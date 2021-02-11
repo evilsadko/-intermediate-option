@@ -19,11 +19,9 @@ if __name__ == "__main__":
     for ix, i in enumerate(vals_prod):
         product_dict[i] = ix
 
-    #o_open = TG.ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged']  
-    
-    #c_open = TG.CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']
-
-    
+#    o_open = TG.ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged']  
+#    
+#    
     user_data = {}
     product_data = {}
     idx = 0
@@ -44,5 +42,19 @@ if __name__ == "__main__":
                    Количество продуктов: {idx}\n
                    Среднее количество продуктов в покупке: {idx/len(list(data.keys()))}\n 
                 """)
+        
+# Создать диаграмму покупаемых продуктов
 
+
+
+#https://medium.com/@kvnamipara/a-better-visualisation-of-pie-charts-by-matplotlib-935b7667d77f
+#Наименования продуктов которые покупались: 24290
+# 
+#                   Количество покупателей: 59843
+
+#                   Количество покупок: 82705
+
+#                   Количество продуктов: 8239567
+
+#                   Среднее количество продуктов в покупке: 99.62598391874735
 

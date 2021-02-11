@@ -66,7 +66,7 @@ if __name__ == "__main__":
         data = json.load(json_file)
         start = time.time()
         print (len(list(data.keys()))) #82705
-        for o in list(data.keys())[:]:
+        for o in list(data.keys())[:4000]:
             IDX = np.where(o_arr[:,1] == data[o][0]["P_USER"])
             tem_di = {}
             # 35376 + 5  = 35381

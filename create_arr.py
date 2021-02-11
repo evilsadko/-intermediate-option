@@ -65,17 +65,6 @@ if __name__ == "__main__":
     p_arr = p_open.to_numpy()
     o_id, p_id, i_count = p_arr[:,0], p_arr[:,1], p_arr[:,2]
     dict_i = {}
-#    for i in range(p_arr.shape[0]):
-#              IDX = np.where(ord_id == o_id[i])
-#              IDX2 = np.where(arr_id_c == cus_id[IDX])
-#              if IDX2[0].shape[0] != 0:
-
-#                  try:
-#                     dict_i[o_id[i]].append({"P_ID":p_id[i], "P_COUNT":i_count[i], "P_USER": cus_id[IDX][0], "JCS":arr_jcs[IDX2][0], "CSS":arr_css[IDX2][0], "CSE":arr_cse[IDX2][0]}) 
-#                  except KeyError:
-#                     dict_i[o_id[i]] = [{"P_ID":p_id[i], "P_COUNT":i_count[i], "P_USER": cus_id[IDX][0], "JCS":arr_jcs[IDX2][0], "CSS":arr_css[IDX2][0], "CSE":arr_cse[IDX2][0]}]
-
-
     ty = chunks(p_arr[:,:],10)
     threads = []
     for f_list in ty:
@@ -90,43 +79,9 @@ if __name__ == "__main__":
                 flag = 1
             else:
                 flag = 0
-
-
     time.sleep(20)
-
     with open('data_arr.txt', 'w') as js_file:
         json.dump(dict_i ,js_file)
-    
-#           "VALS ID PRODUCT:", vals[:4], 
-#           "INVERSE IDX:", inverse[:4],
-#           "COUNT:", count[:4],
-
-#    _arr = []
-#    for ix, ixp in enumerate(count):
-#         #print (vals[ix],ixp)
-#         _arr.append([vals[ix],int(ixp)])
-#    _arr = np.array(_arr)
-#    _arr = _arr[_arr[:,1].argsort()]  
-
-
-#    ix = 0
-#    dict_to = {}
-#     
-#    for i in vals0:
-#         if i in vals1:
-##                #
-#              #print (i, np.where(vals1 == i)[0][0], inverse0[np.where(vals1 == i)[0][0]])
-#              try:
-#                 dict_to[i].append([arr_o[inverse0[np.where(vals1 == i)[0][0]],1], arr_o[inverse0[np.where(vals1 == i)[0][0]],0], arr_o[inverse0[np.where(vals1 == i)[0][0]],2], arr_o[inverse0[np.where(vals1 == i)[0][0]],3], arr_o[inverse0[np.where(vals1 == i)[0][0]],4]]) 
-#              #print (i, arr_o[inverse0[np.where(vals1 == i)[0][0]],1], arr_o[inverse0[np.where(vals1 == i)[0][0]],0], arr_o[inverse0[np.where(vals1 == i)[0][0]],2], arr_o[inverse0[np.where(vals1 == i)[0][0]],3], arr_o[inverse0[np.where(vals1 == i)[0][0]],4])
-#              except KeyError:
-#                 dict_to[i] = [[arr_o[inverse0[np.where(vals1 == i)[0][0]],1], arr_o[inverse0[np.where(vals1 == i)[0][0]],0], arr_o[inverse0[np.where(vals1 == i)[0][0]],2], arr_o[inverse0[np.where(vals1 == i)[0][0]],3], arr_o[inverse0[np.where(vals1 == i)[0][0]],4]]]
-#              #ix += 1
-#    new_dict = open("file_dict.txt", "w")
-#    for i in dict_to:
-#        new_dict.write(f"{i},{len(dict_to[i])}\n")
-#    new_dict.close()
-
     
 
 

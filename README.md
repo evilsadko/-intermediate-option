@@ -45,3 +45,31 @@
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1.png)
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_4.png)
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_3.png)
+
+[Ссылки] https://habr.com/ru/post/196980/
+[Ссылки] https://medium.com/@bigdataschool/4-шага-к-моделированию-machine-learning-практические-примеры-на-python-caee5f123873 
+[Ссылки] https://konstantinklepikov.github.io/2019/10/08/scikit-learn-preprocessing.html
+[Ссылки] http://blog.datalytica.ru/2018/04/blog-post.html   
+[Ссылки] https://habr.com/ru/post/491552/    
+[Ссылки] https://habr.com/ru/post/202090/
+[Ссылки] https://www.kaggle.com/rohitanil/keras-cnn-lstm-lb-0-059
+[Ссылки] https://habr.com/ru/post/468295/
+[Ссылки] https://coderoad.ru/51088585/Как-мне-получить-получить-значение-ячейки-и-хранить-в-переменной-с-Pandas
+[Ссылки] https://towardsdatascience.com/dealing-with-list-values-in-pandas-dataframes-a177e534f173
+[Ссылки] https://nagornyy.me/courses/data-science/social-graphs/
+[Ссылки] https://wiki.programstore.ru/algoritmy-obxoda-grafov-na-python-i-c/
+[Ссылки] https://coderoad.ru/11483863/Python-массив-индексов-пересечения-numpy
+[Ссылки] https://blog.skillfactory.ru/nauka-o-dannyh-data-science/graf_ds/
+[Ссылки] https://habr.com/ru/company/ruvds/blog/442516/
+[Ссылки] https://towardsdatascience.com/dealing-with-list-values-in-pandas-dataframes-a177e534f173
+[Ссылки] https://towardsdatascience.com/stacked-bar-charts-with-pythons-matplotlib-f4020e4eb4a7
+[Ссылки] https://pyprog.pro/mpl/mpl_axis_ticks.html
+[Ссылки] https://overcoder.net/q/1551755/python-numpy-я-уже-написал-самый-быстрый-код-для-большого-массива
+[Ссылки] https://prog-cpp.ru/data-graph/
+[Ссылки] https://www.python-course.eu/graphs_python.php
+[Ссылки] https://pimiento.github.io/python_graphs.html
+[Ссылки] https://coderoad.ru/33281957/более-быстрая-альтернатива-numpy-where
+[Ссылки] https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plotting.html
+[Ссылки] https://towardsdatascience.com/the-art-of-effective-visualization-of-multi-dimensional-data-6c7202990c57
+[Ссылки] https://medium.com/@kvnamipara/a-better-visualisation-of-pie-charts-by-matplotlib-935b7667d77f
+[Ссылки] https://medium.com/swlh/python-data-visualization-with-matplotlib-for-absolute-beginner-part-iii-three-dimensional-8284df93dfab

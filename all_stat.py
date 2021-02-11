@@ -23,7 +23,7 @@ if __name__ == "__main__":
     idx = 0
     with open('data_arr.txt') as json_file:
         data = json.load(json_file)
-        for o in data[:1000]:
+        for o in data:
             idx += len(data[o])
             for i in range(len(data[o])):
                 IDX = np.where(p_arr[:,1] == data[o][i]["P_ID"])

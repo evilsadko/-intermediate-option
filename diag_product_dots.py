@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import threading
 import json
-import test_graph as TG
+import create_arr as TG
 
 def get_g(data):
     fig = plt.figure()

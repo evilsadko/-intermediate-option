@@ -51,9 +51,12 @@
 ``` python3 diag_product_dots.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_4.png)
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_3.png)
-9. График продажи продуктов за год, за день
+9. График продажи продуктов за год ``` python3 _test.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_3.png)
+10. График продажи продуктов за день ``` python3 _test.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_1.png)
+11. График покупок за год ``` python3 _test.py ```
+![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_2.png)
 
 https://habr.com/ru/post/196980/  
 https://medium.com/@bigdataschool/4-шага-к-моделированию-machine-learning-практические-примеры-на-python-caee5f123873  

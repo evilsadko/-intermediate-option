@@ -79,6 +79,8 @@ https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plot
 https://towardsdatascience.com/the-art-of-effective-visualization-of-multi-dimensional-data-6c7202990c57  
 https://medium.com/@kvnamipara/a-better-visualisation-of-pie-charts-by-matplotlib-935b7667d77f  
 https://medium.com/swlh/python-data-visualization-with-matplotlib-for-absolute-beginner-part-iii-three-dimensional-8284df93dfab  
+https://habr.com/ru/company/skillfactory/blog/510320/  
+https://medium.com/nuances-of-programming/4-простые-визуализации-данных-в-python-с-помощью-кода-ca58253fa1a3
 ```
 # data.sort_values(by=name_x, ascending=True, inplace=True)
 # f_open.pivot_table("id", "finance_count", "shop_count").plot(kind='bar', stacked=True)

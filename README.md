@@ -57,6 +57,8 @@
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_1.png)
 11. График покупок за год ``` python3 diag_per_year.py```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_2.png)
+12. 12 продуктов, чьи продажи больше 0.5 за год, купленные индиф покупателями за 9 дней января
+![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_10.png)
 
 https://habr.com/ru/post/196980/  
 https://medium.com/@bigdataschool/4-шага-к-моделированию-machine-learning-практические-примеры-на-python-caee5f123873  

@@ -51,9 +51,9 @@
 ``` python3 diag_product_dots.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_4.png)
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_3.png)
-9. График продажи продуктов за год ``` python3 _test.py ```
+9. График продажи продуктов за год ``` python3 diag_per_year.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_3.png)
-10. График продажи продуктов за день ``` python3 _test.py ```
+10. График продажи продуктов за день ``` python3 diag_per_year.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_1.png)
 11. График покупок за год ``` python3 diag_per_year.py```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_2.png)

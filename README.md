@@ -55,7 +55,7 @@
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_3.png)
 10. График продажи продуктов за день ``` python3 _test.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_1.png)
-11. График покупок за год ``` python3 _test.py ```
+11. График покупок за год ``` python3 diaf_per_year.py```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_2.png)
 
 https://habr.com/ru/post/196980/  

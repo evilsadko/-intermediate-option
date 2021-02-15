@@ -43,7 +43,7 @@ if __name__ == "__main__":
         P = product_data[o] / Product_20 * 100
         #max_list.append([o, product_data[o]])
         if P > 0.5:
-            max_list.append(product_data[o])
+            max_list.append(o)
             max_list1.append(P)
             myexplode.append(0) 
             #print (o, product_data[o], P)

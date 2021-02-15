@@ -60,7 +60,7 @@
 12. 12 продуктов, чьи продажи больше 0.5 за год, купленные индиф покупателями за 9 дней января ``` diag_stat_product_.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_10.png)
 10. График продажи продуктов за день ``` python3 diag_per_day.py ```
-![Иллюстрация к проекту]()
+![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_3_1.jpg)
 
 https://habr.com/ru/post/196980/  
 https://medium.com/@bigdataschool/4-шага-к-моделированию-machine-learning-практические-примеры-на-python-caee5f123873  

@@ -53,13 +53,13 @@
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_3.png)
 9. График продажи продуктов за год ``` python3 diag_per_year.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_3.png)
-10. График продажи продуктов за месяц ``` python3 diag_per_month.py.py ```
+10. График продажи продуктов за месяц ``` python3 diag_per_month.py ```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_1.png)
 11. График покупок за год ``` python3 diag_per_year.py```
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_1_2.png)
 12. 12 продуктов, чьи продажи больше 0.5 за год, купленные индиф покупателями за 9 дней января
 ![Иллюстрация к проекту](https://github.com/evilsadko/intermediate-option/blob/main/github/Figure_10.png)
-10. График продажи продуктов за день ``` python3 diag_per_month.py.py ```
+10. График продажи продуктов за день ``` python3 diag_per_day.py ```
 ![Иллюстрация к проекту]()
 
 https://habr.com/ru/post/196980/  

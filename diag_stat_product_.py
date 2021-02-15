@@ -41,7 +41,7 @@ if __name__ == "__main__":
             P = len(product_data[o])/ Product_20 * 100
             #max_list.append([o, product_data[o]])
             if P > 0.5:
-                 val_list.append(product_data[o])
+                 val_list.append([product_data[o], o])
                  #id_list.append(str(o))
                  #print (o, product_data[o], P, len(product_data[o]))
         o_open = ORDER()  #['Order_Id', 'Customer_Id', ', 'price_before_discount', 'Amount_Charged', 'Order_Date']
@@ -65,11 +65,11 @@ if __name__ == "__main__":
 #            except KeyError:
 #                pass
         print (len(list(dicts.keys())))                  
-     
-        
+        fig, ax = plt.subplots()
         for p in range(len(val_list)):
             f_dict = {}
-            for o in val_list[p]:
+            for o in val_list[p][0]:
+                 
                  #IDX = np.where(o_open[:,0] == int(o)) o_open[IDX].tolist()
                  #if dicts[o] != '01':
                  print (len(val_list[p]), o, dicts[o])
@@ -77,7 +77,8 @@ if __name__ == "__main__":
                     f_dict[dicts[o]] += 1
                  except KeyError:
                     f_dict[dicts[o]] = 1
-            plt.plot(list(f_dict.keys()), list(f_dict.values()))               
+            ax.plot(list(f_dict.keys()), list(f_dict.values()), label = f"{val_list[p][1]}")   
+        ax.legend()    
         plt.show()
     #        try:
     #            dicts[date.split(" ")[0].split("-")[1]] += 1 #int(items_count)

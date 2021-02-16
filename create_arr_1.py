@@ -23,7 +23,6 @@ def CUSTOMER():
     c_open = c_open.apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna() # Убираю все строки
     return c_open
 
-
 def PRODUCT():
     p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
@@ -34,14 +33,6 @@ def ORDER():
     o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
     return o_open
 
-def chunks(lst, count):
-    start = 0
-    for i in range(count):
-          stop = start + len(lst[i::count, :])
-          yield lst[start:stop, :]
-          start = stop     
-
-
 def func_return(x, y):
     dict = {} 
     for i in range(x.shape[0]):
@@ -51,6 +42,10 @@ def func_return(x, y):
             dict[x[i,y]] = [i]
     return dict    
 
+def get_i(x):
+    #x = p_open[x,:].tolist()
+    #dict = {"Order_ID":x[0], "Product_ID":x[1], "Items_Count":x[2]}
+    return p_open[x,:].tolist()
 
 if __name__ == "__main__":
     c_open = CUSTOMER().to_numpy() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']    
@@ -71,17 +66,18 @@ if __name__ == "__main__":
         try:
             arr_p[arr_o[i,0]]
             not_errot += 1
-            print (len(arr_p[arr_o[i,0]]))
-            print (arr_c[arr_o[i,1]])
-            print ("----------------------->")
+            gen_ls = [get_i(p) for p in arr_p[arr_o[i,0]]]
+            #print (gen_ls)
+            #print ("Product in order", len(arr_p[arr_o[i,0]]))
+            ID_customer = arr_c[arr_o[i,1]][0]
+            ID_customer = c_open[ID_customer,:].tolist()
+            #print ("Customer ID", ID_customer)
+            sort_dict[ID_customer[0]] = [gen_ls, ID_customer]
+            #print ("----------------------->")
         except KeyError:
             key_error += 1
-    print (key_error, not_errot)
-
-
-
-
-
+    print (len(sort_dict),key_error, not_errot)
+    #9678606 1760573
 
 
 #    with open('data_arr.txt', 'w') as js_file:

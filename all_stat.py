@@ -26,7 +26,6 @@ if __name__ == "__main__":
         for o in data:
             idx += len(data[o])
             for i in range(len(data[o])):
-                IDX = np.where(p_arr[:,1] == data[o][i]["P_ID"])
                 try:    
                     product_data[data[o][i]["P_ID"]] += 1
                 except KeyError:

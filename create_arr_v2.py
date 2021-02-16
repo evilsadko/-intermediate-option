@@ -93,7 +93,7 @@ if __name__ == "__main__":
 #            else:
 #                sort_dict[ID_customer[0]] = [[gen_ls, ID_customer]]
 
-            # Создаю сдлваоб где ключ ID покупки ордера
+            # Создаю словарь где ключ ID покупки ордера
 
 #            sort_dict[arr_o[i,0]] = [[gen_ls, ID_customer]] # Новая
             l = repack_func(gen_ls) # Оригенал

@@ -113,7 +113,8 @@ class Sort_v1:
         print ("DONE")
 
     def diag_user(self)
-        
+        #Диаграмма
+        return None
 
 if __name__ == "__main__":
 

@@ -127,7 +127,7 @@ class Sort_v1:
                 
         print ("DONE")
 
-    def diag_user_consent(self):
+    def diag_user(self):
         duplicat = self.customer_open.drop_duplicates('Customer_Id') 
         A = len(duplicat)
         B = (duplicat['consent'] == 1.0).sum()
@@ -177,8 +177,6 @@ class Sort_v1:
         myexplode = [0.05, 0.05]
         diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_2.jpg", True)
         #---------------------------------------->
-
-    def diag_user_0(self):
         # Покупатели скупились больше чем 1 раз
         customer_dup = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
         customer_dup = customer_dup.drop_duplicates('Customer_Id')
@@ -202,7 +200,7 @@ class Sort_v1:
             try:
                 t = self.customer_dict[i][0] 
                 if len(self.order_dict[i]) == 1:
-                    print (len(self.order_dict[i]), self.customer_arr[t,:].tolist())
+                    #print (len(self.order_dict[i]), self.customer_arr[t,:].tolist())
                     NO_ERROR += 1
                 else:
                     ERROR += 1
@@ -240,11 +238,9 @@ if __name__ == "__main__":
     #S.save_data("data_arr_v1.txt") # Сохранение
     #S.open_dat("data_arr_v1.txt") # Открыть
 #----------------->
-    #S.diag_user_0() # Покупатели скупились больше чем 1 раз
+    S.diag_user() # Аналитика покупателя
 #----------------->
-    #S.diag_user_consent() # Аналитика по рассылке покупателя
+    S.diag_product_0()  # Количество покупок с одним товаром
 #----------------->
-    #S.diag_product_0()  # Количество покупок с одним товаром
-#----------------->
-    S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!!
+    #S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!!
 #----------------->

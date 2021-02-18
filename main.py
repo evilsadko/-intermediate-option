@@ -45,7 +45,8 @@ def PRODUCT():
 def ORDER():
     o_open = pd.read_csv('B24_dbo_Crm_orders.csv', delimiter=',')
     o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-    return o_open
+    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
+    return o_open.sort_values(by=['Order_Date'])
 
 
 class Sort_v1:
@@ -212,23 +213,25 @@ class Sort_v1:
     def diag_product_1(self):
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
         self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
-        #self.order_dict_ = self.func_return(self.order_arr, 0)
-        #self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']        
-        for i in self.order_dict:
+        fig, ax = plt.subplots(figsize=(10,10)) 
+        M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+        for i in list(self.order_dict.keys())[:20]:
                 try:
                     idx_cust = self.customer_dict[i][0]  # idx в списке покупателя
                     _customet = self.customer_arr[idx_cust,:].tolist() # Информация о покупателе
-
-                    #idx_order = self.order_dict[i]
                     order_list = self.order_dict[i] # 
                     for h in order_list:
                         _order = self.order_arr[h,:].tolist()
-                        print (_order)
-                    print (len(order_list), _customet, "====================================")
+                        _date = _order[-1].split(" ")[0].split("-")[1]
+                        M[str(_date)] += int(_order[3])
+                    #ax.bar(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
+                    ax.plot(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
+                    ax.legend()
                 except KeyError:
                     pass
+        fig.savefig('T.png')
 
-#1446480 587889 143286 440498
+
 
 if __name__ == "__main__":
 
@@ -238,9 +241,9 @@ if __name__ == "__main__":
     #S.save_data("data_arr_v1.txt") # Сохранение
     #S.open_dat("data_arr_v1.txt") # Открыть
 #----------------->
-    S.diag_user() # Аналитика покупателя
+    #S.diag_user() # Аналитика покупателя
 #----------------->
-    S.diag_product_0()  # Количество покупок с одним товаром
+    #S.diag_product_0()  # Количество покупок с одним товаром
 #----------------->
     #S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!!
 #----------------->

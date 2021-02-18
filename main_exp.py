@@ -119,7 +119,7 @@ class Sort_v1:
         with open(x, 'w') as js_file:
             json.dump(self.sort_dict, js_file)
 
-    def open_dat(self, x):
+    def open_data(self, x):
         with open(x) as json_file:
             data = json.load(json_file)
             return data
@@ -128,108 +128,6 @@ class Sort_v1:
                 
         print ("DONE")
 
-    def diag_user(self):
-        duplicat = self.customer_open.drop_duplicates('Customer_Id') 
-        A = len(duplicat)
-        B = (duplicat['consent'] == 1.0).sum()
-        vals  = [A-B, B]
-        myexplode = [0, 0.2]
-        labels = ["Не подтверждено", "Согласны на рассылку"]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_0_0.jpg") #vals, labels, myexplode, title, save_name
-        #----------------------------------->
-        duplicat  = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
-        duplicat = duplicat.drop_duplicates('Customer_Id') 
-        A = len(duplicat)
-        B = (duplicat['consent'] == 1.0).sum()
-        vals  = [A-B, B]
-        myexplode = [0, 0.2]
-        labels = ["Не подтверждено", "Согласны на рассылку"]
-        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "github/user/diag_user_consent_0_1.jpg")
-        #----------------------------------->
-        #C = duplicat[duplicat[]== 1.0]
-        duplicat = self.customer_open.drop_duplicates('Customer_Id') 
-        A = len(duplicat)
-        C = (duplicat['join_club_success'] == 1.0).sum()
-        D = (duplicat['Could_send_sms'] == 1.0).sum()
-        I = (duplicat['Could_send_email'] == 1.0).sum()
-        A = A-(C+D+I)
-        vals = [C, D, I, A]
-        labels = ["join_club_success", "Could_send_email", "Could_send_sms", "not access"]
-        myexplode = [0.05, 0.05, 0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_1_0.jpg", True)
-        #------------------------------------->
-        # Для тех кто совершил больше 2 покупок
-        duplicat  = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
-        duplicat = duplicat.drop_duplicates('Customer_Id') 
-        A = len(duplicat['Customer_Id'])
-        C = (duplicat['join_club_success'] == 1.0).sum()
-        D = (duplicat['Could_send_sms'] == 1.0).sum()
-        I = (duplicat['Could_send_email'] == 1.0).sum()
-        A = A-(C+D+I)
-        vals = [C, D, I, A]
-        labels = ["join_club_success", "Could_send_email", "Could_send_sms", "not access"]
-        myexplode = [0.05, 0.05, 0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "github/user/diag_user_consent_1_1.jpg", True)
-        #---------------------------------------->
-        duplicat = self.customer_open.drop_duplicates('Customer_Id') 
-        C = ((duplicat['join_club_success']  == 1.0) & (duplicat['Could_send_sms'] == 1.0) & (duplicat['Could_send_email'] == 1.0)).sum()
-        vals = [C, len(duplicat['Customer_Id'])-C]
-        labels = ["полный доступ", "остальные"]
-        myexplode = [0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_2.jpg", True)
-        #---------------------------------------->
-        # Покупатели скупились больше чем 1 раз
-        customer_dup = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
-        customer_dup = customer_dup.drop_duplicates('Customer_Id')
-        not_duplicat = len(customer_dup['Customer_Id'])
-        duplicat = len(self.customer_open.drop_duplicates('Customer_Id')) 
-        P = not_duplicat / duplicat * 100
-        vals  = [duplicat, not_duplicat]
-        myexplode = [0, 0.2]
-        labels = ["Остальные", "Покупатели совершившие покупки больше 1 раза"]
-        diag_circle(vals, labels, myexplode, "Анализ всех ID", "github/user/diag_user_0.jpg")
-
-    
-    def diag_product_0(self):
-        # Количество покупок с одним товаром
-        self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
-        #self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
-        NO_ERROR = 0
-        ERROR = 0
-        for i in self.order_dict :
-            try:
-                t = self.customer_dict[i][0] 
-                if len(self.order_dict[i]) == 1:
-                    #print (len(self.order_dict[i]), self.customer_arr[t,:].tolist())
-                    NO_ERROR += 1
-                else:
-                    ERROR += 1
-            except KeyError:
-                pass
-        print (len(self.customer_dict), len(self.order_dict), NO_ERROR, ERROR)
-        diag_circle([NO_ERROR, ERROR], ["один товар","остальные"], [0,0], "Количество покупок с одним товаром", "github/order/diag_order_one_product_0.jpg")
-
-    def diag_product_1(self):
-        self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
-        fig, ax = plt.subplots(figsize=(10,10)) 
-        M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
-        for i in list(self.order_dict.keys())[:20]:
-                try:
-                    idx_cust = self.customer_dict[i][0]  # idx в списке покупателя
-                    _customet = self.customer_arr[idx_cust,:].tolist() # Информация о покупателе
-                    order_list = self.order_dict[i] # 
-                    for h in order_list:
-                        _order = self.order_arr[h,:].tolist()
-                        _date = _order[-1].split(" ")[0].split("-")[1]
-                        M[str(_date)] += int(_order[3])
-                    #ax.bar(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
-                    ax.plot(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
-                    ax.legend()
-                except KeyError:
-                    pass
-        fig.savefig('T.png')
 
     def diag_product_2(self):
         #personal_data_user
@@ -284,16 +182,6 @@ class Sort_v1:
 if __name__ == "__main__":
 
     S = Sort_v1()
-#----------------->
-    #S.func_unite("see") # Подготовка
-    #S.save_data("data_arr_v1.txt") # Сохранение
-    #S.open_dat("data_arr_v1.txt") # Открыть
-#----------------->
-    #S.diag_user() # Аналитика покупателя
-#----------------->
-    #S.diag_product_0()  # Количество покупок с одним товаром
-#----------------->
-    #S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!!
 #----------------->
     S.diag_product_2()
 #

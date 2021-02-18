@@ -119,7 +119,7 @@ class Sort_v1:
         with open(x, 'w') as js_file:
             json.dump(self.sort_dict, js_file)
 
-    def open_dat(self, x):
+    def open_data(self, x):
         with open(x) as json_file:
             data = json.load(json_file)
             return data
@@ -239,7 +239,7 @@ if __name__ == "__main__":
 #----------------->
     #S.func_unite("see") # Подготовка
     #S.save_data("data_arr_v1.txt") # Сохранение
-    #S.open_dat("data_arr_v1.txt") # Открыть
+    #S.open_data("data_arr_v1.txt") # Открыть
 #----------------->
     #S.diag_user() # Аналитика покупателя
 #----------------->

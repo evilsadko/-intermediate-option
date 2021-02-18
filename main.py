@@ -134,7 +134,7 @@ class Sort_v1:
         vals  = [A-B, B]
         myexplode = [0, 0.2]
         labels = ["Не подтверждено", "Согласны на рассылку"]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "images/diag_user_consent_0_0.jpg") #vals, labels, myexplode, title, save_name
+        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_0_0.jpg") #vals, labels, myexplode, title, save_name
         #----------------------------------->
         duplicat  = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
         duplicat = duplicat.drop_duplicates('Customer_Id') 
@@ -143,7 +143,7 @@ class Sort_v1:
         vals  = [A-B, B]
         myexplode = [0, 0.2]
         labels = ["Не подтверждено", "Согласны на рассылку"]
-        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "images/diag_user_consent_0_1.jpg")
+        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "github/user/diag_user_consent_0_1.jpg")
         #----------------------------------->
         #C = duplicat[duplicat[]== 1.0]
         duplicat = self.customer_open.drop_duplicates('Customer_Id') 
@@ -155,7 +155,7 @@ class Sort_v1:
         vals = [C, D, I, A]
         labels = ["join_club_success", "Could_send_email", "Could_send_sms", "not access"]
         myexplode = [0.05, 0.05, 0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "images/diag_user_consent_1_0.jpg", True)
+        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_1_0.jpg", True)
         #------------------------------------->
         # Для тех кто совершил больше 2 покупок
         duplicat  = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
@@ -168,14 +168,14 @@ class Sort_v1:
         vals = [C, D, I, A]
         labels = ["join_club_success", "Could_send_email", "Could_send_sms", "not access"]
         myexplode = [0.05, 0.05, 0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "images/diag_user_consent_1_1.jpg", True)
+        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "github/user/diag_user_consent_1_1.jpg", True)
         #---------------------------------------->
         duplicat = self.customer_open.drop_duplicates('Customer_Id') 
         C = ((duplicat['join_club_success']  == 1.0) & (duplicat['Could_send_sms'] == 1.0) & (duplicat['Could_send_email'] == 1.0)).sum()
         vals = [C, len(duplicat['Customer_Id'])-C]
         labels = ["полный доступ", "остальные"]
         myexplode = [0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "images/diag_user_consent_2.jpg", True)
+        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_2.jpg", True)
         #---------------------------------------->
 
     def diag_user_0(self):
@@ -188,7 +188,7 @@ class Sort_v1:
         vals  = [duplicat, not_duplicat]
         myexplode = [0, 0.2]
         labels = ["Остальные", "Покупатели совершившие покупки больше 1 раза"]
-        diag_circle(vals, labels, myexplode, "Анализ всех ID", "images/diag_user_0.jpg")
+        diag_circle(vals, labels, myexplode, "Анализ всех ID", "github/user/diag_user_0.jpg")
 
     
     def diag_product_0(self):
@@ -209,7 +209,7 @@ class Sort_v1:
             except KeyError:
                 pass
         print (len(self.customer_dict), len(self.order_dict), NO_ERROR, ERROR)
-        diag_circle([NO_ERROR, ERROR], ["один товар","остальные"], [0,0], "Количество покупок с одним товаром", "images/diag_order_one_product_0.jpg")
+        diag_circle([NO_ERROR, ERROR], ["один товар","остальные"], [0,0], "Количество покупок с одним товаром", "github/order/diag_order_one_product_0.jpg")
 
     def diag_product_1(self):
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  

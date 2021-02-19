@@ -229,7 +229,7 @@ class Sort_v1:
                     ax.legend()
                 except KeyError:
                     pass
-        fig.savefig('T.png')
+        fig.savefig('github/T.png')
 
 
 
@@ -247,3 +247,5 @@ if __name__ == "__main__":
 #----------------->
     S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!!
 #----------------->
+#1571954145.340004
+

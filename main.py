@@ -231,6 +231,26 @@ class Sort_v1:
                     pass
         fig.savefig('github/T.png')
 
+    def diag_product_2(self): # Total_Amount/TotalDiscount
+        self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
+        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        fig, ax = plt.subplots(figsize=(10,10)) 
+        M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+        for i in list(self.order_dict.keys())[:20]:
+                try:
+                    idx_cust = self.customer_dict[i][0]  # idx в списке покупателя
+                    _customet = self.customer_arr[idx_cust,:].tolist() # Информация о покупателе
+                    order_list = self.order_dict[i] # 
+                    for h in order_list:
+                        _order = self.order_arr[h,:].tolist()
+                        _date = _order[-1].split(" ")[0].split("-")[1]
+                        M[str(_date)] += (int(_order[4])-int(_order[3]))
+                    #ax.bar(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
+                    ax.plot(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
+                    ax.legend()
+                except KeyError:
+                    pass
+        fig.savefig('github/T1.png')
 
 
 if __name__ == "__main__":
@@ -247,5 +267,6 @@ if __name__ == "__main__":
 #----------------->
     S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!!
 #----------------->
+    S.diag_product_2() 
 #1571954145.340004
 

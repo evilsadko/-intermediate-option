@@ -15,18 +15,21 @@ def see_stat(x, y=0):
 
 
 def diag_circle(vals, labels, myexplode, title, save_name, types=None):
-    fig, ax = plt.subplots(figsize=(50,50))
-    ax.pie(vals, explode=myexplode, labels=labels, autopct='%1.2f%%', startangle=90, pctdistance=0.85)
-
+    fig, ax = plt.subplots(figsize=(10,10))
+    if myexplode != None:
+        ax.pie(vals, explode=myexplode, labels=labels, autopct='%1.2f%%', startangle=90, pctdistance=0.85)
+    else:
+        ax.pie(vals, labels=labels, autopct='%1.2f%%', startangle=90, pctdistance=0.85)
     if types != None:
         centre_circle = plt.Circle((0,0),0.70,fc='white')
         fig = plt.gcf()
         fig.gca().add_artist(centre_circle)
 
     ax.axis("equal")
-    ax.set_title(title)
+    ax.set_title(title, pad=20)
     ax.legend(loc='best') #, bbox_to_anchor=(0.7, 0.7) 'upper left' bbox_to_anchor=(0.5, 0., 0.5, 0.5)
     plt.savefig(save_name)
+    plt.cla()
 
 def CUSTOMER():
     c_open = pd.read_csv('B24_dbo_Crm_customers.csv', delimiter=',')
@@ -136,124 +139,121 @@ class Sort_v1:
         print ("DONE")
 
 
-    def diag_product_2(self):
-# Получить сумму всех продаж
-        S = self.product_open['Total_Amount'].sum()
-        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
-        #amount_charged_sum= 1 573 811 359.5180595, price_before_discount_sum= 1 719 882 683.943696
-       
-# Разделить продукты на категории
-#------------------------------------------->
-        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-        Total = 0
-        for i in range(self.product_arr.shape[0]):
-            id_order = self.order_dict[self.product_arr[i,0]]
-            Total += self.product_arr[i,3]
-        print (int(Total), int(S), int(Total) == int(S))
 
-        # 211 884 081.48872375
-#------------------------------------------->
-        NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
-        print (len(NAME['Category1_Id']))
-        name_arr = NAME.to_numpy() 
-
-## Разложить продукты по категориям        
-        CatID_1 = self.func_return(name_arr, 3)
-        LEN_1 = 0
-        for i in CatID_1 :
-            #print (len(CatID_1[i]))
-            LEN_1 += len(CatID_1[i])
-            T_price = 0
-            for o in CatID_1[i]:
-                T = name_arr[o,:].tolist()
-                id_p = T[1]
-                try:
-                    for k in range(len(self.product_dict[id_p])):
-                        id_p_arr = self.product_dict[id_p][k]
-                        F = self.product_arr[id_p_arr,:].tolist() 
-                        T_price += F[-2]  
-                    #print (len(self.product_dict[id_p]))
-                except KeyError:
-                    pass
-            S -= T_price
-            CatID_1[i] = T_price
-        sorted_tuples = sorted(CatID_1.items(), key=lambda item: item[1])
-        self.min_visual_product(np.array(sorted_tuples))
-        L = []
-        V = []
-        M = []
-        for i in CatID_1:
-            print (CatID_1[i], i)
-            if CatID_1[i] > 0:
-                L.append(i)
-                V.append(CatID_1[i])
-                M.append(0)
-        L.append("Other")
-        V.append(S)
-        M.append(0.2)
-        #diag_circle(V, L, M,  "Анализ ID категорий", "C.jpg")
-        diag_circle(V[:], L[:], M[:],  "Анализ ID категорий", "github/C.jpg")
-        #myexplode.append(0.2)
-
+## Сопутствующие товары
+#    def diag_product_3(self):
+## найти самые популярные товары
+#        self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+#        self.product_open = self.product_open.sort_values(['Items_Count'])
+#        #see_stat(self.product_open)
+#        # Узнать кол во ID продуктов
+#        vals_prod = self.product_open.drop_duplicates("Product_ID")
+#        vals_prod = vals_prod["Product_ID"]
+#        #----------------------->
+#        # Декодирование кодирование в словарь
+#        dict_to_coding = {}
+#        dict_to_encoding = {}
+#        new_dict = {}
 #        
-        #print(sorted_dict)  # {1: 1, 3: 4, 2: 9}
-#------------------------------------------------
-#        CatID_2 = self.func_return(name_arr, 5)
-#        LEN_2 = 0    
-#        for i in CatID_2:
-#            #print (len(CatID_2[i]))
-#            LEN_2 += len(CatID_2[i] )
-#        print (len(CatID_1), LEN_1, len(CatID_2), LEN_2)   
-    def diag_product_1(self):
-        NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
-        name_arr = NAME.to_numpy() 
-        #CatID_1 = self.func_return(name_arr, 5)#self.func_return(name_arr, 3)
-        CatID_1 = self.func_return(name_arr, 3)
-#############
-        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
-        #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
-        fig, ax = plt.subplots(figsize=(10,10)) 
-        
-        for i in CatID_1 :
-            #M = {'01':[0,0], '02':[0,0], '03':[0,0], '04':[0,0], '05':[0,0], '06':[0,0], '07':[0,0], '08':[0,0], '09':[0,0], '10':[0,0], '11':[0,0], '12':[0,0]}
-            M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
-            for o in CatID_1[i]:
-                temp = name_arr[o,:].tolist()
-                id_p = temp[1]
-                try:
-                    for k in range(len(self.product_dict[id_p])):
-                        id_p_arr = self.product_dict[id_p][k]
-                        F = self.product_arr[id_p_arr,:].tolist() 
-                        price = F[3]
-                        ord_id = F[0]
-                        ord_id = self.order_dict[ord_id]
-                        _order = self.order_arr[ord_id,:].tolist()[0]
-                        _date = _order[-1].split(" ")[0].split("-")[1]
-                        M[str(_date)] += price
-                        print (_order, ord_id, price, _date)
-                except KeyError:
-                    pass
-            #PLOT
-            
-            plt.plot(list(M.keys()), list(M.values()))  
-            plt.savefig(f"github/cat2/{i}.jpg") 
-            plt.cla()
-            with open(f"github/cat2/{i}.json", 'w') as js_file:
-                 json.dump(M, js_file)
-#out: dict{id} = [date, sum]
+#        for ix, ij in enumerate(vals_prod):
+#            #print (ix, ij)
+#            dict_to_coding[ij] = ix 
+#            dict_to_encoding[ix] = ij
+#            new_dict[ij] = 0
+#        #------------------------->
+#        arr = self.product_open.to_numpy()
+#        
+#        for p in range(1000): #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']  arr.shape[0]#arr.shape[0]
+#            ord_id = arr[p,0] # Получаю ордер
+#            pr_id = arr[p,1] # ID продукта
+#            #_order = self.order_dict[ord_id] 
+#            #_order = self.order_arr[_order,:].tolist() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+#            Z = np.zeros((len(vals_prod)))
+#            PR = self.product_dict[ord_id] #Товары в оредре
+#            #print (PR, ord_id)
+#            for k in PR:
+#                if arr[k,1] != pr_id:
+#                    #print (arr[k,1])
+#                    #print (dict_to_coding[int(arr[k,1])])
+#                    Z[dict_to_coding[int(arr[k,1])]] += 1
+#                    #print (new_dict[pr_id][dict_to_coding[int(arr[k,1])]])
+#                    #print ("-----------------------------------------")
+#            new_dict[pr_id] = Z
+#        print (len(new_dict)) 
+#        for ic in new_dict:
+#            t_d = {}
+#            for iq, q in enumerate(new_dict[ic]):
+#                 if q > 0:
+#                    t_d[dict_to_encoding[iq]] = q
+#                    #print (q, dict_to_encoding[iq])
+#            print (len(t_d))
 
-#        for i in list(self.order_dict.keys())[:]:
-#            _order = self.order_arr[self.order_dict[i],:].tolist()
-#            _product = self.product_dict[i]
-#            
-#            print (_order, len(_product))
-        #fig.savefig('github/T.png')
+#            diag_circle(list(t_d.values()), list(t_d.keys()), None, ic, f"github/related_products/{ic}.jpg")
+
+#            #plt.plot(list(t_d.keys()), list(t_d.values()))  
+#            #plt.savefig(f"github/related_products/{i}.jpg") 
+#            #plt.cla()
+##       print (_order, ord_id, len(PR), pr_id)
+
+    def diag_product_3(self):
+# найти самые популярные товары
+        self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+        self.product_open = self.product_open.sort_values(['Items_Count'])
+        #see_stat(self.product_open)
+        # Узнать кол во ID продуктов
+        vals_prod = self.product_open.drop_duplicates("Product_ID")
+        vals_prod = vals_prod["Product_ID"]
+        #----------------------->
+        # Декодирование кодирование в словарь
+        dict_to_coding = {}
+        dict_to_encoding = {}
+        new_dict = {}
+        
+        for ix, ij in enumerate(vals_prod):
+            #print (ix, ij)
+            dict_to_coding[ij] = ix 
+            dict_to_encoding[ix] = ij
+            new_dict[ij] = 0
+        #------------------------->
+        _product_dict = self.func_return(self.product_arr, 1) 
+        arr = self.product_open.to_numpy()
+        for j in vals_prod[:]:
+            #print (len(_product_dict[j])) # Кол во покупок с этим товаром
+            Z = np.zeros((len(vals_prod)))
+            for k in _product_dict[j]:
+                _id_o = arr[k,0]    #получаю ИД oredr и продукта
+                #_order = self.order_arr[self.order_dict[_id_o],:].tolist()
+                #self.product_dict[_id_o]
+                #print (arr[k,:].tolist(), len(self.product_dict[_id_o]))
+                for u in self.product_dict[_id_o]:
+                     ix_z = int(arr[u,1])
+                     if int(j) != int(ix_z): 
+                        #print (arr[u,:].tolist()) 
+                        
+                        ix_z = dict_to_coding[ix_z]
+                        Z[ix_z] += arr[u,2]
+                        #
+            new_dict[j] = Z
+        for s in new_dict:
+            t_d = {}
+            try:
+                for ix, m in enumerate(new_dict[s]):
+                    if m > 1000:
+                        #print (s, m, dict_to_encoding[ix])
+                        t_d[dict_to_encoding[ix]] = m
+                print (len(t_d))
+                if len(t_d) > 1:
+                    for N in t_d:
+                        print (t_d[N], N)
+
+                    #diag_circle(list(t_d.keys()), list(t_d.keys()), None, s, f"github/related_products/{s}.jpg")
+            except TypeError:
+                print (new_dict[s])
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
     S = Sort_v1()
 #----------------->
-    S.diag_product_1()
+    S.diag_product_3()
 
 #                try:
 #                    idx_cust = self.customer_dict[i][0]  # idx в списке покупателя
@@ -268,4 +268,8 @@ if __name__ == "__main__":
 #                    ax.legend()
 #                except KeyError:
 #                    pass
+#35372 72994146
+#35373 4033100098543
+#35374 7290101958802
+#35375 6186300
 

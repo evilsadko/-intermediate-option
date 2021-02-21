@@ -213,7 +213,7 @@ class Sort_v1:
             #print (ix, ij)
             dict_to_coding[ij] = ix 
             dict_to_encoding[ix] = ij
-            new_dict[ij] = 0
+#            new_dict[ij] = 0
         #------------------------->
         _product_dict = self.func_return(self.product_arr, 1) 
         arr = self.product_open.to_numpy()
@@ -233,28 +233,33 @@ class Sort_v1:
                         ix_z = dict_to_coding[ix_z]
                         Z[ix_z] += arr[u,2]
                         #
-            new_dict[j] = Z
-        for s in new_dict:
-            t_d = {}
-            try:
-                for ix, m in enumerate(new_dict[s]):
-                    if m > 1000:
-                        #print (s, m, dict_to_encoding[ix])
-                        t_d[dict_to_encoding[ix]] = m
-                print (len(t_d))
-                if len(t_d) > 1:
-                    for N in t_d:
-                        print (t_d[N], N)
-
-                    #diag_circle(list(t_d.keys()), list(t_d.keys()), None, s, f"github/related_products/{s}.jpg")
-            except TypeError:
-                print (new_dict[s])
+            new_dict[j] = Z.tolist()
+        #for s in new_dict:
+        with open("related_products.json", 'w') as js_file:
+            json.dump(new_dict, js_file)
+#            t_d = {}
+#            try:
+#                for ix, m in enumerate(new_dict[s]):
+#                    if m > 1000:
+#                        #print (">>>>",s, m, dict_to_encoding[ix])
+#                        t_d[dict_to_encoding[ix]] = m
+#                #print (len(t_d))
+#            except TypeError:
+#                print ("ERROR------------------", new_dict[s])
+##            if len(t_d) > 1:
+##                for N in t_d:
+##                    print (">>>>", t_d[N], N)
+#
+#            diag_circle(list(t_d.keys()), list(t_d.keys()), None, s, f"github/related_products/{s}.jpg")
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
     S = Sort_v1()
 #----------------->
     S.diag_product_3()
-
+    with open("related_products.json","r") as json_file:
+            data = json.load(json_file)
+            for i in data:
+                print (i, len(data[i]), sum(data[i]))
     """
     def diag_product_2(self):
 # Получить сумму всех продаж

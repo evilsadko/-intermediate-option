@@ -255,21 +255,113 @@ if __name__ == "__main__":
 #----------------->
     S.diag_product_3()
 
-#                try:
-#                    idx_cust = self.customer_dict[i][0]  # idx в списке покупателя
-#                    _customet = self.customer_arr[idx_cust,:].tolist() # Информация о покупателе
-#                    order_list = self.order_dict[i] # 
-#                    for h in order_list:
-#                        _order = self.order_arr[h,:].tolist()
-#                        _date = _order[-1].split(" ")[0].split("-")[1]
-#                        M[str(_date)] += int(_order[3])
-#                    #ax.bar(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
-#                    ax.plot(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
-#                    ax.legend()
-#                except KeyError:
-#                    pass
-#35372 72994146
-#35373 4033100098543
-#35374 7290101958802
-#35375 6186300
+    """
+    def diag_product_2(self):
+# Получить сумму всех продаж
+        S = self.product_open['Total_Amount'].sum()
+        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        #amount_charged_sum= 1 573 811 359.5180595, price_before_discount_sum= 1 719 882 683.943696
+
+# Разделить продукты на категории
+#------------------------------------------->
+        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+        Total = 0
+        for i in range(self.product_arr.shape[0]):
+            id_order = self.order_dict[self.product_arr[i,0]]
+            Total += self.product_arr[i,3]
+        print (int(Total), int(S), int(Total) == int(S))
+
+#------------------------------------------->
+        NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
+        print (len(NAME['Category1_Id']))
+        name_arr = NAME.to_numpy() 
+
+## Разложить продукты по категориям        
+        CatID_1 = self.func_return(name_arr, 3)
+        LEN_1 = 0
+        for i in CatID_1 :
+            #print (len(CatID_1[i]))
+            LEN_1 += len(CatID_1[i])
+            T_price = 0
+            for o in CatID_1[i]:
+                T = name_arr[o,:].tolist()
+                id_p = T[1]
+                try:
+                    for k in range(len(self.product_dict[id_p])):
+                        id_p_arr = self.product_dict[id_p][k]
+                        F = self.product_arr[id_p_arr,:].tolist() 
+                        T_price += F[-2]  
+                    #print (len(self.product_dict[id_p]))
+                except KeyError:
+                    pass
+            S -= T_price
+            CatID_1[i] = T_price
+        sorted_tuples = sorted(CatID_1.items(), key=lambda item: item[1])
+        self.min_visual_product(np.array(sorted_tuples))
+        L = []
+        V = []
+        M = []
+        for i in CatID_1:
+            print (CatID_1[i], i)
+            if CatID_1[i] > 0:
+                L.append(i)
+                V.append(CatID_1[i])
+                M.append(0)
+        L.append("Other")
+        V.append(S)
+        M.append(0.2)
+        #diag_circle(V, L, M,  "Анализ ID категорий", "C.jpg")
+        diag_circle(V[:], L[:], M[:],  "Анализ ID категорий", "github/C.jpg")
+
+
+
+
+
+    def diag_product_1(self):
+        NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
+        name_arr = NAME.to_numpy() 
+        #CatID_1 = self.func_return(name_arr, 5)#self.func_return(name_arr, 3)
+        CatID_1 = self.func_return(name_arr, 3)
+#############
+        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
+        #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
+        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        fig, ax = plt.subplots(figsize=(10,10)) 
+
+        for i in CatID_1 :
+            #M = {'01':[0,0], '02':[0,0], '03':[0,0], '04':[0,0], '05':[0,0], '06':[0,0], '07':[0,0], '08':[0,0], '09':[0,0], '10':[0,0], '11':[0,0], '12':[0,0]}
+            M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+            for o in CatID_1[i]:
+                temp = name_arr[o,:].tolist()
+                id_p = temp[1]
+                try:
+                    for k in range(len(self.product_dict[id_p])):
+                        id_p_arr = self.product_dict[id_p][k]
+                        F = self.product_arr[id_p_arr,:].tolist() 
+                        price = F[3]
+                        ord_id = F[0]
+                        ord_id = self.order_dict[ord_id]
+                        _order = self.order_arr[ord_id,:].tolist()[0]
+                        _date = _order[-1].split(" ")[0].split("-")[1]
+                        M[str(_date)] += price
+                        print (_order, ord_id, price, _date)
+                except KeyError:
+                    pass
+            #PLOT
+
+            plt.plot(list(M.keys()), list(M.values()))  
+            plt.savefig(f"github/cat2/{i}.jpg") 
+            plt.cla()
+            with open(f"github/cat2/{i}.json", 'w') as js_file:
+                 json.dump(M, js_file)
+
+#out: dict{id} = [date, sum]
+#        for i in list(self.order_dict.keys())[:]:
+#            _order = self.order_arr[self.order_dict[i],:].tolist()
+#            _product = self.product_dict[i]
+#            
+#            print (_order, len(_product))
+        #fig.savefig('github/T.png')
+
+    """
 

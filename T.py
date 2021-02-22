@@ -207,14 +207,15 @@ class Sort_v1:
     def diag_product_1(self):
         NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
         name_arr = NAME.to_numpy() 
-        CatID_1 = self.func_return(name_arr, 5)#self.func_return(name_arr, 3)
+        CatID_1 = self.func_return(name_arr, 5)
+        #CatID_1 = self.func_return(name_arr, 3)
 
 #############
         self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
         #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
         self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         fig, ax = plt.subplots(figsize=(10,10)) 
-        
+        dict_save = {}
         for i in CatID_1 :
             #M = {'01':[0,0], '02':[0,0], '03':[0,0], '04':[0,0], '05':[0,0], '06':[0,0], '07':[0,0], '08':[0,0], '09':[0,0], '10':[0,0], '11':[0,0], '12':[0,0]}
             M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
@@ -231,16 +232,21 @@ class Sort_v1:
                         _order = self.order_arr[ord_id,:].tolist()[0]
                         _date = _order[-1].split(" ")[0].split("-")[1]
                         M[str(_date)] += price
-                        print (_order, ord_id, price, _date)
+                        #print (_order, ord_id, price, _date)
                 except KeyError:
                     pass
             #PLOT
-            
-            plt.plot(list(M.keys()), list(M.values()))  
-            plt.savefig(f"github/cat2/{i}.jpg") 
-            plt.cla()
-            with open(f"github/cat2/{i}.json", 'w') as js_file:
-                 json.dump(M, js_file)
+            dict_save[i] = M
+#------------------------------------->
+        with open('cat_2.json', 'w') as js_file:
+            json.dump(dict_save, js_file)
+#------------------------------------->
+
+#            plt.plot(list(M.keys()), list(M.values()))  
+#            plt.savefig(f"github/cat2/{i}.jpg") 
+#            plt.cla()
+#            with open(f"github/cat2/{i}.json", 'w') as js_file:
+#                 json.dump(M, js_file)
 #out: dict{id} = [date, sum]
 
 #        for i in list(self.order_dict.keys())[:]:

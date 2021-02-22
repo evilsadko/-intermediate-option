@@ -229,8 +229,9 @@ class Sort_v1:
                     ax.legend()
                 except KeyError:
                     pass
-        fig.savefig('github/T.png')
+        fig.savefig('github/order/count_order_per_year.png')
 
+    # Зарность покупки 'price_before_discount', 'Amount_Charged'
     def diag_product_2(self): # Total_Amount/TotalDiscount
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
         self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
@@ -250,7 +251,7 @@ class Sort_v1:
                     ax.legend()
                 except KeyError:
                     pass
-        fig.savefig('github/T1.png')
+        fig.savefig('github/order/difference_price_amount.png')
 
 
 if __name__ == "__main__":

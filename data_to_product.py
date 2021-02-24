@@ -20,6 +20,7 @@ def see_stat(x, y=0):
 
 def PRODUCT():
     p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
+    see_stat(p_open)
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
     return p_open
 
@@ -66,8 +67,8 @@ if __name__ == "__main__":
         #print (o_id, p_id, i_count, dicts[o_id])
 
 ######## SAVE TO FILE
-#    with open('prod.json', 'w') as js_file:
-#            json.dump(product_data, js_file)
+    with open('prod.json', 'w') as js_file:
+            json.dump(product_data, js_file)
 
 ######## CREATE VISUAL 
     for i in product_data:

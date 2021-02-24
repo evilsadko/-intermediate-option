@@ -1,6 +1,11 @@
 data/
 github/cat/
 github/cat2/
+graph/
+old_data/
+prod.json
+prod.tar.xz
+graph.tar.xz
 related_products.json
 B24_dbo_Products.csv
 B24_dbo_Crm_orders.csv

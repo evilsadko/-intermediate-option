@@ -195,15 +195,6 @@ class Sort_v1:
         diag_circle(V[:], L[:], M[:],  "Анализ ID категорий", "github/C.jpg")
         #myexplode.append(0.2)
 
-#        
-        #print(sorted_dict)  # {1: 1, 3: 4, 2: 9}
-#------------------------------------------------
-#        CatID_2 = self.func_return(name_arr, 5)
-#        LEN_2 = 0    
-#        for i in CatID_2:
-#            #print (len(CatID_2[i]))
-#            LEN_2 += len(CatID_2[i] )
-#        print (len(CatID_1), LEN_1, len(CatID_2), LEN_2)   
     def diag_product_1(self):
         NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
         name_arr = NAME.to_numpy() 
@@ -220,8 +211,7 @@ class Sort_v1:
             #M = {'01':[0,0], '02':[0,0], '03':[0,0], '04':[0,0], '05':[0,0], '06':[0,0], '07':[0,0], '08':[0,0], '09':[0,0], '10':[0,0], '11':[0,0], '12':[0,0]}
             M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
             for o in CatID_1[i]:
-                temp = name_arr[o,:].tolist()
-                id_p = temp[1]
+                id_p = name_arr[o,1]
                 try:
                     for k in range(len(self.product_dict[id_p])):
                         id_p_arr = self.product_dict[id_p][k]
@@ -235,18 +225,25 @@ class Sort_v1:
                         #print (_order, ord_id, price, _date)
                 except KeyError:
                     pass
+                    #print (id_p)
             #PLOT
-            dict_save[i] = M
-#------------------------------------->
-        with open('cat_2.json', 'w') as js_file:
-            json.dump(dict_save, js_file)
-#------------------------------------->
+            if sum(M.values()) > 0:
+                dict_save[i] = M
+    #------------------------------------->
+    #        with open('cat_2.json', 'w') as js_file:
+    #            json.dump(dict_save, js_file)
+    #------------------------------------->
+                plt.title(f'ID категории - {i}')
+                plt.xlabel('Месяц')
+                plt.ylabel('Количество продуктов')
+                plt.bar(list(M.keys()), list(M.values()), color = (0.5,0.1,0.5,0.6))
 
-#            plt.plot(list(M.keys()), list(M.values()))  
-#            plt.savefig(f"github/cat2/{i}.jpg") 
-#            plt.cla()
-#            with open(f"github/cat2/{i}.json", 'w') as js_file:
-#                 json.dump(M, js_file)
+                plt.plot(list(M.keys()), list(M.values()))  
+                plt.savefig(f"github/cat2/{i}.jpg") 
+                plt.cla()
+            with open('category2.json', 'w') as js_file:
+                json.dump(dict_save, js_file)
+
 #out: dict{id} = [date, sum]
 
 #        for i in list(self.order_dict.keys())[:]:
@@ -255,23 +252,10 @@ class Sort_v1:
 #            
 #            print (_order, len(_product))
         #fig.savefig('github/T.png')
+
 if __name__ == "__main__":
-    #NAME = PRODUCTNAME()
     S = Sort_v1()
 #----------------->
     S.diag_product_1()
 
-#                try:
-#                    idx_cust = self.customer_dict[i][0]  # idx в списке покупателя
-#                    _customet = self.customer_arr[idx_cust,:].tolist() # Информация о покупателе
-#                    order_list = self.order_dict[i] # 
-#                    for h in order_list:
-#                        _order = self.order_arr[h,:].tolist()
-#                        _date = _order[-1].split(" ")[0].split("-")[1]
-#                        M[str(_date)] += int(_order[3])
-#                    #ax.bar(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
-#                    ax.plot(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
-#                    ax.legend()
-#                except KeyError:
-#                    pass
 

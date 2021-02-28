@@ -48,6 +48,11 @@ def ORDER():
     o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
     return o_open.sort_values(by=['Order_Date'])
 
+def PRODUCTNAME():
+    p_open = pd.read_csv('B24_dbo_Products.csv', delimiter=',')
+    #see_stat(p_open)
+    return p_open
+
 
 class Sort_v1:
     def __init__(self):
@@ -197,6 +202,7 @@ class Sort_v1:
         #self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
         NO_ERROR = 0
         ERROR = 0
+        print (len(self.customer_dict), len(self.order_dict))
         for i in self.order_dict :
             try:
                 t = self.customer_dict[i][0] 
@@ -231,7 +237,7 @@ class Sort_v1:
                     pass
         fig.savefig('github/order/count_order_per_year.png')
 
-    # Зарность покупки 'price_before_discount', 'Amount_Charged'
+    # Разность покупки 'price_before_discount', 'Amount_Charged'
     def diag_product_2(self): # Total_Amount/TotalDiscount
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
         self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
@@ -253,6 +259,52 @@ class Sort_v1:
                     pass
         fig.savefig('github/order/difference_price_amount.png')
 
+    def diag_category_0(self):
+        NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
+        name_arr = NAME.to_numpy() 
+        CatID_1 = self.func_return(name_arr, 5)
+        #CatID_1 = self.func_return(name_arr, 3)
+
+#############
+        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
+        #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
+        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        fig, ax = plt.subplots(figsize=(10,10)) 
+        dict_save = {}
+        for i in CatID_1 :
+            #M = {'01':[0,0], '02':[0,0], '03':[0,0], '04':[0,0], '05':[0,0], '06':[0,0], '07':[0,0], '08':[0,0], '09':[0,0], '10':[0,0], '11':[0,0], '12':[0,0]}
+            M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+            for o in CatID_1[i]:
+                id_p = name_arr[o,1]
+                try:
+                    for k in range(len(self.product_dict[id_p])):
+                        id_p_arr = self.product_dict[id_p][k]
+                        F = self.product_arr[id_p_arr,:].tolist() 
+                        price = F[3]
+                        ord_id = F[0]
+                        ord_id = self.order_dict[ord_id]
+                        _order = self.order_arr[ord_id,:].tolist()[0]
+                        _date = _order[-1].split(" ")[0].split("-")[1]
+                        M[str(_date)] += price
+                        #print (_order, ord_id, price, _date)
+                except KeyError:
+                    pass
+                    #print (id_p)
+            #PLOT
+            if sum(M.values()) > 0:
+                dict_save[i] = M
+    #------------------------------------->
+                plt.title(f'ID категории - {i}')
+                plt.xlabel('Месяц')
+                plt.ylabel('Количество продуктов')
+                plt.bar(list(M.keys()), list(M.values()), color = (0.5,0.1,0.5,0.6))
+
+                plt.plot(list(M.keys()), list(M.values()))  
+                plt.savefig(f"github/cat2/{i}.jpg") 
+                plt.cla()
+            with open('category2.json', 'w') as js_file:
+                json.dump(dict_save, js_file)
+
 
 if __name__ == "__main__":
 
@@ -264,10 +316,18 @@ if __name__ == "__main__":
 #----------------->
     #S.diag_user() # Аналитика покупателя
 #----------------->
-    #S.diag_product_0()  # Количество покупок с одним товаром
+    #S.diag_product_0()  # Количество покупок с одним товаром ERROR
 #----------------->
-    S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!!
+    #S.diag_product_1()  # Отношение покупателей к покупкам  В РАБОТЕ!!! 
 #----------------->
-    S.diag_product_2() 
+    #S.diag_product_2() 
+#----------------->
+    S.diag_category_0() # Категории
+
 #1571954145.340004
+
+#Позарнулись просто пипец!
+#Все выводы неправельные (не 60К а 400К членов клубов 8,10,15)
+#возврат клиентов - также
+#Главные параметры непоказаны как: короляция товаров, что счем покупают, что приводит к увиличанию корзины.
 

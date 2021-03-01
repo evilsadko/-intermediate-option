@@ -139,27 +139,22 @@ class Sort_v1:
 
     # Cопутствующий продукт создать файл для обработки
     def related_products(self):
-        # найти самые популярные товары
         self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-        self.product_open = self.product_open.sort_values(['Items_Count'])
-        #see_stat(self.product_open)
-        # Узнать кол во ID продуктов
-        vals_prod = self.product_open.drop_duplicates("Product_ID")
-        vals_prod = vals_prod["Product_ID"]
-        print (len(vals_prod))
+        self.product_open = self.product_open.sort_values(['Items_Count']) # Сортировка
+        vals_prod = self.product_open.drop_duplicates("Product_ID") # Убрать дубликаты
+        vals_prod = vals_prod["Product_ID"] 
+        print (len(vals_prod)) # Узнать кол во ID продуктов
         #----------------------->
         # Декодирование кодирование в словарь
         dict_to_coding = {}
         dict_to_encoding = {}
-        new_dict = {}
-        
         for ix, ij in enumerate(vals_prod):
-            #print (ix, ij)
             dict_to_coding[ij] = ix 
             dict_to_encoding[ix] = ij
-        start = time.time()
         #------------------------------------->
         # Обработка файлов
+        start = time.time()
+        new_dict = {}
         _product_dict = self.func_return(self.product_arr, 1)  #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
         arr = self.product_open.to_numpy()
         for j in vals_prod[:]:
@@ -170,18 +165,15 @@ class Sort_v1:
                 for u in self.product_dict[_id_o]:
                      ix_z = int(arr[u,1])
                      if int(j) != int(ix_z): 
-                        #print (arr[u,:].tolist()) 
-                        
                         ix_z = dict_to_coding[ix_z]
                         Z[ix_z] += arr[u,2]
-                        #
+
             new_dict[j] = Z.tolist()
         print ("END", time.time()-start, len(new_dict))
 
         #---------------------------------------->
-        # SAVE TO FILE
-        #for s in new_dict:
-        with open("related_products.json", 'w') as js_file:
+        # Сохраняю файл
+        with open("out/related_products.json", 'w') as js_file:
             json.dump(new_dict, js_file)
 
         #---------------------------------------->
@@ -189,7 +181,7 @@ class Sort_v1:
 def related_product_sort():
         dict_to_encoding = json.load(open("dict_to_encoding.json",'r'))
         _dict = {}
-        with open("related_products.json","r") as json_file:
+        with open("out/related_products.json","r") as json_file:
                 data = json.load(json_file)
                 for i in data:
                     P1 = sum(data[i])
@@ -210,11 +202,12 @@ def related_product_sort():
                         _dict[i] = t_d  
                         #diag_circle(list(t_d.values()), list(t_d.keys()) , None, i, f"github/related_products/{i}.jpg")
                     
-        with open("sort_related_products.json",'w') as js_file:
+        with open("out/sort_related_products.json",'w') as js_file:
                 json.dump(_dict, js_file)
+
 # Визуализация сопутствующего товара
 def visual_related_product():
-    F = open("sort_related_products.json", 'r')
+    F = open("out/sort_related_products.json", 'r')
     data = json.load(F)
     for i in data:
         diag_circle(list(data[i].values()), list(data[i].keys()) , None, i, f"github/related_products/{i}.jpg")
@@ -222,16 +215,13 @@ def visual_related_product():
 
 
 # Сортировка сопутствующего товара по месяцам
-#
-#
 # TO DO
-#
-#
+###########
 def visual_related_m():
-    F = open("sort_related_products.json", 'r')
+    F = open("out/sort_related_products.json", 'r')
     data = json.load(F)
     for i in data:
-        print (data[i], i)
+        print (len(data[i]), i)
 
 
 if __name__ == "__main__":
@@ -244,7 +234,7 @@ if __name__ == "__main__":
     #visual_related_product()
 #----------------->
     # Сортировка сопутствующего товара по месяцам
-    visual_related_m()
+    #visual_related_m()
     
 
 

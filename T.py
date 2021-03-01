@@ -194,7 +194,7 @@ class Sort_v1:
         #diag_circle(V, L, M,  "Анализ ID категорий", "C.jpg")
         diag_circle(V[:], L[:], M[:],  "Анализ ID категорий", "github/C.jpg")
         #myexplode.append(0.2)
-
+    #
     def diag_product_1(self):
         NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
         name_arr = NAME.to_numpy() 

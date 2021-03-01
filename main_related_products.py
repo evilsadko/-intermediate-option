@@ -15,7 +15,7 @@ def see_stat(x, y=0):
 
 
 def diag_circle(vals, labels, myexplode, title, save_name, types=None):
-    fig, ax = plt.subplots(figsize=(10,10))
+    fig, ax = plt.subplots(figsize=(10,10), clear=True)
     if myexplode != None:
         #ax.pie(vals, explode=myexplode, labels=labels, autopct='%1.2f%%', startangle=90, pctdistance=0.85)
         ax.pie(vals, explode=myexplode, labels=labels, autopct='%.2f', startangle=90, pctdistance=0.85)
@@ -30,8 +30,9 @@ def diag_circle(vals, labels, myexplode, title, save_name, types=None):
     ax.axis("equal")
     ax.set_title(f"ID продукта: {title}", loc="left", pad=20)
     ax.legend(loc='lower right') #, bbox_to_anchor=(0.7, 0.7) 'upper left' bbox_to_anchor=(0.5, 0., 0.5, 0.5) 'best'
-    plt.savefig(save_name)
-    plt.cla()
+    fig.savefig(save_name)
+    fig.clear(True)
+    plt.close(fig)
 
 def CUSTOMER():
     c_open = pd.read_csv('B24_dbo_Crm_customers.csv', delimiter=',')
@@ -136,8 +137,8 @@ class Sort_v1:
             data = json.load(json_file)
             return data
 
-
-    def diag_product_3(self):
+    # Cопутствующий продукт создать файл для обработки
+    def related_products(self):
         # найти самые популярные товары
         self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
         self.product_open = self.product_open.sort_values(['Items_Count'])
@@ -184,53 +185,67 @@ class Sort_v1:
             json.dump(new_dict, js_file)
 
         #---------------------------------------->
+# Сортировка сопутствующего товара
+def related_product_sort():
+        dict_to_encoding = json.load(open("dict_to_encoding.json",'r'))
+        _dict = {}
+        with open("related_products.json","r") as json_file:
+                data = json.load(json_file)
+                for i in data:
+                    P1 = sum(data[i])
+                    t_d = {}
+                    for ix, o in enumerate(data[i]):
+                            try:
+                                if o > 0:
+                                    P = o / int(P1) * 100
+                                    if P > 0.5:
+                                        #t_d[ix] = o
+                                        t_d[dict_to_encoding[str(ix)]] = o
+                                        P1 = P1 - o
+                            except:
+                                   print (o, P1, i)   
+                            
+                    if P1 > 0:
+                        t_d["остальные"] = P1
+                        _dict[i] = t_d  
+                        #diag_circle(list(t_d.values()), list(t_d.keys()) , None, i, f"github/related_products/{i}.jpg")
+                    
+        with open("sort_related_products.json",'w') as js_file:
+                json.dump(_dict, js_file)
+# Визуализация сопутствующего товара
+def visual_related_product():
+    F = open("sort_related_products.json", 'r')
+    data = json.load(F)
+    for i in data:
+        diag_circle(list(data[i].values()), list(data[i].keys()) , None, i, f"github/related_products/{i}.jpg")
+                 
 
 
+# Сортировка сопутствующего товара по месяцам
+#
+#
+# TO DO
+#
+#
+def visual_related_m():
+    F = open("sort_related_products.json", 'r')
+    data = json.load(F)
+    for i in data:
+        print (data[i], i)
 
 
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
     #S = Sort_v1()
 #----------------->
-    #S.diag_product_3()
-    dict_to_encoding = json.load(open("dict_to_encoding.json",'r'))
+    # Сопутствующие продукты
+    #S.related_products()
+    #related_product_sort()
+    #visual_related_product()
+#----------------->
+    # Сортировка сопутствующего товара по месяцам
+    visual_related_m()
+    
 
-    with open("related_products.json","r") as json_file:
-            data = json.load(json_file)
-            for i in data:
-                P1 = sum(data[i])
-                t_d = {}
-                for ix, o in enumerate(data[i]):
-                        try:
-                            if o > 0:
-                                P = o / int(P1) * 100
-                                if P > 1.0:
-                                    #t_d[ix] = o
-                                    t_d[dict_to_encoding[str(ix)]] = o
-                                    P1 = P1 - o
-                        except:
-                               print (t_d, o, P1, i)             
-                if P1 > 0:
-                    t_d["остальные"] = P1
-                    diag_circle(list(t_d.values()), list(t_d.keys()) , None, i, f"github/related_products/{i}.jpg")
-                
 
-#        time.sleep(10)
-#        t_d = {}
-#        for ix, m in enumerate(new_dict):
-#            print (new_dict[m])
-            
-#            try:
-#                for ix, m in enumerate(new_dict[s]):
-#                    if m > 1000:
-#                        #print (">>>>",s, m, dict_to_encoding[ix])
-#                        t_d[dict_to_encoding[ix]] = m
-#                #print (len(t_d))
-#            except TypeError:
-#                print ("ERROR------------------", new_dict[s])
-##            if len(t_d) > 1:
-##                for N in t_d:
-##                    print (">>>>", t_d[N], N)
-
-#            diag_circle(list(t_d.keys()), list(t_d.values()), None, s, f"github/related_products/{s}.jpg")
 

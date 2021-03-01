@@ -262,8 +262,8 @@ class Sort_v1:
     def diag_category_0(self):
         NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
         name_arr = NAME.to_numpy() 
-        CatID_1 = self.func_return(name_arr, 5)
-        #CatID_1 = self.func_return(name_arr, 3)
+        CatID_1 = self.func_return(name_arr, 5) # cat2
+        #CatID_1 = self.func_return(name_arr, 3) # cat
 
 #############
         self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
@@ -300,11 +300,14 @@ class Sort_v1:
                 plt.bar(list(M.keys()), list(M.values()), color = (0.5,0.1,0.5,0.6))
 
                 plt.plot(list(M.keys()), list(M.values()))  
-                plt.savefig(f"github/cat2/{i}.jpg") 
+                plt.savefig(f"github/cat2/{i}.jpg")  # cat/cat2
                 plt.cla()
             with open('category2.json', 'w') as js_file:
                 json.dump(dict_save, js_file)
 
+###########
+#  Популярные продукты в категории
+#
 
 if __name__ == "__main__":
 

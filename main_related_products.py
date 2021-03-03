@@ -65,21 +65,20 @@ def PRODUCTNAME():
 class Sort_v1:
     def __init__(self):
         # Pandas
-        self.customer_open = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
+        #self.customer_open = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
         self.order_open = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         self.product_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
 #        # Array
 #        self.customer_arr = self.customer_open.to_numpy()
         self.order_arr = self.order_open.to_numpy()
         self.product_arr = self.product_open.to_numpy()
-#        # Dict Graph
-#        self.customer_dict = self.func_return(self.customer_arr, 0)
-        self.order_dict = self.func_return(self.order_arr, 0)
-        self.product_dict = self.func_return(self.product_arr, 0)
-
         self.sort_dict = {}
 
     def func_unite(self, see=None):
+        # Dict Graph
+        self.customer_dict = self.func_return(self.customer_arr, 0)
+        self.product_dict = self.func_return(self.product_arr, 0)
+        #---------------------->
         key_error = 0
         not_errot = 0
         # Прохожу циклом по покупкам ордер

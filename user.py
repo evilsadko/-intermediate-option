@@ -29,13 +29,14 @@ def diag_circle(vals, labels, myexplode, title, save_name, types=None):
 
 def CUSTOMER():
     c_open = pd.read_csv('B24_dbo_Crm_customers.csv', delimiter=',')
-    see_stat(c_open)
 #    c_open = c_open[['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']]
-#    c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
-#    c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
-#    c_open['Could_send_email'] = c_open['Could_send_email'].replace(np.nan, 0)
-#    c_open['consent'] = c_open['consent'].replace(np.nan, 0)
+    c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
+    c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
+    c_open['Could_send_email'] = c_open['Could_send_email'].replace(np.nan, 0)
+    c_open['consent'] = c_open['consent'].replace(np.nan, 0)
+    c_open[]
 #    c_open = c_open.apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna() # Убираю все строки
+    #see_stat(c_open)
     return c_open
 
 def PRODUCT():
@@ -150,6 +151,8 @@ if __name__ == "__main__":
     #S = Sort_v1()
     #S.diag_user() # Аналитика покупателя
     C = CUSTOMER()
+    col = C.columns.tolist()
+    print (col)
     D = {}
     for i in C["Clubid"]:
         D[i] = 0

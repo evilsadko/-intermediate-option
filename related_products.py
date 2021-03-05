@@ -63,8 +63,6 @@ def func_date():
     o_open = ORDER()  #['Order_Id', 'Customer_Id', ', 'price_before_discount', 'Amount_Charged', 'Order_Date']
     o_open = o_open.sort_values(by=['Order_Date']) #, inplace=True, ascending=False
     o_open = o_open.to_numpy()
-#    cats = ['Jan', 'Feb', 'Mar', 'Apr','May','Jun', 'Jul', 'Aug','Sep', 'Oct', 'Nov', 'Dec']
-    
     p_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
     p_open = p_open.to_numpy()
 #----------------------------->
@@ -78,8 +76,6 @@ def func_date():
             items_count = int(t[2])
             date = t[-1]
             dicts[o_id] = date.split(" ")[0].split("-")[1] # Переношу месяц
-
-#['Order_Id', 'Customer_Id', ', 'price_before_discount', 'Amount_Charged', 'Order_Date']
 #----------------------------->
     #Граф PRODUCT ID - {ORDER ID, DATE, COUNT}
     product_data = {}

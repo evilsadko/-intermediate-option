@@ -34,7 +34,7 @@ def CUSTOMER():
     c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
     c_open['Could_send_email'] = c_open['Could_send_email'].replace(np.nan, 0)
     c_open['consent'] = c_open['consent'].replace(np.nan, 0)
-    c_open[]
+    c_open['Clubid'] = c_open['Clubid'].replace(np.nan, 100500)
 #    c_open = c_open.apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna() # Убираю все строки
     #see_stat(c_open)
     return c_open
@@ -55,7 +55,20 @@ def PRODUCTNAME():
     #see_stat(p_open)
     return p_open
 
+def NAME():
+    c_open = pd.read_csv('names - names.csv', delimiter=',')
+    c_open = c_open[['1', '243995', 'היי', 'Unnamed: 3', '0 - женщины\n1 - мужчины']]
+    c_open['Unnamed: 3'] = c_open['Unnamed: 3'].replace(np.nan, 2)
+    return c_open
 
+def func_return(x, y):
+        dict = {} 
+        for i in range(x.shape[0]):
+            try:
+                dict[x[i,y]].append(i)
+            except KeyError:
+                dict[x[i,y]] = [i]
+        return dict    
 class Sort_v1:
     def __init__(self):
         # Pandas
@@ -67,21 +80,12 @@ class Sort_v1:
         self.order_arr = self.order_open.to_numpy()
         self.product_arr = self.product_open.to_numpy()
         # Dict Graph
-        self.customer_dict = self.func_return(self.customer_arr, 0)
-        self.order_dict = self.func_return(self.order_arr, 0)
-        self.product_dict = self.func_return(self.product_arr, 0)
+        self.customer_dict = func_return(self.customer_arr, 0)
+        self.order_dict = func_return(self.order_arr, 0)
+        self.product_dict = func_return(self.product_arr, 0)
 
         self.sort_dict = {}
 
-
-    def func_return(self, x, y):
-        dict = {} 
-        for i in range(x.shape[0]):
-            try:
-                dict[x[i,y]].append(i)
-            except KeyError:
-                dict[x[i,y]] = [i]
-        return dict    
 
     def diag_user(self):
         duplicat = self.customer_open.drop_duplicates('Customer_Id') 
@@ -144,17 +148,106 @@ class Sort_v1:
         labels = ["Остальные", "Покупатели совершившие покупки больше 1 раза"]
         diag_circle(vals, labels, myexplode, "Анализ всех ID", "github/user/diag_user_0.jpg")
 
-    #def diag_user_date(self):
-        
+def user_per_m():
+##----------------------->
+    C = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
+    col = C.columns.tolist()
+    arr_c = C.to_numpy()
+    dict_cust_group = func_return(arr_c, 6)
+    dict_cust_id = func_return(arr_c, 1)
+##------------------------>
+    O = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+    order_arr = O.to_numpy()
+    dict_order_id_cust = func_return(order_arr, 1)
+    
+    for i in dict_order_id_cust:
+        try:
+            M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+            for o in dict_order_id_cust[i]:
+                data = order_arr[o,:].tolist()
+                short_data = data[-1].split(" ")[0].split("-")[1]
+                M[short_data] += data[3]
+                #print (i, data, short_data)
+                #print (i, data, arr_c[dict_cust_id[i],:].tolist())
+             
+            fig, ax = plt.subplots(figsize=(10,10), clear=True)
+            ax.set_title(f'ID покупателя - {i}')
+            ax.set_xlabel('Месяц')
+            ax.set_ylabel('Потраченная сумма')
+            ax.bar(list(M.keys()), list(M.values()), color = (0,0.2,1,0.6))
+
+            ax.plot(list(M.keys()), list(M.values()))  
+            fig.savefig(f"github/user_m/{i}.jpg") 
+            fig.clear(True)
+            plt.close(fig)  
+              
+        except KeyError:
+            pass     
+
+def sex_user_m():
+    N = NAME()
+    L = N.to_numpy()
+    # Создаю граф пол
+    dict_sex = {}
+    for i in range(L.shape[0]):
+        dict_sex[L[i,2]] = L[i,-2]
+##----------------------->
+    C = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
+    col = C.columns.tolist()
+    print (col)
+    arr_c = C.to_numpy()
+#    dict_cust_group = func_return(arr_c, 6)
+    dict_cust_id = func_return(arr_c, 1)
+
+    O = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+    order_arr = O.to_numpy()
+    dict_order_id_cust = func_return(order_arr, 1)
+#   
+    M0 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+    M1 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+    M2 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0} 
+    for i in dict_order_id_cust:
+        try:
+
+            for o in dict_order_id_cust[i]:
+                 data = order_arr[o,:].tolist()
+                 short_data = data[-1].split(" ")[0].split("-")[1]
+                 #print (dict_cust_id[o])
+                 #
+                 id_ =  arr_c[dict_cust_id[o][0],10]
+                 sex = dict_sex[id_]
+                 if sex == 0.0:
+                     M0[short_data] += data[3]
+                 if sex == 1.0:
+                     M1[short_data] += data[3]
+                 if sex == 2.0:
+                     M2[short_data] += data[3]
+                 print (sex, short_data)
+                 
+        except KeyError:
+                pass
+                
+    fig, ax = plt.subplots(figsize=(10,10), clear=True)
+    ax.set_title(f'ID покупателя - {i}')
+    ax.set_xlabel('Месяц')
+    ax.set_ylabel('Потраченная сумма')
+    ax.bar(list(M0.keys()), list(M0.values()), color = (0,0.5,1,0.6))
+    ax.bar(list(M1.keys()), list(M1.values()), color = (0,0.4,1,0.6))
+    ax.bar(list(M2.keys()), list(M2.values()), color = (0,0.3,1,0.6))
+    #ax.plot(list(M.keys()), list(M.values()))  
+    fig.savefig(f"github/user/sex.jpg") 
+    fig.clear(True)
+    plt.close(fig)       
 
 if __name__ == "__main__":
     #S = Sort_v1()
     #S.diag_user() # Аналитика покупателя
-    C = CUSTOMER()
-    col = C.columns.tolist()
-    print (col)
-    D = {}
-    for i in C["Clubid"]:
-        D[i] = 0
-    print (len(D))
-    #61984    
+
+    #user_per_m()
+    sex_user_m()
+    
+    # 17 клубов если убираю NaN
+    # 61984  если не убираю NaN  
+    # 100500 - NaN
+    # Пользователи за год с учетом пола
+           

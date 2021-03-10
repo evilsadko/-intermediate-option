@@ -206,6 +206,9 @@ def sex_user_m():
     M0 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
     M1 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
     M2 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0} 
+    man = 0 #1
+    female = 0 #0
+    undefined = 0 #
     for i in dict_order_id_cust:
         try:
 
@@ -218,14 +221,18 @@ def sex_user_m():
                  sex = dict_sex[id_]
                  if sex == 0.0:
                      M0[short_data] += data[3]
+                     female += 1
                  if sex == 1.0:
                      M1[short_data] += data[3]
+                     man += 1
                  if sex == 2.0:
                      M2[short_data] += data[3]
+                     undefined += 1
                  print (sex, short_data)
                  
         except KeyError:
-                pass
+                undefined += 1
+                #pass
                 
     fig, ax = plt.subplots(figsize=(10,10), clear=True)
     ax.set_title(f'ID покупателя - {i}')
@@ -237,8 +244,24 @@ def sex_user_m():
     #ax.plot(list(M.keys()), list(M.values()))  
     fig.savefig(f"github/user/sex.jpg") 
     fig.clear(True)
-    plt.close(fig)       
+    plt.close(fig) 
+    
+    
+    labels = ["man", "female", "undefined"]
+    vals = [man, female, undefined]
+    myexplode = [0.05, 0.05, 0.05]
+    fig, ax = plt.subplots()
+    ax.pie(vals, explode=myexplode, labels=labels, autopct='%1.2f%%', startangle=90, pctdistance=0.85)
 
+    centre_circle = plt.Circle((0,0),0.70,fc='white')
+    fig = plt.gcf()
+    fig.gca().add_artist(centre_circle)
+
+    ax.axis("equal")
+    ax.legend(loc='upper left', bbox_to_anchor=(0.9, 0.9))
+    fig.savefig(f"github/user/sex_all.jpg") 
+    fig.clear(True)
+    plt.close(fig) 
 if __name__ == "__main__":
     #S = Sort_v1()
     #S.diag_user() # Аналитика покупателя

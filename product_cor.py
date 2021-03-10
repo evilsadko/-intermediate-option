@@ -44,6 +44,7 @@ def CUSTOMER():
 
 def PRODUCT():
     p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
+    see_stat(p_open)
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
     return p_open
     
@@ -224,7 +225,17 @@ if __name__ == "__main__":
 #----------------->
     # Сортировка сопутствующего товара по месяцам
     #S.products_date()
-    visual_related_m()
-
-
-
+    #visual_related_m()
+        
+    """
+    Буду использовать связанные продукты
+    Мне нужен коэффициент который показывает как продукт влияют продукты из 
+    """
+    product_open = PRODUCT() # ['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
+    product_arr = product_open.to_numpy()
+    new_dict = {}
+    with open("out/sort_related_products.json","r") as json_file:
+        data = json.load(json_file)
+        for i in data:
+            print (i, data[i])
+            

@@ -93,6 +93,23 @@ https://medium.com/@kvnamipara/a-better-visualisation-of-pie-charts-by-matplotli
 https://medium.com/swlh/python-data-visualization-with-matplotlib-for-absolute-beginner-part-iii-three-dimensional-8284df93dfab  
 https://habr.com/ru/company/skillfactory/blog/510320/  
 https://medium.com/nuances-of-programming/4-простые-визуализации-данных-в-python-с-помощью-кода-ca58253fa1a3
+# Корреляционный анализ
+https://habr.com/ru/company/datawiz/blog/264217/
+https://habr.com/ru/post/241967/
+https://habr.com/ru/post/240323/
+https://neurohive.io/ru/tutorial/primer-reshenija-realnoj-zadachi-po-mashinnomu-obucheniju-na-python/
+https://coderoad.ru/3949226/Вычисление-корреляции-Пирсона-и-значимости-в-Python
+http://chel-center.ru/python-yfc/2020/02/13/opisatelnaya-statistika-na-python-chast-2/
+https://habr.com/ru/post/206306/
+https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/
+https://overcoder.net/q/как-рассчитать-r-квадрат-используя-python-и-numpy
+https://proglib.io/p/linear-regression
+http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/    
+# ТЕПЛОВАЯ КАРТА 
+https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0   
+https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html   
+# ONE HOT ENCODING
+
 ```
 # data.sort_values(by=name_x, ascending=True, inplace=True)
 # f_open.pivot_table("id", "finance_count", "shop_count").plot(kind='bar', stacked=True)
@@ -197,9 +214,6 @@ Victor, [15.02.21 14:15]
 Victor, [15.02.21 14:20]
 https://clockwise.software/blog/how-to-integrate-gpt3/
 
-Victor, [15.02.21 14:20]
-Еще одна статья
-
 Victor, [15.02.21 14:21]
 Советы она может давать, но точность ее советов под вопросом.
 Victor, [12.02.21 11:40]
@@ -225,17 +239,8 @@ Product: Total_Amount, TotalDiscount
 Victor, [12.02.21 11:48]
 Что даст понимание как скидка влияет на покупательскую активность
 
-Victor, [12.02.21 11:49]
-Эта скидка накопительная, или преодичная
-
-Victor, [12.02.21 11:52]
-постараюсь сегодня сделать график популярности товара исходя из времени
-
 Victor, [15.02.21 19:49]
 Кол-во продуктов и покупок в день в течении года
 
-Victor, [15.02.21 19:50]
-За 365 дня
 
-Vladimir Savrov, [15.02.21 21:28]
 

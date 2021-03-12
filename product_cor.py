@@ -5,6 +5,7 @@ import matplotlib.dates as dates
 import threading
 import json
 import time
+from scipy import stats
 
 def see_stat(x, y=0):
     if y == "list":
@@ -43,9 +44,14 @@ def CUSTOMER():
     return c_open
 
 def PRODUCT():
-    p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
+    s = time.time()
+#    p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
+#    p_open.to_pickle("B24_dbo_Crm_product_in_order.pk")
+    
+    p_open = pd.read_pickle("B24_dbo_Crm_product_in_order.pk")
     see_stat(p_open)
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
+    print (time.time()-s)
     return p_open
     
 def ORDER():
@@ -213,6 +219,15 @@ def visual_related_m():
                 fig.clear(True)
                 plt.close(fig)
 
+#def visual_related_m_cor():
+#            data_related = json.load(open("out/sort_related_products.json", 'r'))
+#            date_sort_m = json.load(open("out/products_date.json",'r'))
+#            for i in data_related:
+#                for o in data_related[i]:
+#                    if o != "остальные":
+#                        print (o, date_sort_m[o].keys(), date_sort_m[o].values()) 
+
+
 
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
@@ -226,16 +241,72 @@ if __name__ == "__main__":
     # Сортировка сопутствующего товара по месяцам
     #S.products_date()
     #visual_related_m()
+    
+#------------------------------------------->
+#    кореляция
+#    visual_related_m_cor()
         
     """
     Буду использовать связанные продукты
     Мне нужен коэффициент который показывает как продукт влияют продукты из 
+    Например кореляция цены на кол во покупок
     """
     product_open = PRODUCT() # ['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
-    product_arr = product_open.to_numpy()
-    new_dict = {}
-    with open("out/sort_related_products.json","r") as json_file:
-        data = json.load(json_file)
-        for i in data:
-            print (i, data[i])
+#35.73815846443176
+#70.14598345756531
+# Если не хотите использовать бд 
+# Запускаю процесс в вечный цикл с файлом
+# Записываю в текстовый документ номер процесса и запускаю
+# Нужный скрип и читаю процесс, так исбавлюсь от постоянной загрузки файла
+    
+#    print (product_open.corr())
+#    
+#    pearson_coef, p_value = stats.pearsonr(product_open['Items_Count'], product_open['Total_Amount'])
+#    print("Items_Count <-> Total_Amount",pearson_coef, p_value)
+#    pearson_coef, p_value = stats.pearsonr(product_open['Items_Count'], product_open['TotalDiscount'])
+#    print("Items_Count <-> TotalDiscount",pearson_coef, p_value)
+#    G = product_open['Total_Amount']-product_open['TotalDiscount']
+#    pearson_coef, p_value = stats.pearsonr(product_open['Items_Count'], G)
+#    print("Items_Count <-> (Total_Amount-TotalDiscount)",pearson_coef, p_value) 
+       
+#    product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+#    product_arr = product_open.to_numpy()
+#    new_dict = {}
+#    with open("out/sort_related_products.json","r") as json_file:
+#        data = json.load(json_file)
+#        for i in data:
+#            print (i, data[i])
+#       
+     
+#               Items_Count  Total_Amount  TotalDiscount
+#Items_Count    1.000000      0.129837       0.066624
+#Total_Amount   0.129837      1.000000       0.392744
+#TotalDiscount  0.066624      0.392744       1.000000       
+            
+#https://habr.com/ru/company/datawiz/blog/264217/
+#https://habr.com/ru/post/241967/
+#https://habr.com/ru/post/240323/
+#https://neurohive.io/ru/tutorial/primer-reshenija-realnoj-zadachi-po-mashinnomu-obucheniju-na-python/
+#https://coderoad.ru/3949226/Вычисление-корреляции-Пирсона-и-значимости-в-Python
+#http://chel-center.ru/python-yfc/2020/02/13/opisatelnaya-statistika-na-python-chast-2/
+#https://habr.com/ru/post/206306/
+#https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/
+#https://overcoder.net/q/как-рассчитать-r-квадрат-используя-python-и-numpy
+#https://proglib.io/p/linear-regression
+#http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/   
+#https://pythonru.com/biblioteki/osnovnye-funkcii-pandas-pd-4 
+#https://habr.com/ru/post/350500/
+#https://habr.com/ru/post/329334/
+#https://habr.com/ru/post/491622/
+#https://habr.com/ru/company/billing/blog/334738/
+# ТЕПЛОВАЯ КАРТА 
+#https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0   
+#https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html   
+# ONE HOT ENCODING
+# https://machinelearningmastery.com/how-to-one-hot-encode-sequence-data-in-python/
+#https://stackoverflow.com/questions/33282368/plotting-a-2d-heatmap-with-matplotlib 
+#https://pythonru.com/biblioteki/seaborn-plot
+#Серелизация
+#https://towardsdatascience.com/the-best-format-to-save-pandas-data-414dca023e0d
+#https://stackoverflow.com/questions/17098654/how-to-store-a-dataframe-using-pandas
             

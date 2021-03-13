@@ -302,7 +302,7 @@ class Sort_v1:
                 plt.plot(list(M.keys()), list(M.values()))  
                 plt.savefig(f"github/cat2/{i}.jpg")  # cat/cat2
                 plt.cla()
-            with open('category2.json', 'w') as js_file:
+            with open('out/category2.json', 'w') as js_file:
                 json.dump(dict_save, js_file)
 
 ###########

@@ -262,7 +262,7 @@ def heatmap_product():
     ax.set_title("Зависемость полей")
     fig.tight_layout()
     #plt.show()
-    fig.savefig(f"github/heatmap_product.jpg")
+    fig.savefig(f"github/correlation/heatmap_product.jpg")
 
 def heatmap_order():
     product_open = ORDER() # ['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
@@ -295,7 +295,7 @@ def heatmap_order():
     ax.set_title("Зависемость полей")
     fig.tight_layout()
     #plt.show()
-    fig.savefig(f"github/heatmap_order.jpg")
+    fig.savefig(f"github/correlation/heatmap_order.jpg")
 
 
 #def visual_related_m_cor():
@@ -359,7 +359,38 @@ def heatmap_order():
 #            #plt.show()
 #            fig.savefig(f"github/correlation/TotalDiscount/heatmap_{i}.jpg")     
 
+def heatmap_vis(x, y):
+    fig, ax = plt.subplots()
+    im = ax.imshow(x)
 
+    # We want to show all ticks...
+    ax.set_xticks(np.arange(len(y)))
+    ax.set_yticks(np.arange(len(y)))
+    # ... and label them with the respective list entries
+    ax.set_xticklabels(ID_s)
+    ax.set_yticklabels(ID_s)
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    for edge, spine in ax.spines.items():
+        spine.set_visible(False)
+
+    ax.set_xticks(np.arange(x.shape[1]+1)-.5, minor=True)
+    ax.set_yticks(np.arange(x.shape[0]+1)-.5, minor=True)
+    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+    ax.tick_params(which="minor", bottom=False, left=False)
+
+    # Loop over data dimensions and create text annotations.
+    for z in range(len(y)):
+        for j in range(len(y)):
+            text = ax.text(j, z, round(x[z, j], 1), ha="center", va="center", color="w")
+
+    ax.set_title("Зависемость продуктов")
+    fig.tight_layout()
+    #plt.show()
+    fig.savefig(f"github/correlation/test/heatmap_{i}.jpg")    
 
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
@@ -422,37 +453,38 @@ if __name__ == "__main__":
             corr_2 = np.corrcoef(T_data2)
             
             corr_a = (corr_0+corr_1+corr_2)/3
-            fig, ax = plt.subplots()
-            im = ax.imshow(corr_a)
+            heatmap_vis(corr_a, ID_s)
+#            fig, ax = plt.subplots()
+#            im = ax.imshow(corr_a)
 
-            # We want to show all ticks...
-            ax.set_xticks(np.arange(len(ID_s)))
-            ax.set_yticks(np.arange(len(ID_s)))
-            # ... and label them with the respective list entries
-            ax.set_xticklabels(ID_s)
-            ax.set_yticklabels(ID_s)
+#            # We want to show all ticks...
+#            ax.set_xticks(np.arange(len(ID_s)))
+#            ax.set_yticks(np.arange(len(ID_s)))
+#            # ... and label them with the respective list entries
+#            ax.set_xticklabels(ID_s)
+#            ax.set_yticklabels(ID_s)
 
-            # Rotate the tick labels and set their alignment.
-            plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-                     rotation_mode="anchor")
+#            # Rotate the tick labels and set their alignment.
+#            plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+#                     rotation_mode="anchor")
 
-            for edge, spine in ax.spines.items():
-                spine.set_visible(False)
+#            for edge, spine in ax.spines.items():
+#                spine.set_visible(False)
 
-            ax.set_xticks(np.arange(T_data0.shape[1]+1)-.5, minor=True)
-            ax.set_yticks(np.arange(T_data0.shape[0]+1)-.5, minor=True)
-            ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
-            ax.tick_params(which="minor", bottom=False, left=False)
+#            ax.set_xticks(np.arange(T_data0.shape[1]+1)-.5, minor=True)
+#            ax.set_yticks(np.arange(T_data0.shape[0]+1)-.5, minor=True)
+#            ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+#            ax.tick_params(which="minor", bottom=False, left=False)
 
-            # Loop over data dimensions and create text annotations.
-            for z in range(len(ID_s)):
-                for j in range(len(ID_s)):
-                    text = ax.text(j, z, round(corr_a[z, j], 1), ha="center", va="center", color="w")
+#            # Loop over data dimensions and create text annotations.
+#            for z in range(len(ID_s)):
+#                for j in range(len(ID_s)):
+#                    text = ax.text(j, z, round(corr_a[z, j], 1), ha="center", va="center", color="w")
 
-            ax.set_title("Зависемость продуктов")
-            fig.tight_layout()
-            #plt.show()
-            fig.savefig(f"github/correlation/test/heatmap_{i}.jpg")                             
+#            ax.set_title("Зависемость продуктов")
+#            fig.tight_layout()
+#            #plt.show()
+#            fig.savefig(f"github/correlation/test/heatmap_{i}.jpg")                             
                     
 # correlation          
 #                    M[_date][0] += temp[2] #'Items_Count'

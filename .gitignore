@@ -1,23 +1,4 @@
 data/
-github/related_products/
-github/related_products_m/
-github/products/
-github/cat/
-github/cat2/
-github/related_products_m/
-github/user_m/
-old_data/
-prod.json
-prod.tar.xz
-graph.tar.xz
-related_products.json
-B24_dbo_Products.csv
-B24_dbo_Crm_orders.csv
-B24_dbo_Crm_product_in_order.csv
-B24_dbo_Crm_customers.csv
-B24_dbo_Crm_product_in_order.pk
-B24_dbo_Crm_orders.pk
-names - names.csv
-
-
-
+github/
+in/
+out/

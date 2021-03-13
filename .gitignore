@@ -16,6 +16,7 @@ B24_dbo_Crm_orders.csv
 B24_dbo_Crm_product_in_order.csv
 B24_dbo_Crm_customers.csv
 B24_dbo_Crm_product_in_order.pk
+B24_dbo_Crm_orders.pk
 names - names.csv
 
 

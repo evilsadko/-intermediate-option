@@ -359,7 +359,7 @@ def heatmap_order():
 #            #plt.show()
 #            fig.savefig(f"github/correlation/TotalDiscount/heatmap_{i}.jpg")     
 
-def heatmap_vis(x, y):
+def heatmap_vis(x, y, name):
     fig, ax = plt.subplots()
     im = ax.imshow(x)
 
@@ -390,7 +390,7 @@ def heatmap_vis(x, y):
     ax.set_title("Зависемость продуктов")
     fig.tight_layout()
     #plt.show()
-    fig.savefig(f"github/correlation/test/heatmap_{i}.jpg")    
+    fig.savefig(name)    
 
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
@@ -417,16 +417,10 @@ if __name__ == "__main__":
     Например кореляция цены на кол во покупок
     """
     
-#    product_open = ORDER() # ['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
-#    product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-#    product_arr = product_open.to_numpy()
-#    new_dict = {}
     date_year = json.load(open("out/products_date_v1.json","r"))
     with open("out/sort_related_products.json","r") as json_file:
         data = json.load(json_file)
-        
         for i in data:
-#            print (i, date_year[i])
             T_data0 = []
             T_data1 = []
             T_data2 = []
@@ -444,16 +438,21 @@ if __name__ == "__main__":
                     T_data0.append(T1[:,0])
                     T_data1.append(T1[:,1])
                     T_data2.append(T1[:,2])
-                    #print (pearson_coef, p_value)
             T_data0 = np.array(T_data0)
             T_data1 = np.array(T_data1)
             T_data2 = np.array(T_data2)
+            
             corr_0 = np.corrcoef(T_data0)
+            heatmap_vis(corr_0a, ID_s, f"github/correlation/Items_Count/ic_heatmap_{i}.jpg")
             corr_1 = np.corrcoef(T_data1)
+            heatmap_vis(corr_1, ID_s, f"github/correlation/Total_Amount/ta_heatmap_{i}.jpg")
             corr_2 = np.corrcoef(T_data2)
+            heatmap_vis(corr_2, ID_s, f"github/correlation/TotalDiscount/td_heatmap_{i}.jpg")
             
             corr_a = (corr_0+corr_1+corr_2)/3
-            heatmap_vis(corr_a, ID_s)
+            heatmap_vis(corr_a, ID_s, f"github/correlation/test/a_heatmap_{i}.jpg")
+            
+            
 #            fig, ax = plt.subplots()
 #            im = ax.imshow(corr_a)
 

@@ -443,7 +443,7 @@ if __name__ == "__main__":
             T_data2 = np.array(T_data2)
             
             corr_0 = np.corrcoef(T_data0)
-            heatmap_vis(corr_0a, ID_s, f"github/correlation/Items_Count/ic_heatmap_{i}.jpg")
+            heatmap_vis(corr_0, ID_s, f"github/correlation/Items_Count/ic_heatmap_{i}.jpg")
             corr_1 = np.corrcoef(T_data1)
             heatmap_vis(corr_1, ID_s, f"github/correlation/Total_Amount/ta_heatmap_{i}.jpg")
             corr_2 = np.corrcoef(T_data2)

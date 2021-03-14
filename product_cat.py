@@ -290,7 +290,7 @@ def heatmap_vis(x, y, name):
         for j in range(len(y)):
             text = ax.text(j, z, round(x[z, j], 1), ha="center", va="center", color="w")
 
-    ax.set_title("Зависемость продуктов")
+    ax.set_title("Зависемость категорий")
     fig.tight_layout()
     #plt.show()
     fig.savefig(name)    
@@ -341,8 +341,25 @@ def hard_heatmap_category():
             pass   
 
 if __name__ == "__main__":
-    
-              
+    date_year = json.load(open("out/category.json", "r"))
+    for i in date_year:
+        #print (i, date_year[i])
+        list_t = []
+        ID_s = []
+        T1 = np.array(list(date_year[i].values()))
+        ID_s.append(i)
+        list_t.append(T1)
+        for u in date_year:
+            if u != i:
+                
+               T2 = np.array(list(date_year[u].values()))
+               pearson_coef, p_value = stats.pearsonr(T1, T2)
+               if pearson_coef > 0.8:
+                   list_t.append(T2) 
+                   ID_s.append(u)
+        T_data = np.array(list_t)
+        corr = np.corrcoef(T_data)
+        heatmap_vis(corr, ID_s, f"github/correlation/category/cat_heatmap_{i}.jpg")                
 #            T_data0 = []
 #            T_data1 = []
 #            T_data2 = []

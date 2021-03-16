@@ -94,6 +94,8 @@ https://medium.com/swlh/python-data-visualization-with-matplotlib-for-absolute-b
 https://habr.com/ru/company/skillfactory/blog/510320/  
 https://medium.com/nuances-of-programming/4-простые-визуализации-данных-в-python-с-помощью-кода-ca58253fa1a3
 # Корреляционный анализ
+https://ru.wikipedia.org/wiki/Корреляция_цифровых_изображений
+https://ru.wikipedia.org/wiki/Шкала          
 https://habr.com/ru/company/datawiz/blog/264217/
 https://habr.com/ru/post/241967/
 https://habr.com/ru/post/240323/
@@ -104,11 +106,24 @@ https://habr.com/ru/post/206306/
 https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/
 https://overcoder.net/q/как-рассчитать-r-квадрат-используя-python-и-numpy
 https://proglib.io/p/linear-regression
-http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/    
+http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/   
+https://pythonru.com/biblioteki/osnovnye-funkcii-pandas-pd-4 
+https://habr.com/ru/post/350500/
+https://habr.com/ru/post/329334/
+https://habr.com/ru/post/491622/
+https://habr.com/ru/company/billing/blog/334738/
 # ТЕПЛОВАЯ КАРТА 
 https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0   
-https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html   
+https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html 
+https://nagornyy.me/courses/data-science/intro-to-seaborn/  
+https://habr.com/ru/post/468295/
 # ONE HOT ENCODING
+https://machinelearningmastery.com/how-to-one-hot-encode-sequence-data-in-python/
+https://stackoverflow.com/questions/33282368/plotting-a-2d-heatmap-with-matplotlib 
+https://pythonru.com/biblioteki/seaborn-plot
+# Серелизация
+https://towardsdatascience.com/the-best-format-to-save-pandas-data-414dca023e0d
+https://stackoverflow.com/questions/17098654/how-to-store-a-dataframe-using-pandas
 
 ```
 # data.sort_values(by=name_x, ascending=True, inplace=True)
@@ -240,7 +255,11 @@ Victor, [12.02.21 11:48]
 Что даст понимание как скидка влияет на покупательскую активность
 
 Victor, [15.02.21 19:49]
-Кол-во продуктов и покупок в день в течении года
+Кол-во продуктов и покупок в день в течении года   
 
+Если не хотите использовать бд 
+Запускаю процесс в вечный цикл с файлом
+Записываю в текстовый документ номер процесса и запускаю
+Нужный скрип и читаю процесс, так исбавлюсь от постоянной загрузки файла
 
 

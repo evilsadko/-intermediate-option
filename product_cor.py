@@ -392,31 +392,7 @@ def heatmap_vis(x, y, name):
     #plt.show()
     fig.savefig(name)    
 
-if __name__ == "__main__":
-    #NAME = PRODUCTNAME()
-    #S = Sort_v1()
-#----------------->
-    # Сопутствующие продукты
-    #S.related_products()
-    #related_product_sort()
-    #visual_related_product()
-#----------------->
-    # Сортировка сопутствующего товара по месяцам
-    #S.products_date()
-    #visual_related_m()
-    
-#------------------------------------------->
-#    кореляция
-#    visual_related_m_cor()
-#    heatmap_product()
-#    heatmap_order()
-
-    """
-    Буду использовать связанные продукты
-    Мне нужен коэффициент который показывает как продукт влияют продукты из 
-    Например кореляция цены на кол во покупок
-    """
-    
+def heatmap_prep():
     date_year = json.load(open("out/products_date_v1.json","r"))
     with open("out/sort_related_products.json","r") as json_file:
         data = json.load(json_file)
@@ -451,40 +427,35 @@ if __name__ == "__main__":
             
             corr_a = (corr_0+corr_1+corr_2)/3
             heatmap_vis(corr_a, ID_s, f"github/correlation/test/a_heatmap_{i}.jpg")
-            
-            
-#            fig, ax = plt.subplots()
-#            im = ax.imshow(corr_a)
 
-#            # We want to show all ticks...
-#            ax.set_xticks(np.arange(len(ID_s)))
-#            ax.set_yticks(np.arange(len(ID_s)))
-#            # ... and label them with the respective list entries
-#            ax.set_xticklabels(ID_s)
-#            ax.set_yticklabels(ID_s)
+if __name__ == "__main__":
+    #NAME = PRODUCTNAME()
+    #S = Sort_v1()
+#----------------->
+    # Сопутствующие продукты
+    #S.related_products()
+    #related_product_sort()
+    #visual_related_product()
+#----------------->
+    # Сортировка сопутствующего товара по месяцам
+    #S.products_date()
+    #visual_related_m()
+    
+#------------------------------------------->
+#    кореляция
+#    visual_related_m_cor()
+#    heatmap_product()
+#    heatmap_order()
+#    heatmap_prep()
 
-#            # Rotate the tick labels and set their alignment.
-#            plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-#                     rotation_mode="anchor")
-
-#            for edge, spine in ax.spines.items():
-#                spine.set_visible(False)
-
-#            ax.set_xticks(np.arange(T_data0.shape[1]+1)-.5, minor=True)
-#            ax.set_yticks(np.arange(T_data0.shape[0]+1)-.5, minor=True)
-#            ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
-#            ax.tick_params(which="minor", bottom=False, left=False)
-
-#            # Loop over data dimensions and create text annotations.
-#            for z in range(len(ID_s)):
-#                for j in range(len(ID_s)):
-#                    text = ax.text(j, z, round(corr_a[z, j], 1), ha="center", va="center", color="w")
-
-#            ax.set_title("Зависемость продуктов")
-#            fig.tight_layout()
-#            #plt.show()
-#            fig.savefig(f"github/correlation/test/heatmap_{i}.jpg")                             
-                    
+    """
+    Буду использовать связанные продукты
+    Мне нужен коэффициент который показывает как продукт влияют продукты из 
+    Например кореляция цены на кол во покупок
+    """
+    
+    
+    
 # correlation          
 #                    M[_date][0] += temp[2] #'Items_Count'
 #                    M[_date][1] += temp[3] #'Total_Amount'
@@ -496,42 +467,3 @@ if __name__ == "__main__":
 
 
 
-
-#35.73815846443176
-#70.14598345756531
-# Если не хотите использовать бд 
-# Запускаю процесс в вечный цикл с файлом
-# Записываю в текстовый документ номер процесса и запускаю
-# Нужный скрип и читаю процесс, так исбавлюсь от постоянной загрузки файла
-
-#https://ru.wikipedia.org/wiki/Корреляция_цифровых_изображений
-#https://ru.wikipedia.org/wiki/Шкала          
-#https://habr.com/ru/company/datawiz/blog/264217/
-#https://habr.com/ru/post/241967/
-#https://habr.com/ru/post/240323/
-#https://neurohive.io/ru/tutorial/primer-reshenija-realnoj-zadachi-po-mashinnomu-obucheniju-na-python/
-#https://coderoad.ru/3949226/Вычисление-корреляции-Пирсона-и-значимости-в-Python
-#http://chel-center.ru/python-yfc/2020/02/13/opisatelnaya-statistika-na-python-chast-2/
-#https://habr.com/ru/post/206306/
-#https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/
-#https://overcoder.net/q/как-рассчитать-r-квадрат-используя-python-и-numpy
-#https://proglib.io/p/linear-regression
-#http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/   
-#https://pythonru.com/biblioteki/osnovnye-funkcii-pandas-pd-4 
-#https://habr.com/ru/post/350500/
-#https://habr.com/ru/post/329334/
-#https://habr.com/ru/post/491622/
-#https://habr.com/ru/company/billing/blog/334738/
-# ТЕПЛОВАЯ КАРТА 
-#https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0   
-#https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html 
-#https://nagornyy.me/courses/data-science/intro-to-seaborn/  
-#https://habr.com/ru/post/468295/
-# ONE HOT ENCODING
-#https://machinelearningmastery.com/how-to-one-hot-encode-sequence-data-in-python/
-#https://stackoverflow.com/questions/33282368/plotting-a-2d-heatmap-with-matplotlib 
-#https://pythonru.com/biblioteki/seaborn-plot
-#Серелизация
-#https://towardsdatascience.com/the-best-format-to-save-pandas-data-414dca023e0d
-#https://stackoverflow.com/questions/17098654/how-to-store-a-dataframe-using-pandas
-            

@@ -428,6 +428,109 @@ def heatmap_prep():
             corr_a = (corr_0+corr_1+corr_2)/3
             heatmap_vis(corr_a, ID_s, f"github/correlation/test/a_heatmap_{i}.jpg")
 
+def dynamic_price():
+    date_year = json.load(open("out/products_date_v1.json","r"))
+    with open("out/sort_related_products.json","r") as json_file:
+        data = json.load(json_file)
+        for i in data:
+            #print (date_year[i])
+            ds = {}
+            for o in date_year[i]:
+                #print (date_year[i][o])
+                try:
+                    ds[o] = date_year[i][o][1]/date_year[i][o][0]
+                except ZeroDivisionError:
+                    #print (date_year[i][o])
+                    ds[o] = 0
+#            print (ds)  
+            fig, ax = plt.subplots(figsize=(10,10), clear=True)
+            ax.set_title(f'ID продукта - {i}')
+            ax.set_xlabel('Месяц')
+            ax.set_ylabel('Количество продуктов')
+            ax.bar(list(ds.keys()), list(ds.values()), color = (0.8,0.2,0.1,0.6))
+            ax.plot(list(ds.keys()), list(ds.values()), label = f"{o}")  
+            ax.legend(loc='lower right')
+            fig.savefig(f"github/dynamic_price/{i}.jpg")  # cat/cat2
+            fig.clear(True)
+            plt.close(fig)
+
+
+def test():
+    date_year = json.load(open("out/products_date_v1.json","r"))
+    with open("out/sort_related_products.json","r") as json_file:
+        data = json.load(json_file)
+        f_list = []
+        f_list_count = []
+        for i in data:
+            #print (date_year[i])
+            ds = {}
+            DSS = {}
+            for o in date_year[i]:
+                #print (date_year[i][o])
+                try:
+                    ds[o] = date_year[i][o][1]/date_year[i][o][0]
+                except ZeroDivisionError:
+                    #print (date_year[i][o])
+                    ds[o] = 0
+            DSS[i] = ds   
+            T1 = np.array(list(date_year[i].values()))[:,0]   
+            for o in data[i]:
+                if o != "остальные":
+                    T2 = np.array(list(date_year[o].values()))[:,1] 
+                    pearson_coef, p_value = stats.pearsonr(T1, T2)
+                    if pearson_coef > 0.8:
+                        ds = {}
+                        for om in date_year[o]:
+                            try:
+                                ds[om] = date_year[o][om][1]/date_year[o][om][0]
+                            except ZeroDivisionError:
+                                ds[o] = 0
+                        DSS[o] = ds    
+            f_list.append(DSS)  
+        relist = []
+        for ix, p in enumerate(f_list):   
+            if len(list(p.keys())) > 1:   
+                 relist.append(p)   
+        for ix, p in enumerate(relist):   
+            print (len(list(p.keys())))
+def test2():
+    date_year = json.load(open("out/products_date_v1.json","r"))
+    F_LS = [] 
+    with open("out/sort_related_products.json","r") as json_file:
+        data = json.load(json_file)
+        LS = []
+        LS2 = []
+        for i in data:
+            T = np.array(list(date_year[i].values()))
+            price_once = T[:,1]/T[:,0]
+            where_are_NaNs = np.isnan(price_once)
+            price_once[where_are_NaNs] = 0
+            LS.append([i, T[:,0], price_once])
+            #print (price_once)
+            t_ls = []
+            for o in data[i]:
+                if o != "остальные":
+                    
+                    T2 = np.array(list(date_year[o].values()))
+                    pearson_coef, p_value = stats.pearsonr(T[:,0], T2[:,0])
+                    if pearson_coef > 0.8:
+                        price_once2 = T2[:,1]/T2[:,0]
+                        where_are_NaNs2 = np.isnan(price_once2)
+                        price_once2[where_are_NaNs2] = 0
+                        t_ls.append([o, T2[:,0], price_once2])
+            LS2.append(t_ls)
+        print (len(LS), len(LS2)) 
+        for i in range(len(LS)):
+            #print (len(LS[i]), len(LS2[i]))
+            if len(LS2[i]) > 0:
+                F_LS.append([LS[i], LS2[i]])
+#    for i in F_LS:
+#        print (i)   
+    _array = np.array(F_LS)
+    print (_array.shape)   
+    train_array = _array[:,0].tolist()
+    print (train_array)
+
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
     #S = Sort_v1()
@@ -453,9 +556,145 @@ if __name__ == "__main__":
     Мне нужен коэффициент который показывает как продукт влияют продукты из 
     Например кореляция цены на кол во покупок
     """
-    
-    
-    
+    date_year = json.load(open("out/products_date_v1.json","r"))
+    data = json.load(open("out/sort_related_products.json","r")) 
+    f_list = []
+    for i in data:
+        T1 = np.array(list(date_year[i].values()))
+        price_once1 = T1[:,1]/T1[:,0]
+        where_are_NaNs1 = np.isnan(price_once1)
+        if not True in where_are_NaNs1:
+#            print (T1)
+            L = []
+            for o in data[i]:
+                if o != "остальные":
+                    T2 = np.array(list(date_year[o].values()))
+                    price_once2 = T2[:,1]/T2[:,0]
+                    where_are_NaNs2 = np.isnan(price_once2)
+                    if not True in where_are_NaNs2:
+#                        print (T2)
+                        L.append([o, T2[:,0], price_once2])
+            if len(L) > 0:
+#                print (L)  
+                f_list.append([[i, T1[:,0], price_once1], L])    
+    f_list = np.array(f_list)   
+    print (f_list[0,0][2], f_list[0,1][0][2])    
+    print (f_list.shape)   
+    import tensorflow as tf
+    import numpy
+    import matplotlib.pyplot as plt
+    rng = numpy.random
+
+    # Parameters
+    learning_rate = 0.01
+    training_epochs = 1000
+    display_step = 50
+
+
+    # Training Data
+    train_X = f_list[10,0][2]#numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,7.042,10.791,5.313,7.997,5.654,9.27,3.1])
+    train_Y = f_list[10,1][0][2]#numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,2.827,3.465,1.65,2.904,2.42,2.94,1.3])
+    n_samples = train_X.shape[0]
+    print (train_Y.shape, train_X.shape)
+
+    # tf Graph Input
+    X = tf.placeholder("float")
+    Y = tf.placeholder("float")
+
+    # Set model weights
+    W = tf.Variable(rng.randn(), name="weight")
+    b = tf.Variable(rng.randn(), name="bias")
+
+    # Construct a linear model
+    pred = tf.add(tf.multiply(X, W), b)
+
+
+    # Mean squared error
+    cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
+    # Gradient descent
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+
+
+    # Initialize the variables (i.e. assign their default value)
+    init = tf.global_variables_initializer()
+
+    # Start training
+    with tf.Session() as sess:
+        sess.run(init)
+
+        # Fit all training data
+        for epoch in range(training_epochs):
+            for (x, y) in zip(train_X, train_Y):
+                sess.run(optimizer, feed_dict={X: x, Y: y})
+
+            #Display logs per epoch step
+            if (epoch+1) % display_step == 0:
+                c = sess.run(cost, feed_dict={X: train_X, Y:train_Y})
+                print ("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(c), \
+                    "W=", sess.run(W), "b=", sess.run(b))
+
+        print ("Optimization Finished!")
+        training_cost = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
+        print ("Training cost=", training_cost, "W=", sess.run(W), "b=", sess.run(b), '\n')
+        print ('Прогнозирование') 
+        y_pred_batch = sess.run(pred, {X: train_X})
+        print (y_pred_batch)
+        print (train_Y)
+        #Graphic display
+        plt.plot(train_X, train_Y, 'ro', label='Original data')
+        plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')
+        plt.legend()
+        plt.show()
+        
+        
+#    y_array = []
+#    x_array = []                    
+#    for i in range(f_list.shape[0]):
+#        y_a = np.array(f_list[i,0][1]) # count
+#        x_a = np.array(f_list[i,0][2]) # price
+#        y_array.append(y_a)
+#        x_array.append(x_a)
+##        print (x_a.shape, y_a.shape)     
+#    x_array = np.array(x_array)[:-200,:]
+#    y_array = np.array(y_array)[:-200,:]
+#    
+#    test_x = np.array(x_array)[-200:,:]
+#    test_y = np.array(y_array)[-200:,:]
+#    print (x_array.shape, y_array.shape) 
+#    batch_size = 1  
+#    for batch_idx in range(x_array.shape[0]//batch_size):
+#        train_x = x_array[batch_idx * batch_size:(batch_idx + 1) * batch_size,:]
+#        train_y = y_array[batch_idx * batch_size:(batch_idx + 1) * batch_size,:]
+##        print (batch_idx, batch_idx * batch_size, (batch_idx + 1) * batch_size)                   
+#    # Тренировка модели tf             
+#    import tensorflow as tf 
+#    learning_rate = 0.1
+#    x = tf.placeholder(tf.float32, name='x')
+#    y = tf.placeholder(tf.float32, name='y')  
+#    w = tf.Variable(np.random.normal(), name='W')
+#    b = tf.Variable(np.random.normal(), name='b')
+#    y_pred = tf.add(tf.multiply(w, x), b)
+
+#    cost = tf.reduce_sum(tf.square(y_pred - y))
+#    # Gradient descent
+#    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)         
+#    # Initialize the variables (i.e. assign their default value)
+#    init = tf.global_variables_initializer()     
+#    with tf.Session() as sess:
+#        sess.run(init)         
+#        for epoch in range(10000):
+#            #for batch_idx in range(x_array.shape[0]//batch_size):
+##                train_x = x_array[batch_idx * batch_size:(batch_idx + 1) * batch_size,:].flatten()
+##                train_y = y_array[batch_idx * batch_size:(batch_idx + 1) * batch_size,:].flatten()
+#                train_x = x_array[2,:]
+#                train_y = y_array[2,:]
+#                for (xT, yT) in zip(train_x , train_y):
+#                    #print (xT, yT)
+#                    sess.run(optimizer, feed_dict={x:xT, y:yT})       
+#                    if epoch % 400 == 0:
+#                        c = sess.run(cost, feed_dict={x: xT, y: yT})
+#                        print ( "Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(c), "W=", sess.run(w), "b=", sess.run(b))
+                       
 # correlation          
 #                    M[_date][0] += temp[2] #'Items_Count'
 #                    M[_date][1] += temp[3] #'Total_Amount'
@@ -465,5 +704,10 @@ if __name__ == "__main__":
 #Total_Amount   0.129837      1.000000       0.392744
 #TotalDiscount  0.066624      0.392744       1.000000       
 
-
-
+# Кол во товаров от колва цены
+# кол во товаров от цены сопутствующего
+# Кол вл ьлваолв от кол ва сопутствующего
+#let IMG = document.querySelector("#rc-imageselector-target > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > div.rc-image-tile-wrapper > img")
+#короляция товаров, что счем покупают, что приводит к увиличанию корзины.
+#что лучше предлагать клиентам и/или клиенту персонально
+#что лучше рекламировать - и почему.

@@ -273,6 +273,68 @@ def heatmap_order():
     #plt.show()
     fig.savefig(f"github/correlation/heatmap_order.jpg")
 
+
+#def visual_related_m_cor():
+#    date_year = json.load(open("out/products_date_v1.json","r"))
+#    with open("out/sort_related_products.json","r") as json_file:
+#        data = json.load(json_file)
+#        
+#        for i in data:
+##            print (i, date_year[i])
+#            T_data = []
+#            ID_s = []
+#            T = np.array(list(date_year[i].values()))
+#            #print (T.shape)
+#            I_C = T[:,2]
+#            T_data.append(I_C)
+#            ID_s.append(i)
+#            #print (I_C)
+#            #print (len(data[i]))
+#            for o in data[i]:
+#                
+#                if o != "остальные":
+##                    print (o, date_year[o])
+#                    T1 = np.array(list(date_year[o].values()))
+#                    I_C1 = T1[:,2]
+#                    
+#                    #pearson_coef, p_value = stats.pearsonr(I_C, I_C1)
+#                    ID_s.append(o)
+#                    T_data.append(I_C1)
+#                    #print (pearson_coef, p_value)
+#            T_data = np.array(T_data)
+#            corr_a = np.corrcoef(T_data)
+#            fig, ax = plt.subplots()
+#            im = ax.imshow(corr_a)
+
+#            # We want to show all ticks...
+#            ax.set_xticks(np.arange(len(ID_s)))
+#            ax.set_yticks(np.arange(len(ID_s)))
+#            # ... and label them with the respective list entries
+#            ax.set_xticklabels(ID_s)
+#            ax.set_yticklabels(ID_s)
+
+#            # Rotate the tick labels and set their alignment.
+#            plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+#                     rotation_mode="anchor")
+
+#            for edge, spine in ax.spines.items():
+#                spine.set_visible(False)
+
+#            ax.set_xticks(np.arange(T_data.shape[1]+1)-.5, minor=True)
+#            ax.set_yticks(np.arange(T_data.shape[0]+1)-.5, minor=True)
+#            ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+#            ax.tick_params(which="minor", bottom=False, left=False)
+
+#            # Loop over data dimensions and create text annotations.
+#            for z in range(len(ID_s)):
+#                for j in range(len(ID_s)):
+#                    text = ax.text(j, z, round(corr_a[z, j], 1), ha="center", va="center", color="w")
+
+#            ax.set_title("Зависемость продуктов")
+#            fig.tight_layout()
+#            #plt.show()
+#            fig.savefig(f"github/correlation/TotalDiscount/heatmap_{i}.jpg")     
+
 def heatmap_vis(x, y, name):
     fig, ax = plt.subplots()
     im = ax.imshow(x)
@@ -281,8 +343,8 @@ def heatmap_vis(x, y, name):
     ax.set_xticks(np.arange(len(y)))
     ax.set_yticks(np.arange(len(y)))
     # ... and label them with the respective list entries
-    ax.set_xticklabels(y)
-    ax.set_yticklabels(y)
+    ax.set_xticklabels(ID_s)
+    ax.set_yticklabels(ID_s)
 
     # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
@@ -305,54 +367,20 @@ def heatmap_vis(x, y, name):
     fig.tight_layout()
     #plt.show()
     fig.savefig(name)    
-    fig.clear(True)
-    plt.close(fig)
 
-#def heatmap_prep():
-#    date_year = json.load(open("out/products_date_v1.json","r"))
-#    with open("out/sort_related_products.json","r") as json_file:
-#        data = json.load(json_file)
-#        for i in data:
-#            T_data0 = []
-#            T_data1 = []
-#            T_data2 = []
-#            ID_s = []
-#            T = np.array(list(date_year[i].values()))
-#            T_data0.append(T[:,0])
-#            T_data1.append(T[:,1])
-#            T_data2.append(T[:,2])
-#            ID_s.append(i)
-#            for o in data[i]:
-#                if o != "остальные":
-#                    T1 = np.array(list(date_year[o].values()))
-#                    #pearson_coef, p_value = stats.pearsonr(I_C, I_C1)
-#                    ID_s.append(o)
-#                    T_data0.append(T1[:,0])
-#                    T_data1.append(T1[:,1])
-#                    T_data2.append(T1[:,2])
-#            T_data0 = np.array(T_data0)
-#            T_data1 = np.array(T_data1)
-#            T_data2 = np.array(T_data2)
-#            
-#            corr_0 = np.corrcoef(T_data0)
-#            heatmap_vis(corr_0, ID_s, f"github/correlation/Items_Count/ic_heatmap_{i}.jpg")
-#            corr_1 = np.corrcoef(T_data1)
-#            heatmap_vis(corr_1, ID_s, f"github/correlation/Total_Amount/ta_heatmap_{i}.jpg")
-#            corr_2 = np.corrcoef(T_data2)
-#            heatmap_vis(corr_2, ID_s, f"github/correlation/TotalDiscount/td_heatmap_{i}.jpg")
-#            
-#            corr_a = (corr_0+corr_1+corr_2)/3
-#            heatmap_vis(corr_a, ID_s, f"github/correlation/test/a_heatmap_{i}.jpg")
 def heatmap_prep():
     date_year = json.load(open("out/products_date_v1.json","r"))
     with open("out/sort_related_products.json","r") as json_file:
         data = json.load(json_file)
-        d_ict = {}
         for i in data:
             T_data0 = []
+            T_data1 = []
+            T_data2 = []
             ID_s = []
             T = np.array(list(date_year[i].values()))
             T_data0.append(T[:,0])
+            T_data1.append(T[:,1])
+            T_data2.append(T[:,2])
             ID_s.append(i)
             for o in data[i]:
                 if o != "остальные":
@@ -360,14 +388,21 @@ def heatmap_prep():
                     #pearson_coef, p_value = stats.pearsonr(I_C, I_C1)
                     ID_s.append(o)
                     T_data0.append(T1[:,0])
-                    
+                    T_data1.append(T1[:,1])
+                    T_data2.append(T1[:,2])
             T_data0 = np.array(T_data0)
+            T_data1 = np.array(T_data1)
+            T_data2 = np.array(T_data2)
+            
             corr_0 = np.corrcoef(T_data0)
-            d_ict[f"corr_{i}"] = [ID_s, corr_0.tolist()]
-            #heatmap_vis(corr_0, ID_s, f"github/correlation/Items_Count/ic_heatmap_{i}.jpg")
-        with open("out/correlation_products.json",'w') as js_file:
-                json.dump(d_ict, js_file)
-
+            heatmap_vis(corr_0, ID_s, f"github/correlation/Items_Count/ic_heatmap_{i}.jpg")
+            corr_1 = np.corrcoef(T_data1)
+            heatmap_vis(corr_1, ID_s, f"github/correlation/Total_Amount/ta_heatmap_{i}.jpg")
+            corr_2 = np.corrcoef(T_data2)
+            heatmap_vis(corr_2, ID_s, f"github/correlation/TotalDiscount/td_heatmap_{i}.jpg")
+            
+            corr_a = (corr_0+corr_1+corr_2)/3
+            heatmap_vis(corr_a, ID_s, f"github/correlation/test/a_heatmap_{i}.jpg")
 
 def dynamic_price():
     date_year = json.load(open("out/products_date_v1.json","r"))
@@ -396,6 +431,81 @@ def dynamic_price():
             plt.close(fig)
 
 
+def test():
+    date_year = json.load(open("out/products_date_v1.json","r"))
+    with open("out/sort_related_products.json","r") as json_file:
+        data = json.load(json_file)
+        f_list = []
+        f_list_count = []
+        for i in data:
+            #print (date_year[i])
+            ds = {}
+            DSS = {}
+            for o in date_year[i]:
+                #print (date_year[i][o])
+                try:
+                    ds[o] = date_year[i][o][1]/date_year[i][o][0]
+                except ZeroDivisionError:
+                    #print (date_year[i][o])
+                    ds[o] = 0
+            DSS[i] = ds   
+            T1 = np.array(list(date_year[i].values()))[:,0]   
+            for o in data[i]:
+                if o != "остальные":
+                    T2 = np.array(list(date_year[o].values()))[:,1] 
+                    pearson_coef, p_value = stats.pearsonr(T1, T2)
+                    if pearson_coef > 0.8:
+                        ds = {}
+                        for om in date_year[o]:
+                            try:
+                                ds[om] = date_year[o][om][1]/date_year[o][om][0]
+                            except ZeroDivisionError:
+                                ds[o] = 0
+                        DSS[o] = ds    
+            f_list.append(DSS)  
+        relist = []
+        for ix, p in enumerate(f_list):   
+            if len(list(p.keys())) > 1:   
+                 relist.append(p)   
+        for ix, p in enumerate(relist):   
+            print (len(list(p.keys())))
+def test2():
+    date_year = json.load(open("out/products_date_v1.json","r"))
+    F_LS = [] 
+    with open("out/sort_related_products.json","r") as json_file:
+        data = json.load(json_file)
+        LS = []
+        LS2 = []
+        for i in data:
+            T = np.array(list(date_year[i].values()))
+            price_once = T[:,1]/T[:,0]
+            where_are_NaNs = np.isnan(price_once)
+            price_once[where_are_NaNs] = 0
+            LS.append([i, T[:,0], price_once])
+            #print (price_once)
+            t_ls = []
+            for o in data[i]:
+                if o != "остальные":
+                    
+                    T2 = np.array(list(date_year[o].values()))
+                    pearson_coef, p_value = stats.pearsonr(T[:,0], T2[:,0])
+                    if pearson_coef > 0.8:
+                        price_once2 = T2[:,1]/T2[:,0]
+                        where_are_NaNs2 = np.isnan(price_once2)
+                        price_once2[where_are_NaNs2] = 0
+                        t_ls.append([o, T2[:,0], price_once2])
+            LS2.append(t_ls)
+        print (len(LS), len(LS2)) 
+        for i in range(len(LS)):
+            #print (len(LS[i]), len(LS2[i]))
+            if len(LS2[i]) > 0:
+                F_LS.append([LS[i], LS2[i]])
+#    for i in F_LS:
+#        print (i)   
+    _array = np.array(F_LS)
+    print (_array.shape)   
+    train_array = _array[:,0].tolist()
+    print (train_array)
 
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
@@ -412,14 +522,109 @@ if __name__ == "__main__":
     
 #------------------------------------------->
 #    кореляция
+#    visual_related_m_cor()
 #    heatmap_product()
 #    heatmap_order()
 #    heatmap_prep()
-#    dynamic_price()
-    D = json.load(open("out/popular_product_category.json","r"))
-    for i in D:
-        print (D[i])
-       
+
+    """
+    Буду использовать связанные продукты
+    Мне нужен коэффициент который показывает как продукт влияют продукты из 
+    Например кореляция цены на кол во покупок
+    """
+    date_year = json.load(open("out/products_date_v1.json","r"))
+    data = json.load(open("out/sort_related_products.json","r")) 
+    f_list = []
+    for i in data:
+        T1 = np.array(list(date_year[i].values()))
+        price_once1 = T1[:,1]/T1[:,0]
+        where_are_NaNs1 = np.isnan(price_once1)
+        if not True in where_are_NaNs1:
+#            print (T1)
+            L = []
+            for o in data[i]:
+                if o != "остальные":
+                    T2 = np.array(list(date_year[o].values()))
+                    price_once2 = T2[:,1]/T2[:,0]
+                    where_are_NaNs2 = np.isnan(price_once2)
+                    if not True in where_are_NaNs2:
+#                        print (T2)
+                        L.append([o, T2[:,0], price_once2])
+            if len(L) > 0:
+#                print (L)  
+                f_list.append([[i, T1[:,0], price_once1], L])    
+    f_list = np.array(f_list)   
+    #print (f_list[0,0][2], f_list[0,1][0][2])    
+    print (f_list.shape)   
+    import tensorflow as tf
+    import numpy
+    import matplotlib.pyplot as plt
+    rng = numpy.random
+
+    # Parameters
+    learning_rate = 0.01
+    training_epochs = 1000
+    display_step = 50
+
+
+    # Training Data
+    train_X = f_list[100,0][2]#numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,7.042,10.791,5.313,7.997,5.654,9.27,3.1])
+    train_Y = f_list[100,1][0][2]#numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,2.827,3.465,1.65,2.904,2.42,2.94,1.3])
+
+    print (train_X, train_Y)
+
+    n_samples = train_X.shape[0]
+    print (train_Y.shape, train_X.shape)
+
+    # tf Graph Input
+    X = tf.placeholder("float")
+    Y = tf.placeholder("float")
+
+    # Set model weights
+    W = tf.Variable(rng.randn(), name="weight")
+    b = tf.Variable(rng.randn(), name="bias")
+
+    # Construct a linear model
+    pred = tf.add(tf.multiply(X, W), b)
+
+
+    # Mean squared error
+    cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
+    # Gradient descent
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+
+
+    # Initialize the variables (i.e. assign their default value)
+    init = tf.global_variables_initializer()
+
+    # Start training
+    with tf.Session() as sess:
+        sess.run(init)
+
+        # Fit all training data
+        for epoch in range(training_epochs):
+            for (x, y) in zip(train_X, train_Y):
+                sess.run(optimizer, feed_dict={X: x, Y: y})
+
+            #Display logs per epoch step
+            if (epoch+1) % display_step == 0:
+                c = sess.run(cost, feed_dict={X: train_X, Y:train_Y})
+                print ("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(c), \
+                    "W=", sess.run(W), "b=", sess.run(b))
+
+        print ("Optimization Finished!")
+        training_cost = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
+        print ("Training cost=", training_cost, "W=", sess.run(W), "b=", sess.run(b), '\n')
+        print ('Прогнозирование') 
+        y_pred_batch = sess.run(pred, {X: train_X})
+        print (y_pred_batch)
+        print (train_Y)
+        #Graphic display
+        plt.plot(train_X, train_Y, 'ro', label='Original data')
+        plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')
+        plt.legend()
+        plt.show()
+        
 # correlation          
 #                    M[_date][0] += temp[2] #'Items_Count'
 #                    M[_date][1] += temp[3] #'Total_Amount'

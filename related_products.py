@@ -5,35 +5,10 @@ import matplotlib.dates as dates
 import threading
 import json
 import time
-
-def see_stat(x, y=0):
-    if y == "list":
-        print (x.columns.tolist())
-    else:
-        for c in  x.columns.tolist():
-            print (f"###############\n{x[c].value_counts(dropna=False)}")
-
-
-def diag_circle(vals, labels, myexplode, title, save_name, types=None):
-    fig, ax = plt.subplots(figsize=(10,10), clear=True)
-    if myexplode != None:
-        ax.pie(vals, explode=myexplode, labels=labels, autopct='%.2f', startangle=90, pctdistance=0.85)
-    else:
-        ax.pie(vals, labels=labels, autopct='%.2f', startangle=0, pctdistance=0.85) #autopct='%1.2f%%', startangle=90
-    if types != None:
-        centre_circle = plt.Circle((0,0),0.70,fc='white')
-        fig = plt.gcf()
-        fig.gca().add_artist(centre_circle)
-
-    ax.axis("equal")
-    ax.set_title(f"ID продукта: {title}", loc="left", pad=20)
-    ax.legend(loc='lower right') #, bbox_to_anchor=(0.7, 0.7) 'upper left' bbox_to_anchor=(0.5, 0., 0.5, 0.5) 'best'
-    fig.savefig(save_name)
-    fig.clear(True)
-    plt.close(fig)
+from utils import diag_circle, see_stat
 
 def CUSTOMER():
-    c_open = pd.read_csv('B24_dbo_Crm_customers.csv', delimiter=',')
+    c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
     c_open = c_open[['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']]
     c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
     c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
@@ -43,12 +18,14 @@ def CUSTOMER():
     return c_open
 
 def PRODUCT():
-    p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
+    #p_open = pd.read_csv('in/B24_dbo_Crm_product_in_order.csv', delimiter=',')
+    p_open = pd.read_pickle("in/B24_dbo_Crm_product_in_order.pk")
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
     return p_open
     
 def ORDER():
-    o_open = pd.read_csv('B24_dbo_Crm_orders.csv', delimiter=',')
+    #o_open = pd.read_csv('in/B24_dbo_Crm_orders.csv', delimiter=',')
+    o_open = pd.read_pickle("in/B24_dbo_Crm_orders.pk")
     #see_stat(o_open)
     o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
     o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
@@ -247,9 +224,10 @@ def visual_related_m():
             data_related = json.load(open("out/sort_related_products.json", 'r'))
             date_sort_m = json.load(open("out/products_date.json",'r'))
             for i in data_related:
+#                print (i, date_sort_m[i])
+#                print ("-------------")
+            
                 fig, ax = plt.subplots(figsize=(10,10), clear=True)
-                #print (i, date_sort_m[i])
-                #print ("-------------")
                 ax.set_title(f'ID продукта - {i}')
                 ax.set_xlabel('Месяц')
                 ax.set_ylabel('Количество продуктов')
@@ -267,16 +245,16 @@ def visual_related_m():
 
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
-    #S = Sort_v1()
+    S = Sort_v1()
 #----------------->
     # Сопутствующие продукты
-    #S.related_products()
+    S.related_products()
     #related_product_sort()
     #visual_related_product()
 #----------------->
     # Сортировка сопутствующего товара по месяцам
     #S.products_date()
-    visual_related_m()
+    #visual_related_m()
 
 
 

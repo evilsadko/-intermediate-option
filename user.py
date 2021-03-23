@@ -28,7 +28,7 @@ def diag_circle(vals, labels, myexplode, title, save_name, types=None):
     plt.savefig(save_name)
 
 def CUSTOMER():
-    c_open = pd.read_csv('B24_dbo_Crm_customers.csv', delimiter=',')
+    c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
 #    c_open = c_open[['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']]
     c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
     c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
@@ -40,18 +40,18 @@ def CUSTOMER():
     return c_open
 
 def PRODUCT():
-    p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
+    p_open = pd.read_csv('in/B24_dbo_Crm_product_in_order.csv', delimiter=',')
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
     return p_open
     
 def ORDER():
-    o_open = pd.read_csv('B24_dbo_Crm_orders.csv', delimiter=',')
+    o_open = pd.read_csv('in/B24_dbo_Crm_orders.csv', delimiter=',')
     o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
     o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
     return o_open.sort_values(by=['Order_Date'])
 
 def PRODUCTNAME():
-    p_open = pd.read_csv('B24_dbo_Products.csv', delimiter=',')
+    p_open = pd.read_csv('in/B24_dbo_Products.csv', delimiter=',')
     #see_stat(p_open)
     return p_open
 

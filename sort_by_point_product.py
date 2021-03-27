@@ -95,73 +95,18 @@ def branch_data():
                 
 #    with open("out/branch_product.json", 'w') as js_file:
 #        json.dump(dict_branch_product, js_file)  
+
+
 if __name__ == "__main__":
 
-#    O = ORDER() # ['Order_Id', 'Batch', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
-#    O_arr = O.to_numpy()
-#    order_dict = utils.func_return(O_arr, 0)
-#    start = time.time()
-#    
-#    P = PRODUCT() # ['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-#    P_arr = P.to_numpy()
-#    product_dict = utils.func_return(P_arr, 0)
 
 #----------------------------------------------------->
 
-
-#    
-#    dict_branch = utils.func_return(O_arr, 1)
-#    for i in dict_branch:
-#        dict_branch[i] = {'01':[], '02':[], '03':[], '04':[], '05':[], '06':[], '07':[], '08':[], '09':[], '10':[], '11':[], '12':[]}
-#    for i in list(product_dict.keys())[:]:
-#       
-#        for v in product_dict[i]:
-#            order_id = P_arr[v,0]
-#            branch_id = O_arr[order_dict[order_id], 1][0]
-#            order_date = O_arr[order_dict[order_id], -1][0].split(" ")[0].split("-")[1]
-#            dict_branch[branch_id][order_date].append(O_arr[order_dict[order_id], :].tolist())
-
-#    with open("out/branch_order.json", 'w') as js_file:
-#        json.dump(dict_branch, js_file)     
-
-#---------------------------------------------->                   
 #    branch_data()
  
     dict_branch = json.load(open("out/branch/branch_product_51.json",'r')) 
     for i in dict_branch:
         print (dict_branch[i], i, len(dict_branch[i]))
-#-------------------------------->
-
-#    L = []
-#    V = []
-#    M = [] 
-#    L0 = []
-
-#    for i in dict_branch:
-#        
-#        L.append(i)
-#        V.append(sum(np.array(list(dict_branch[i].values()))[:,0]))
-#        M.append(0)
-#        V0.append(sum(np.array(list(dict_branch[i].values()))[:,1]))
-
- 
-#---------------------------------->     
-#    dict_branch = utils.func_return(O_arr, 1)
-#    for i in dict_branch:
-#        dict_branch[i] = {'01':[0,0], '02':[0,0], '03':[0,0], '04':[0,0], '05':[0,0], '06':[0,0], '07':[0,0], '08':[0,0], '09':[0,0], '10':[0,0], '11':[0,0], '12':[0,0]}
-#    
-#    #dict_branch = {}
-#    for i in list(product_dict.keys())[:]:
-#       
-#        for v in product_dict[i]:
-#            #prod = P_arr[v,:]
-#            
-#            order_id = P_arr[v,0]
-#            branch_id = O_arr[order_dict[order_id], 1][0]
-#            if branch_id == 512:
-#                order_date = O_arr[order_dict[order_id], -1][0].split(" ")[0].split("-")[1]
-#                if order_date == '02':
-#                    print (O_arr[order_dict[order_id], :])  
 #---------------------------------->  
     
     

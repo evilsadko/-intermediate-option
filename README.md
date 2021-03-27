@@ -95,25 +95,32 @@ https://habr.com/ru/company/skillfactory/blog/510320/
 https://medium.com/nuances-of-programming/4-простые-визуализации-данных-в-python-с-помощью-кода-ca58253fa1a3
 https://medium.com/@willwestinvest/getting-investment-advice-from-gpt-3-at-the-aidungeon-d4cdfd0fcbe8 Тут про торговлю на бирже   
 https://clockwise.software/blog/how-to-integrate-gpt3/       
-# Корреляционный анализ
-https://ru.wikipedia.org/wiki/Корреляция_цифровых_изображений
-https://ru.wikipedia.org/wiki/Шкала          
-https://habr.com/ru/company/datawiz/blog/264217/
-https://habr.com/ru/post/241967/
-https://habr.com/ru/post/240323/
-https://neurohive.io/ru/tutorial/primer-reshenija-realnoj-zadachi-po-mashinnomu-obucheniju-na-python/
-https://coderoad.ru/3949226/Вычисление-корреляции-Пирсона-и-значимости-в-Python
-http://chel-center.ru/python-yfc/2020/02/13/opisatelnaya-statistika-na-python-chast-2/
-https://habr.com/ru/post/206306/
-https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/
-https://overcoder.net/q/как-рассчитать-r-квадрат-используя-python-и-numpy
-https://proglib.io/p/linear-regression
-http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/   
-https://pythonru.com/biblioteki/osnovnye-funkcii-pandas-pd-4 
-https://habr.com/ru/post/350500/
-https://habr.com/ru/post/329334/
-https://habr.com/ru/post/491622/
-https://habr.com/ru/company/billing/blog/334738/
+# Корреляционный анализ 
+https://ru.wikipedia.org/wiki/Корреляция_цифровых_изображений   
+https://ru.wikipedia.org/wiki/Шкала             
+https://habr.com/ru/company/datawiz/blog/264217/   
+https://habr.com/ru/post/241967/   
+https://habr.com/ru/post/240323/    
+https://neurohive.io/ru/tutorial/primer-reshenija-realnoj-zadachi-po-mashinnomu-obucheniju-na-python/   
+https://coderoad.ru/3949226/Вычисление-корреляции-Пирсона-и-значимости-в-Python   
+http://chel-center.ru/python-yfc/2020/02/13/opisatelnaya-statistika-na-python-chast-2/   
+https://habr.com/ru/post/206306/   
+https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/   
+https://overcoder.net/q/как-рассчитать-r-квадрат-используя-python-и-numpy   
+https://proglib.io/p/linear-regression   
+http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/     
+https://pythonru.com/biblioteki/osnovnye-funkcii-pandas-pd-4    
+https://habr.com/ru/post/350500/   
+https://habr.com/ru/post/329334/   
+https://habr.com/ru/post/491622/   
+https://habr.com/ru/company/billing/blog/334738/   
+# РКГРКССИЯ   
+https://coderoad.ru/45262280/Множественная-регрессия-на-Tensorflow   
+https://www.machinelearningmastery.ru/linear-regression-with-tensorflow-js-e7b39713572/   
+https://habr.com/ru/post/276093/   
+https://coderoad.ru/43170017/Линейная-регрессия-с-tensorflow    
+https://ru.csstricks.net/8226607-linear-regression-with-tensorflow-examples   
+https://towardsdatascience.com/a-line-by-line-laymans-guide-to-linear-regression-using-tensorflow-3c0392aa9e1f    
 # ТЕПЛОВАЯ КАРТА 
 https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0   
 https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html 

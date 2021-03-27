@@ -118,10 +118,7 @@ if __name__ == "__main__":
     V = []
     M = [] 
     
-    
-    L0 = []
     V0 = []
-    M0 = []        
     for i in dict_branch:
         fig, ax = plt.subplots(figsize=(10,10), clear=True)
         ax.set_title(f'ID точки - {i}')
@@ -138,7 +135,7 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(figsize=(10,10), clear=True)
         ax.set_title(f'ID точки - {i}')
         ax.set_xlabel('Месяц')
-        ax.set_ylabel('Количество продуктов')
+        ax.set_ylabel('Сумма продаж')
         ax.bar(list(dict_branch[i].keys()), np.array(list(dict_branch[i].values()))[:,1], color = (0.2,0.7,0.6,0.6))
 
         ax.plot(list(dict_branch[i].keys()), np.array(list(dict_branch[i].values()))[:,1])  
@@ -150,15 +147,13 @@ if __name__ == "__main__":
         V.append(sum(np.array(list(dict_branch[i].values()))[:,0]))
         M.append(0)
 
-        L0.append(i)
         V0.append(sum(np.array(list(dict_branch[i].values()))[:,1]))
-        M0.append(0)
         
  
     
        
     diag_circle(V[:], L[:], M[:],  "Популярные точки", "github/popular_branch.jpg")    
-    diag_circle(V0[:], L0[:], M0[:],  "Прибыльные точки", "github/profit_branch.jpg") 
+    diag_circle(V0[:], L[:], M[:],  "Прибыльные точки", "github/profit_branch.jpg") 
 #        print (np.array(list(dict_branch[i].values()))[:,0])
 #        print (np.array(list(dict_branch[i].values()))[:,1])
         #print (np.array(list(dict_branch[i].values())).shape)
@@ -173,6 +168,4 @@ if __name__ == "__main__":
 #    популярные продукты
 #    популярные категории
 #
-               
-            
-
+       

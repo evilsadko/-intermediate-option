@@ -104,17 +104,17 @@ https://habr.com/ru/post/240323/
 https://neurohive.io/ru/tutorial/primer-reshenija-realnoj-zadachi-po-mashinnomu-obucheniju-na-python/   
 https://coderoad.ru/3949226/Вычисление-корреляции-Пирсона-и-значимости-в-Python   
 http://chel-center.ru/python-yfc/2020/02/13/opisatelnaya-statistika-na-python-chast-2/   
-https://habr.com/ru/post/206306/   
-https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/   
 https://overcoder.net/q/как-рассчитать-r-квадрат-используя-python-и-numpy   
-https://proglib.io/p/linear-regression   
 http://statistica.ru/theory/koeffitsient-determinatsii-i-lineynaya-regressiya/     
 https://pythonru.com/biblioteki/osnovnye-funkcii-pandas-pd-4    
 https://habr.com/ru/post/350500/   
 https://habr.com/ru/post/329334/   
 https://habr.com/ru/post/491622/   
 https://habr.com/ru/company/billing/blog/334738/   
-# РКГРКССИЯ   
+# РЕГРЕССИЯ   
+https://proglib.io/p/linear-regression   
+https://www.machinelearningmastery.ru/simple-and-multiple-linear-regression-with-python-c9ab422ec29c/     
+https://habr.com/ru/post/206306/     
 https://coderoad.ru/45262280/Множественная-регрессия-на-Tensorflow   
 https://www.machinelearningmastery.ru/linear-regression-with-tensorflow-js-e7b39713572/   
 https://habr.com/ru/post/276093/   

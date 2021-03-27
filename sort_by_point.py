@@ -127,6 +127,9 @@ if __name__ == "__main__":
         ax.bar(list(dict_branch[i].keys()), np.array(list(dict_branch[i].values()))[:,0], color = (0.2,0.7,0.6,0.6))
 
         ax.plot(list(dict_branch[i].keys()), np.array(list(dict_branch[i].values()))[:,0])  
+        
+#        for i, v in enumerate(np.array(list(dict_branch[i].values()))[:,0]):
+#            ax.text(v + 3, i + .25, str(v), color='blue', fontweight='bold')
         fig.savefig(f"github/branch_0/{i}.jpg") 
         fig.clear(True)
         plt.close(fig)

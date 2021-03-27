@@ -8,6 +8,7 @@ import time
 from scipy import stats
 from utils import diag_circle, see_stat
 import utils
+import os
 
 def CUSTOMER():
     c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
@@ -47,9 +48,6 @@ def PRODUCTNAME():
     #see_stat(p_open)
     return p_open
 
-#def saveJSON(x):
-#    with open("out/branch_product.json", 'w') as js_file:
-#        json.dump(dict_branch_product, js_file)  
 
 def branch_data():
     O = ORDER() # ['Order_Id', 'Batch', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
@@ -75,41 +73,89 @@ def branch_data():
             M = order_date.split(" ")[0].split("-")[1]
             L_product += [customet_id, order_date]
             dict_branch[branch_id][M].append(L_product) 
-            #print (L_product)     
-            #dict_branch[branch_id][order_date].append(O_arr[order_dict[order_id], :].tolist())   
             
     for i in dict_branch:
         with open(f"out/branch/branch_product_{i}.json", 'w') as js_file:
             json.dump(dict_branch[i], js_file)  
     
-#    dict_branch_product = {}
-#    dict_branch = json.load(open("out/branch_order.json",'r'))  
-#    for i in dict_branch:
-#        dict_branch_product[i] = {'01':[], '02':[], '03':[], '04':[], '05':[], '06':[], '07':[], '08':[], '09':[], '10':[], '11':[], '12':[]}
-#        for o in dict_branch[i]:
-#            for d in range(len(dict_branch[i][o])):
-#                id_order = dict_branch[i][o][d][0]
-#                dict_branch_product[i][o].append(product_dict[id_order])
-#        with open(f"out/branch/branch_product_{i}.json", 'w') as js_file:
-#            json.dump(dict_branch_product[i], js_file)  
-                
-#    with open("out/branch_product.json", 'w') as js_file:
-#        json.dump(dict_branch_product, js_file)  
+
+class DATA(object):
+   def __init__(self):
+       self.file = []
+
+   def parseIMG(self, dir_name):
+       path = f"{dir_name}/"
+       print ("PARSING",path)
+       for r, d, f in os.walk(path):
+           for ix, file in enumerate(f): 
+                      if ".json" in file: 
+                          self.file.append(os.path.join(r, file))
 
 
 if __name__ == "__main__":
 
-
 #----------------------------------------------------->
 
+    
 #    branch_data()
- 
-    dict_branch = json.load(open("out/branch/branch_product_51.json",'r')) 
-    for i in dict_branch:
-        print (dict_branch[i], i, len(dict_branch[i]))
-#---------------------------------->  
+    
+    D = DATA()
+    D.parseIMG('out/branch')
     
     
+    dict_popular_branch = {}
+    
+    for filename in D.file:
+        branch_id = filename.split(".")[0].split("_")[-1]
+#        print (filename, branch_)
+        dict_branch = json.load(open(filename,'r')) 
+        dict_popular_branch[branch_id] = {}
+        for i in dict_branch:
+            dict_popular_branch[branch_id][i] = {}
+            for o in range(len(dict_branch[i])):
+                id_product = dict_branch[i][o][1]
+                count_product = dict_branch[i][o][2]
+                try:
+                    dict_popular_branch[branch_id][i][id_product] += count_product
+                except KeyError:
+                    dict_popular_branch[branch_id][i][id_product] = count_product
+    #print (dict_popular_branch["51"]["02"])  
+    sort_dict = {}   
+    for i in dict_popular_branch:
+        sort_dict[i] = {}
+        try_m = {}
+        list_ = []
+        for o in dict_popular_branch[i]:
+#            print (len(list(dict_popular_branch[i][o].keys())))
+            sort_dict[i][o] = {}
+            sum_all = sum(list(dict_popular_branch[i][o].values()))
+
+            for r in dict_popular_branch[i][o]:
+                P = dict_popular_branch[i][o][r] / int(sum_all) * 100
+                if P > 0.5:
+                    sort_dict[i][o][r] = dict_popular_branch[i][o][r]
+                    #print (P, dict_popular_branch[i][o][r], r)  
+                    list_.append(r)
+                try:
+                    try_m[r][o] = dict_popular_branch[i][o][r]
+                except KeyError:
+                    try_m[r] = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}  
+                    try_m[r][o] = dict_popular_branch[i][o][r]  
+        #print (len(list(try_m.keys())))                                  
+        fig, ax = plt.subplots(figsize=(10,10), clear=True)
+        ax.set_title(f'ID точки - {i}')
+        ax.set_xlabel('Месяц')
+        ax.set_ylabel('Количество продуктов')
+        for j in list_:
+            #print (list(try_m[j].keys()), list(try_m[j].values()))
+            ax.plot(list(try_m[j].keys()), list(try_m[j].values()), label = f"{j}") 
+            ax.legend(loc='lower right')
+
+        fig.savefig(f"github/branch_img/{i}.jpg")  # cat/cat2
+        fig.clear(True)
+        plt.close(fig)
+
+#---------------------------------->    
 #    Сортировать продукты по магазинам посмотреть какой магазин больше всего продал продуктов 
 #    какой больше всего принес прибыль
 
@@ -119,3 +165,4 @@ if __name__ == "__main__":
 #    популярные категории
 #
               
+#    Найти в каком магазине самые активные покупатели              

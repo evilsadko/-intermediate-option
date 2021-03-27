@@ -416,6 +416,7 @@ if __name__ == "__main__":
 #    heatmap_order()
 #    heatmap_prep()
 #    dynamic_price()
+
     D = json.load(open("out/popular_product_category.json","r"))
     for i in D:
         print (D[i])

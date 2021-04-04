@@ -4,57 +4,8 @@ import matplotlib.pyplot as plt
 import threading
 import json
 import time
-from utils import diag_circle, see_stat
-
-#def see_stat(x, y=0):
-#    if y == "list":
-#        print (x.columns.tolist())
-#    else:
-#        for c in  x.columns.tolist():
-#            print (f"###############\n{x[c].value_counts(dropna=False)}")
-
-
-#def diag_circle(vals, labels, myexplode, title, save_name, types=None):
-#    fig, ax = plt.subplots(figsize=(10,10))
-#    ax.pie(vals, explode=myexplode, labels=labels, autopct='%1.2f%%', startangle=90, pctdistance=0.85)
-
-#    if types != None:
-#        centre_circle = plt.Circle((0,0),0.70,fc='white')
-#        fig = plt.gcf()
-#        fig.gca().add_artist(centre_circle)
-
-#    ax.axis("equal")
-#    ax.set_title(title)
-#    ax.legend(loc='best') #, bbox_to_anchor=(0.7, 0.7) 'upper left' bbox_to_anchor=(0.5, 0., 0.5, 0.5)
-#    plt.savefig(save_name)
-
-def CUSTOMER():
-    c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
-    c_open = c_open[['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']]
-    c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
-    c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
-    c_open['Could_send_email'] = c_open['Could_send_email'].replace(np.nan, 0)
-    c_open['consent'] = c_open['consent'].replace(np.nan, 0)
-    c_open = c_open.apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna() # Убираю все строки
-    return c_open
-
-def PRODUCT():
-    p_open = pd.read_csv('in/B24_dbo_Crm_product_in_order.csv', delimiter=',')
-    p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
-    return p_open
+from utils import diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME, ORDER
     
-def ORDER():
-    o_open = pd.read_csv('in/B24_dbo_Crm_orders.csv', delimiter=',')
-    o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
-    return o_open.sort_values(by=['Order_Date'])
-
-def PRODUCTNAME():
-    p_open = pd.read_csv('B24_dbo_Products.csv', delimiter=',')
-    #see_stat(p_open)
-    return p_open
-
-
 class Sort_v1:
     def __init__(self):
         # Pandas
@@ -314,8 +265,8 @@ if __name__ == "__main__":
 
     S = Sort_v1()
 #----------------->
-    #S.func_unite("see") # Подготовка
-    #S.save_data("data_arr_v1.txt") # Сохранение
+    S.func_unite("see") # Подготовка
+    S.save_data("data_arr_v1.txt") # Сохранение
     #S.open_data("data_arr_v1.txt") # Открыть
 #----------------->
     #S.diag_user() # Аналитика покупателя
@@ -327,11 +278,4 @@ if __name__ == "__main__":
     #S.diag_product_2() # Разность покупки
 #----------------->
     #S.diag_category_0() # Категории
-
-#1571954145.340004
-
-#Позарнулись просто пипец!
-#Все выводы неправельные (не 60К а 400К членов клубов 8,10,15)
-#возврат клиентов - также
-#Главные параметры непоказаны как: короляция товаров, что счем покупают, что приводит к увиличанию корзины.
 

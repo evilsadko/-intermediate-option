@@ -29,40 +29,6 @@ def diag_circle(vals, labels, myexplode, title, save_name, types=None):
     fig.clear(True)
     plt.close(fig)
 
-#def CUSTOMER():
-#    c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
-##    c_open = c_open[['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']]
-#    c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
-#    c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
-#    c_open['Could_send_email'] = c_open['Could_send_email'].replace(np.nan, 0)
-#    c_open['consent'] = c_open['consent'].replace(np.nan, 0)
-#    c_open['Clubid'] = c_open['Clubid'].replace(np.nan, 100500)
-##    c_open = c_open.apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna() # Убираю все строки
-#    #see_stat(c_open)
-#    return c_open
-
-#def PRODUCT():
-#    p_open = pd.read_csv('in/B24_dbo_Crm_product_in_order.csv', delimiter=',')
-#    p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
-#    return p_open
-#    
-#def ORDER():
-#    o_open = pd.read_csv('in/B24_dbo_Crm_orders.csv', delimiter=',')
-#    o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-#    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
-#    return o_open.sort_values(by=['Order_Date'])
-
-#def PRODUCTNAME():
-#    p_open = pd.read_csv('in/B24_dbo_Products.csv', delimiter=',')
-#    #see_stat(p_open)
-#    return p_open
-
-#def NAME():
-#    c_open = pd.read_csv('names - names.csv', delimiter=',')
-#    c_open = c_open[['1', '243995', 'היי', 'Unnamed: 3', '0 - женщины\n1 - мужчины']]
-#    c_open['Unnamed: 3'] = c_open['Unnamed: 3'].replace(np.nan, 2)
-#    return c_open
-
 def func_return(x, y):
         dict = {} 
         for i in range(x.shape[0]):
@@ -72,13 +38,12 @@ def func_return(x, y):
                 dict[x[i,y]] = [i]
         return dict    
 #-----------------------------------------------------------------_>
-
+def convert_to_pk(name):
+    c_open = pd.read_csv(name, delimiter=',')
+    c_open.to_pickle(f"{name.split('.')[0]}.pk")
 
 
 def CUSTOMER():
-#    c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
-#    c_open.to_pickle("in/B24_dbo_Crm_customers.pk")
-    
     c_open = pd.read_pickle("in/B24_dbo_Crm_customers.pk")
     c_open = c_open[['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']]
     c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
@@ -86,30 +51,31 @@ def CUSTOMER():
     c_open['Could_send_email'] = c_open['Could_send_email'].replace(np.nan, 0)
     c_open['consent'] = c_open['consent'].replace(np.nan, 0)
     c_open = c_open.apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna() # Убираю все строки
+#    see_stat(c_open)
     return c_open
 
 def PRODUCT():
-    s = time.time()
-#    p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
-#    p_open.to_pickle("B24_dbo_Crm_product_in_order.pk")
-    
     p_open = pd.read_pickle("in/B24_dbo_Crm_product_in_order.pk")
-    #see_stat(p_open)
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
-    print (time.time()-s)
+#    see_stat(c_open)
     return p_open
     
 def ORDER():
-#    o_open = pd.read_csv('B24_dbo_Crm_orders.csv', delimiter=',')
-#    o_open.to_pickle("B24_dbo_Crm_orders.pk")
-
     o_open = pd.read_pickle("in/B24_dbo_Crm_orders.pk")
-    #see_stat(o_open)
-    o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
+    #o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
+    o_open = o_open[['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
     o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
+    o_open['Items_Count'] = o_open['Items_Count'].replace(np.nan, 0)
     return o_open.sort_values(by=['Order_Date'])
 
 def PRODUCTNAME():
     p_open = pd.read_csv('in/B24_dbo_Products.csv', delimiter=',')
-    #see_stat(p_open)
+#    see_stat(p_open)
     return p_open
+    
+def NAME():
+    c_open = pd.read_csv('names - names.csv', delimiter=',')
+    c_open = c_open[['1', '243995', 'היי', 'Unnamed: 3', '0 - женщины\n1 - мужчины']]
+    c_open['Unnamed: 3'] = c_open['Unnamed: 3'].replace(np.nan, 2)
+    return c_open    
+    

@@ -6,44 +6,7 @@ import threading
 import json
 import time
 from scipy import stats
-from utils import diag_circle, see_stat
-
-
-def CUSTOMER():
-    c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
-    c_open = c_open[['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']]
-    c_open['join_club_success'] = c_open['join_club_success'].replace(np.nan, 2)
-    c_open['Could_send_sms'] = c_open['Could_send_sms'].replace(np.nan, 0)
-    c_open['Could_send_email'] = c_open['Could_send_email'].replace(np.nan, 0)
-    c_open['consent'] = c_open['consent'].replace(np.nan, 0)
-    c_open = c_open.apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna() # Убираю все строки
-    return c_open
-
-def PRODUCT():
-    s = time.time()
-#    p_open = pd.read_csv('B24_dbo_Crm_product_in_order.csv', delimiter=',')
-#    p_open.to_pickle("B24_dbo_Crm_product_in_order.pk")
-    
-    p_open = pd.read_pickle("in/B24_dbo_Crm_product_in_order.pk")
-    #see_stat(p_open)
-    p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
-    print (time.time()-s)
-    return p_open
-    
-def ORDER():
-#    o_open = pd.read_csv('B24_dbo_Crm_orders.csv', delimiter=',')
-#    o_open.to_pickle("B24_dbo_Crm_orders.pk")
-
-    o_open = pd.read_pickle("in/B24_dbo_Crm_orders.pk")
-    #see_stat(o_open)
-    o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
-    return o_open.sort_values(by=['Order_Date'])
-
-def PRODUCTNAME():
-    p_open = pd.read_csv('in/B24_dbo_Products.csv', delimiter=',')
-    #see_stat(p_open)
-    return p_open
+from utils import diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
 
 
 class Sort_v1:

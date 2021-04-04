@@ -4,28 +4,8 @@ import matplotlib.pyplot as plt
 import threading
 import json
 import time
+from utils import see_stat, diag_circle, PRODUCT, ORDER, PRODUCTNAME, NAME, func_return
 
-def see_stat(x, y=0):
-    if y == "list":
-        print (x.columns.tolist())
-    else:
-        for c in  x.columns.tolist():
-            print (f"###############\n{x[c].value_counts(dropna=False)}")
-
-
-def diag_circle(vals, labels, myexplode, title, save_name, types=None):
-    fig, ax = plt.subplots(figsize=(10,10))
-    ax.pie(vals, explode=myexplode, labels=labels, autopct='%1.2f%%', startangle=90, pctdistance=0.85)
-
-    if types != None:
-        centre_circle = plt.Circle((0,0),0.70,fc='white')
-        fig = plt.gcf()
-        fig.gca().add_artist(centre_circle)
-
-    ax.axis("equal")
-    ax.set_title(title)
-    ax.legend(loc='best') #, bbox_to_anchor=(0.7, 0.7) 'upper left' bbox_to_anchor=(0.5, 0., 0.5, 0.5)
-    plt.savefig(save_name)
 
 def CUSTOMER():
     c_open = pd.read_csv('in/B24_dbo_Crm_customers.csv', delimiter=',')
@@ -39,36 +19,6 @@ def CUSTOMER():
     #see_stat(c_open)
     return c_open
 
-def PRODUCT():
-    p_open = pd.read_csv('in/B24_dbo_Crm_product_in_order.csv', delimiter=',')
-    p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
-    return p_open
-    
-def ORDER():
-    o_open = pd.read_csv('in/B24_dbo_Crm_orders.csv', delimiter=',')
-    o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
-    return o_open.sort_values(by=['Order_Date'])
-
-def PRODUCTNAME():
-    p_open = pd.read_csv('in/B24_dbo_Products.csv', delimiter=',')
-    #see_stat(p_open)
-    return p_open
-
-def NAME():
-    c_open = pd.read_csv('names - names.csv', delimiter=',')
-    c_open = c_open[['1', '243995', 'היי', 'Unnamed: 3', '0 - женщины\n1 - мужчины']]
-    c_open['Unnamed: 3'] = c_open['Unnamed: 3'].replace(np.nan, 2)
-    return c_open
-
-def func_return(x, y):
-        dict = {} 
-        for i in range(x.shape[0]):
-            try:
-                dict[x[i,y]].append(i)
-            except KeyError:
-                dict[x[i,y]] = [i]
-        return dict    
 class Sort_v1:
     def __init__(self):
         # Pandas

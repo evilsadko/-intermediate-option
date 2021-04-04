@@ -23,7 +23,7 @@ def diag_circle(vals, labels, myexplode, title, save_name, types=None):
         fig.gca().add_artist(centre_circle)
 
     ax.axis("equal")
-    ax.set_title(f"ID продукта: {title}", loc="left", pad=20)
+    ax.set_title(f"ID: {title}", loc="left", pad=20)
     ax.legend(loc='lower right') #, bbox_to_anchor=(0.7, 0.7) 'upper left' bbox_to_anchor=(0.5, 0., 0.5, 0.5) 'best'
     fig.savefig(save_name)
     fig.clear(True)

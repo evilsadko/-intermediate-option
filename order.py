@@ -4,15 +4,10 @@ import matplotlib.pyplot as plt
 import threading
 import json
 import time
-from utils import diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
+from utils import func_return, diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
 
 
     
-def ORDER():
-    o_open = pd.read_csv('in/B24_dbo_Crm_orders.csv', delimiter=',')
-    o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
-    return o_open.sort_values(by=['Order_Date'])
 
 
 class Sort_v1:
@@ -44,7 +39,7 @@ class Sort_v1:
     def diag_product_0(self):
         # Количество покупок с одним товаром
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = self.func_return(self.order_arr, 2) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         #self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
         NO_ERROR = 0
         ERROR = 0
@@ -64,7 +59,7 @@ class Sort_v1:
 
     def diag_product_1(self):
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = self.func_return(self.order_arr, 2) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         fig, ax = plt.subplots(figsize=(10,10)) 
         M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
         for i in list(self.order_dict.keys())[:20]:
@@ -75,7 +70,7 @@ class Sort_v1:
                     for h in order_list:
                         _order = self.order_arr[h,:].tolist()
                         _date = _order[-1].split(" ")[0].split("-")[1]
-                        M[str(_date)] += int(_order[3])
+                        M[str(_date)] += int(_order[4])
                     #ax.bar(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
                     ax.plot(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
                     ax.legend()
@@ -86,7 +81,7 @@ class Sort_v1:
     # Разность покупки 'price_before_discount', 'Amount_Charged'
     def diag_product_2(self): # Total_Amount/TotalDiscount
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = self.func_return(self.order_arr, 2) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         fig, ax = plt.subplots(figsize=(10,10)) 
         M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
         for i in list(self.order_dict.keys())[:20]:
@@ -97,7 +92,7 @@ class Sort_v1:
                     for h in order_list:
                         _order = self.order_arr[h,:].tolist()
                         _date = _order[-1].split(" ")[0].split("-")[1]
-                        M[str(_date)] += (int(_order[4])-int(_order[3]))
+                        M[str(_date)] += (int(_order[5])-int(_order[4]))
                     #ax.bar(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
                     ax.plot(list(M.keys()), list(M.values()), label = f"{_customet[0]}") 
                     ax.legend()
@@ -126,7 +121,7 @@ class Sort_v1:
                     for k in range(len(self.product_dict[id_p])):
                         id_p_arr = self.product_dict[id_p][k]
                         F = self.product_arr[id_p_arr,:].tolist() 
-                        price = F[3]
+                        price = F[4]
                         ord_id = F[0]
                         ord_id = self.order_dict[ord_id]
                         _order = self.order_arr[ord_id,:].tolist()[0]

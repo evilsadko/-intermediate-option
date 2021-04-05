@@ -24,18 +24,12 @@ class Sort_v1:
         # Pandas
         self.customer_open = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
         self.order_open = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
-        self.product_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
         # Array
         self.customer_arr = self.customer_open.to_numpy()
         self.order_arr = self.order_open.to_numpy()
-        self.product_arr = self.product_open.to_numpy()
         # Dict Graph
         self.customer_dict = func_return(self.customer_arr, 0)
         self.order_dict = func_return(self.order_arr, 0)
-        self.product_dict = func_return(self.product_arr, 0)
-
-        self.sort_dict = {}
-
 
     def diag_user(self):
         duplicat = self.customer_open.drop_duplicates('Customer_Id') 
@@ -106,9 +100,9 @@ def user_per_m():
     dict_cust_group = func_return(arr_c, 6)
     dict_cust_id = func_return(arr_c, 1)
 ##------------------------>
-    O = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+    O = ORDER() #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
     order_arr = O.to_numpy()
-    dict_order_id_cust = func_return(order_arr, 1)
+    dict_order_id_cust = func_return(order_arr, 2)
     
     for i in dict_order_id_cust:
         try:
@@ -127,7 +121,7 @@ def user_per_m():
             ax.bar(list(M.keys()), list(M.values()), color = (0,0.2,1,0.6))
 
             ax.plot(list(M.keys()), list(M.values()))  
-            fig.savefig(f"github/user_m/{i}.jpg") 
+            fig.savefig(f"github/user/user_m/{i}.jpg") 
             fig.clear(True)
             plt.close(fig)  
               
@@ -149,9 +143,9 @@ def sex_user_m():
 #    dict_cust_group = func_return(arr_c, 6)
     dict_cust_id = func_return(arr_c, 1)
 
-    O = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+    O = ORDER() #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
     order_arr = O.to_numpy()
-    dict_order_id_cust = func_return(order_arr, 1)
+    dict_order_id_cust = func_return(order_arr, 2)
 #   
     M0 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
     M1 = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
@@ -213,11 +207,10 @@ def sex_user_m():
     fig.clear(True)
     plt.close(fig) 
 if __name__ == "__main__":
-    #S = Sort_v1()
-    #S.diag_user() # Аналитика покупателя
-
-    #user_per_m()
+    S = Sort_v1()
+    S.diag_user() # Аналитика покупателя
     sex_user_m()
+    user_per_m()
     
     # 17 клубов если убираю NaN
     # 61984  если не убираю NaN  

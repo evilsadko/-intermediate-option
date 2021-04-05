@@ -105,7 +105,7 @@ if __name__ == "__main__":
     
     
     start = time.time()
-    file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()#[:100]
+    file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()[:1000]
 
 
     ty = chunks(file_arr_temp, 10)

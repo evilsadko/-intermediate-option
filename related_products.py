@@ -5,7 +5,7 @@ import matplotlib.dates as dates
 import threading
 import json
 import time
-from utils import diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
+from utils import func_return, diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
 
 
     
@@ -18,88 +18,21 @@ def ORDER():
     return o_open.sort_values(by=['Order_Date'])
 
 
-def func_date():
-    o_open = ORDER()  #['Order_Id', 'Customer_Id', ', 'price_before_discount', 'Amount_Charged', 'Order_Date']
-    o_open = o_open.sort_values(by=['Order_Date']) #, inplace=True, ascending=False
-    o_open = o_open.to_numpy()
-    p_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
-    p_open = p_open.to_numpy()
-#----------------------------->
-    #Граф ORDER ID - DATE
-    dicts = {}
-    print (o_open.shape[0], p_open.shape[0])
-    for i in range(o_open.shape[0]):
-            t = o_open[i,:].tolist()
-            o_id = int(t[0]) 
-            cust_id = int(t[1])
-            items_count = int(t[2])
-            date = t[-1]
-            dicts[o_id] = date.split(" ")[0].split("-")[1] # Переношу месяц
-#----------------------------->
-    #Граф PRODUCT ID - {ORDER ID, DATE, COUNT}
-    product_data = {}
-    for i in range(p_open.shape[0]):
-        o_id = int(p_open[i,0]) # ID order из продукта
-        p_id = int(p_open[i,1]) # ID продукта из ордера
-        i_count = int(p_open[i,2])
-        try:
-            product_data[p_id].append({"o_id":o_id, "o_date":dicts[o_id], "i_count":i_count})
-        except KeyError:
-            product_data[p_id] = [{"o_id":o_id, "o_date":dicts[o_id], "i_count":i_count}]
-        #print (o_id, p_id, i_count, dicts[o_id])
 
-######## SAVE TO FILE
-    with open('prod.json', 'w') as js_file:
-            json.dump(product_data, js_file)
-
-######## CREATE VISUAL 
-    for i in product_data:
-        print ("VISUAL")
-        temp = {}
-        for k in product_data[i]:
-            #print (k)
-            try:
-                temp[k["o_date"]] += k["i_count"]
-            except KeyError:
-                temp[k["o_date"]] = k["i_count"]
-
-        plt.plot(list(temp.keys()), list(temp.values()))  
-        plt.savefig(f"graph/{i}.jpg") 
-        plt.cla()
 
 
 class Sort_v1:
     def __init__(self):
         # Pandas
-        #self.customer_open = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
         self.order_open = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         self.product_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
-#        # Array
-#        self.customer_arr = self.customer_open.to_numpy()
+        # Array
         self.order_arr = self.order_open.to_numpy()
         self.product_arr = self.product_open.to_numpy()
 
-    def func_return(self, x, y):
-        dict = {} 
-        for i in range(x.shape[0]):
-            try:
-                dict[x[i,y]].append(i)
-            except KeyError:
-                dict[x[i,y]] = [i]
-        return dict    
-
-    def save_data(self, x, save_dict):
-        with open(x, 'w') as js_file:
-            json.dump(save_dict, js_file)
-
-    def open_data(self, x):
-        with open(x) as json_file:
-            data = json.load(json_file)
-            return data
-
     # Cопутствующий продукт создать файл для обработки
     def related_products(self):
-        product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+        product_dict = func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
         product_open = self.product_open.sort_values(['Items_Count']) # Сортировка
         vals_prod = self.product_open.drop_duplicates("Product_ID") # Убрать дубликаты
         vals_prod = vals_prod["Product_ID"] 
@@ -115,7 +48,7 @@ class Sort_v1:
         # Обработка файлов
         start = time.time()
         new_dict = {}
-        _product_dict = self.func_return(self.product_arr, 1)  #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+        _product_dict = func_return(self.product_arr, 1)  #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
         for j in vals_prod[:]:
             #print (len(_product_dict[j])) # Кол во покупок с этим товаром
             Z = np.zeros((len(vals_prod)))
@@ -141,8 +74,8 @@ class Sort_v1:
     
     # Сортировка товара по месяцам
     def products_date(self):
-            product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-            order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
+            product_dict = func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+            order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
             temp_dict = {}
             for i in product_dict:
                 M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}

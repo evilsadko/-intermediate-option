@@ -6,7 +6,7 @@ import threading
 import json
 import time
 from scipy import stats
-from utils import diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
+from utils import func_return, diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
 
 
 class Sort_v1:
@@ -19,21 +19,11 @@ class Sort_v1:
 #        self.customer_arr = self.customer_open.to_numpy()
         self.order_arr = self.order_open.to_numpy()
         self.product_arr = self.product_open.to_numpy()
-        self.sort_dict = {}
 
-
-    def func_return(self, x, y):
-        dict = {} 
-        for i in range(x.shape[0]):
-            try:
-                dict[x[i,y]].append(i)
-            except KeyError:
-                dict[x[i,y]] = [i]
-        return dict    
 
     # Cопутствующий продукт создать файл для обработки
     def related_products(self):
-        product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+        product_dict = func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
         product_open = self.product_open.sort_values(['Items_Count']) # Сортировка
         vals_prod = self.product_open.drop_duplicates("Product_ID") # Убрать дубликаты
         vals_prod = vals_prod["Product_ID"] 
@@ -50,7 +40,7 @@ class Sort_v1:
         # Обработка файлов
         start = time.time()
         new_dict = {}
-        _product_dict = self.func_return(self.product_arr, 1)  #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+        _product_dict = func_return(self.product_arr, 1)  #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
         for j in vals_prod[:]:
             #print (len(_product_dict[j])) # Кол во покупок с этим товаром
             Z = np.zeros((len(vals_prod)))
@@ -78,8 +68,8 @@ class Sort_v1:
     ###########
     def products_date(self):
             #dict_to_encoding = json.load(open("out/dict_to_encoding.json",'r'))
-            product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-            order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
+            product_dict = func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+            order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
             temp_dict = {}
             for i in product_dict:
                 #M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
@@ -88,9 +78,9 @@ class Sort_v1:
                     temp = self.product_arr[v,:].tolist()
                     ord_id = temp[0] 
                     _date = self.order_arr[order_dict[ord_id],:].tolist()[0][-1].split(" ")[0].split("-")[1]
-                    M[_date][0] += temp[2] #'Items_Count'
-                    M[_date][1] += temp[3] #'Total_Amount'
-                    M[_date][2] += temp[4] #'TotalDiscount'
+                    M[_date][0] += temp[3] #'Items_Count'
+                    M[_date][1] += temp[4] #'Total_Amount'
+                    M[_date][2] += temp[5] #'TotalDiscount'
                     
                     #print (i, v, _date, temp[3])
                 temp_dict[i] = M
@@ -112,10 +102,10 @@ class Sort_v1:
         NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
         name_arr = NAME.to_numpy() 
         #CatID_1 = self.func_return(name_arr, 5) # cat2
-        CatID_1 = self.func_return(name_arr, 3) # cat
-        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
+        CatID_1 = func_return(name_arr, 3) # cat
+        self.product_dict = func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
         #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         fig, ax = plt.subplots(figsize=(10,10)) 
         dict_save = {}
         for i in CatID_1 :
@@ -127,7 +117,7 @@ class Sort_v1:
                     for k in range(len(self.product_dict[id_p])):
                         id_p_arr = self.product_dict[id_p][k]
                         F = self.product_arr[id_p_arr,:].tolist() 
-                        price = F[3]
+                        price = F[4]
                         ord_id = F[0]
                         ord_id = self.order_dict[ord_id]
                         _order = self.order_arr[ord_id,:].tolist()[0]
@@ -234,14 +224,6 @@ def heatmap_vis(x, y, name):
     #plt.show()
     fig.savefig(name)    
 
-def func_return(x, y):
-    dict = {} 
-    for i in range(x.shape[0]):
-        try:
-            dict[x[i,y]].append(i)
-        except KeyError:
-            dict[x[i,y]] = [i]
-    return dict    
 
 def hard_heatmap_category():
     date_year = json.load(open("out/category.json", "r"))

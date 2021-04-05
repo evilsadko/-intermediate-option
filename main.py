@@ -46,7 +46,7 @@ class Sort_v1:
                 #sort_dict[arr_o[i,0]] = [[gen_ls, ID_customer]] # Новая
                 T = self.func_repack(gen_ls)
                 T.append({"DATE_ORDER":self.order_arr[i,-1], "Items_Count":self.order_arr[i,2], "price_before_discount":self.order_arr[i,3], 
-                          "Amount_Charged": self.order_arr[i,4], "CONSENT":ID_customer[1],
+                          "Amount_Charged": self.order_arr[i,5], "CONSENT":ID_customer[1],
                           "USER": ID_customer[0], "JCS":ID_customer[2], "CSS":ID_customer[3], "CSE":ID_customer[4],})
                 self.sort_dict[self.order_arr[i,0]] = T
                 not_errot += 1
@@ -59,15 +59,6 @@ class Sort_v1:
         for i in x:
             list.append({"P_ID":i[1], "P_COUNT":i[2], "Total_Amount":i[3],"TotalDiscount":i[4]})
         return list
-
-    def func_return(self, x, y):
-        dict = {} 
-        for i in range(x.shape[0]):
-            try:
-                dict[x[i,y]].append(i)
-            except KeyError:
-                dict[x[i,y]] = [i]
-        return dict    
 
     def get_from_index(self, x):
         return self.product_arr[x,:].tolist()
@@ -85,72 +76,10 @@ class Sort_v1:
                 
         print ("DONE")
 
-    def diag_user(self):
-        duplicat = self.customer_open.drop_duplicates('Customer_Id') 
-        A = len(duplicat)
-        B = (duplicat['consent'] == 1.0).sum()
-        vals  = [A-B, B]
-        myexplode = [0, 0.2]
-        labels = ["Не подтверждено", "Согласны на рассылку"]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_0_0.jpg") #vals, labels, myexplode, title, save_name
-        #----------------------------------->
-        duplicat  = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
-        duplicat = duplicat.drop_duplicates('Customer_Id') 
-        A = len(duplicat)
-        B = (duplicat['consent'] == 1.0).sum()
-        vals  = [A-B, B]
-        myexplode = [0, 0.2]
-        labels = ["Не подтверждено", "Согласны на рассылку"]
-        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "github/user/diag_user_consent_0_1.jpg")
-        #----------------------------------->
-        #C = duplicat[duplicat[]== 1.0]
-        duplicat = self.customer_open.drop_duplicates('Customer_Id') 
-        A = len(duplicat)
-        C = (duplicat['join_club_success'] == 1.0).sum()
-        D = (duplicat['Could_send_sms'] == 1.0).sum()
-        I = (duplicat['Could_send_email'] == 1.0).sum()
-        A = A-(C+D+I)
-        vals = [C, D, I, A]
-        labels = ["join_club_success", "Could_send_email", "Could_send_sms", "not access"]
-        myexplode = [0.05, 0.05, 0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_1_0.jpg", True)
-        #------------------------------------->
-        # Для тех кто совершил больше 2 покупок
-        duplicat  = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
-        duplicat = duplicat.drop_duplicates('Customer_Id') 
-        A = len(duplicat['Customer_Id'])
-        C = (duplicat['join_club_success'] == 1.0).sum()
-        D = (duplicat['Could_send_sms'] == 1.0).sum()
-        I = (duplicat['Could_send_email'] == 1.0).sum()
-        A = A-(C+D+I)
-        vals = [C, D, I, A]
-        labels = ["join_club_success", "Could_send_email", "Could_send_sms", "not access"]
-        myexplode = [0.05, 0.05, 0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для покупателей совершивших больше одной покупки", "github/user/diag_user_consent_1_1.jpg", True)
-        #---------------------------------------->
-        duplicat = self.customer_open.drop_duplicates('Customer_Id') 
-        C = ((duplicat['join_club_success']  == 1.0) & (duplicat['Could_send_sms'] == 1.0) & (duplicat['Could_send_email'] == 1.0)).sum()
-        vals = [C, len(duplicat['Customer_Id'])-C]
-        labels = ["полный доступ", "остальные"]
-        myexplode = [0.05, 0.05]
-        diag_circle(vals, labels, myexplode, "Для всех покупателей", "github/user/diag_user_consent_2.jpg", True)
-        #---------------------------------------->
-        # Покупатели скупились больше чем 1 раз
-        customer_dup = self.customer_open[self.customer_open[['Customer_Id']].duplicated() == True]
-        customer_dup = customer_dup.drop_duplicates('Customer_Id')
-        not_duplicat = len(customer_dup['Customer_Id'])
-        duplicat = len(self.customer_open.drop_duplicates('Customer_Id')) 
-        P = not_duplicat / duplicat * 100
-        vals  = [duplicat, not_duplicat]
-        myexplode = [0, 0.2]
-        labels = ["Остальные", "Покупатели совершившие покупки больше 1 раза"]
-        diag_circle(vals, labels, myexplode, "Анализ всех ID", "github/user/diag_user_0.jpg")
-
-    
     def diag_product_0(self):
         # Количество покупок с одним товаром
-        self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.customer_dict = func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
+        self.order_dict = func_return(self.order_arr, 2) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
         #self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
         NO_ERROR = 0
         ERROR = 0
@@ -169,8 +98,8 @@ class Sort_v1:
         diag_circle([NO_ERROR, ERROR], ["один товар","остальные"], [0,0], "Количество покупок с одним товаром", "github/order/diag_order_one_product_0.jpg")
 
     def diag_product_1(self):
-        self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.customer_dict = func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
+        self.order_dict = func_return(self.order_arr, 2) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
         fig, ax = plt.subplots(figsize=(10,10)) 
         M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
         for i in list(self.order_dict.keys())[:20]:
@@ -191,8 +120,8 @@ class Sort_v1:
 
     # Разность покупки 'price_before_discount', 'Amount_Charged'
     def diag_product_2(self): # Total_Amount/TotalDiscount
-        self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 1) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.customer_dict = func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
+        self.order_dict = func_return(self.order_arr, 2) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
         fig, ax = plt.subplots(figsize=(10,10)) 
         M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
         for i in list(self.order_dict.keys())[:20]:
@@ -214,13 +143,13 @@ class Sort_v1:
     def diag_category_0(self):
         NAME = PRODUCTNAME() # [ ID, Product_Id, LocalName, Category1_Id, Category1_Name, Category2_Id, Category2_Name] 
         name_arr = NAME.to_numpy() 
-        CatID_1 = self.func_return(name_arr, 5) # cat2
+        CatID_1 = func_return(name_arr, 5) # cat2
         #CatID_1 = self.func_return(name_arr, 3) # cat
 
 #############
-        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
+        self.product_dict = func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
         #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
         fig, ax = plt.subplots(figsize=(10,10)) 
         dict_save = {}
         for i in CatID_1 :
@@ -265,11 +194,7 @@ if __name__ == "__main__":
 
     S = Sort_v1()
 #----------------->
-    S.func_unite("see") # Подготовка
-    S.save_data("data_arr_v1.txt") # Сохранение
-    #S.open_data("data_arr_v1.txt") # Открыть
-#----------------->
-    #S.diag_user() # Аналитика покупателя
+    #S.func_unite("see") # Подготовка
 #----------------->
     #S.diag_product_0()  # Количество покупок с одним товаром ERROR
 #----------------->

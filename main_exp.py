@@ -4,14 +4,8 @@ import matplotlib.pyplot as plt
 import threading
 import json
 import time
-from utils import diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
+from utils import func_return, diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
 
-def ORDER():
-    o_open = pd.read_csv('in/B24_dbo_Crm_orders.csv', delimiter=',')
-    #see_stat(o_open)
-    o_open = o_open[['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
-    return o_open.sort_values(by=['Order_Date'])
 
 
 def chunks(lst, count):
@@ -24,89 +18,17 @@ def chunks(lst, count):
 class Sort_v1:
     def __init__(self):
         # Pandas
-        self.customer_open = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
-        self.order_open = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         self.product_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
 #        # Array
-#        self.customer_arr = self.customer_open.to_numpy()
-        self.order_arr = self.order_open.to_numpy()
         self.product_arr = self.product_open.to_numpy()
 #        # Dict Graph
-#        self.customer_dict = self.func_return(self.customer_arr, 0)
-        self.order_dict = self.func_return(self.order_arr, 0)
-        self.product_dict = self.func_return(self.product_arr, 0)
-
-        self.sort_dict = {}
-
-    def func_unite(self, see=None):
-        key_error = 0
-        not_errot = 0
-        # Прохожу циклом по покупкам ордер
-        for i in range(self.order_arr.shape[0]):
-            try:
-                # Из получаю продукты исходя из покупки ордер
-                gen_ls = [self.get_from_index(p) for p in self.product_dict[self.order_arr[i,0]]] #arr_p[arr_o[i,0]]
-
-                # Получаю  индекс покупателя в массиве
-                ID_customer = self.customer_dict[self.order_arr[i,1]][0]
-
-                # По индексу получаю информацию о покупателе
-                ID_customer = self.customer_arr[ID_customer,:].tolist()
-                if see != None:
-                    print ("Product in order", len(gen_ls))
-                    print ("Customer ID", ID_customer, int(ID_customer[0]), self.order_arr[i,1])
-
-                # Создаю словарь где ключ ID покупки ордера
-
-                #sort_dict[arr_o[i,0]] = [[gen_ls, ID_customer]] # Новая
-                T = self.func_repack(gen_ls)
-                T.append({"DATE_ORDER":self.order_arr[i,-1], "Items_Count":self.order_arr[i,2], "price_before_discount":self.order_arr[i,3], 
-                          "Amount_Charged": self.order_arr[i,4], "CONSENT":ID_customer[1],
-                          "USER": ID_customer[0], "JCS":ID_customer[2], "CSS":ID_customer[3], "CSE":ID_customer[4],})
-                self.sort_dict[self.order_arr[i,0]] = T
-                not_errot += 1
-            except KeyError:
-                key_error += 1
-        print (len(self.sort_dict), key_error, not_errot)
-
-    def func_repack(self, x):
-        list = []
-        for i in x:
-            list.append({"P_ID":i[1], "P_COUNT":i[2], "Total_Amount":i[3],"TotalDiscount":i[4]})
-        return list
-
-    def func_return(self, x, y):
-        dict = {} 
-        for i in range(x.shape[0]):
-            try:
-                dict[x[i,y]].append(i)
-            except KeyError:
-                dict[x[i,y]] = [i]
-        return dict    
-
-    def get_from_index(self, x):
-        return self.product_arr[x,:].tolist()
-    
-    def save_data(self, x):
-        with open(x, 'w') as js_file:
-            json.dump(self.sort_dict, js_file)
-
-    def open_data(self, x):
-        with open(x) as json_file:
-            data = json.load(json_file)
-            return data
-            #for ix, o in enumerate(list(data.keys())[:]):
-                #print (data[o], ix, o)
-                
-        print ("DONE")
-
-
+        self.product_dict = func_return(self.product_arr, 0)
 # САМЫЕ ПОПУЛЯРНЫЕ КАТЕГОРИИ
     def diag_product_2(self):
 #------------------------------------------->
 # Получить сумму всех продаж
         S = self.product_open['Total_Amount'].sum()
-        self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+        self.product_dict = func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
         print ("Общая продажа", S)
         
 #------------------------------------------->
@@ -116,8 +38,8 @@ class Sort_v1:
         name_arr = NAME.to_numpy() 
 
 ## Разложить продукты по категориям        
-        #CatID_1 = self.func_return(name_arr, 3)  # Категория 1
-        CatID_1 = self.func_return(name_arr, 5) # Категория 2 
+        #CatID_1 = func_return(name_arr, 3)  # Категория 1
+        CatID_1 = func_return(name_arr, 5) # Категория 2 
 
         #Test_arr = [] #Можно использовать промежуточный список
         for i in CatID_1 :
@@ -155,10 +77,10 @@ class Sort_v1:
         V.append(S)
         M.append(0.2)
 
-        diag_circle(V[:], L[:], M[:],  "Популярные категории", "github/popular_categories.jpg")
+        diag_circle(V[:], L[:], M[:],  "Популярные категории", "github/categories/popular_categories.jpg")
         #print(sorted_dict)  # {1: 1, 3: 4, 2: 9}
 #------------------------------------------------
-#        CatID_2 = self.func_return(name_arr, 5)
+#        CatID_2 = func_return(name_arr, 5)
 #        LEN_2 = 0    
 #        for i in CatID_2:
 #            #print (len(CatID_2[i]))
@@ -176,7 +98,7 @@ class Sort_v1:
             ax.bar(A[:,0], A[:,1], width = 0.3)  #color = '#1D2F6F'
         #fig.set_figwidth(20)
         #fig.set_figheight(20)
-        plt.savefig("github/TEST.jpg") 
+        plt.savefig("github/categories/TEST.jpg") 
 
 
     def min_visual_product(self, _arr):
@@ -193,28 +115,16 @@ class Sort_v1:
         ax.set_axisbelow(True)
         ax.yaxis.grid(color='gray', linestyle='dashed', alpha=0.2)# title and legend
         plt.title('Cтатистика продаж категорий', loc ='left', pad=20)
-        plt.savefig("github/sort_stat_group.jpg")
+        plt.savefig("github/categories/sort_stat_group.jpg")
 
 
 
 if __name__ == "__main__":
-    #NAME = PRODUCTNAME()
     S = Sort_v1()
 #----------------->
     S.diag_product_2()
 #
 
-# Соптствующие товары !!!
-# популярные продукты в отношении к категории !!!
-# последние совпадающиесе цифры кредитной карты!!!
-# Вывести категории
 
-# покупку разделить на категории
-# В разрезе на месяц в разрезе за квартал
-# продукты в продукты есть ли подкатегории
-# Послать остатки скалада 
-# Что бы эти графики работали нужно в реальном времени воздействовать что бы они повышались
-# Если они не изменяються учитывать охват магазина
-# Что бы в магазин привлекать людей из далека нужен уникальный продукт характеристики цена состав этикетка
 
 

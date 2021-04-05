@@ -94,12 +94,12 @@ if __name__ == "__main__":
     
     
     start = time.time()
-    file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()#[:100]
+    file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()[:3000]
 
     print (time.time()-start) 
     func_rec(0)  
     print (G, len(file_arr_temp)) 
-    with open(f"out/test_claster_1.json", 'w') as js_file:
+    with open(f"out/test_claster_3.json", 'w') as js_file:
         json.dump(G, js_file)  
 #    for i in range(100000):
 #        for o in get_batch():

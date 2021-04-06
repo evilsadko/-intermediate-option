@@ -56,6 +56,21 @@ def imgs_v(x):
 def similarity(vector1, vector2):
         return np.dot(vector1, vector2.T) / np.dot(np.linalg.norm(vector1, axis=1, keepdims=True), np.linalg.norm(vector2.T, axis=0, keepdims=True))
 
+#def crt(i):
+#        res = json.loads(i.split("\n")[0])
+#        Z = np.zeros((12, 48603))
+#        L1 = list(res.values())[0][0]
+#        L2 = list(res.values())[0][1]
+#        for i in range(len(L1)):
+#             Z[L1[i],L2[i]] += 1  
+#               
+#        Y = []
+#        for o in range(Z.shape[0]):
+#            if sum(Z[o,:]) > 0:
+#                Y.append(1) 
+#            if sum(Z[o,:]) == 0:
+#                Y.append(0)      
+#        return np.reshape(np.array(Y), (1,12)), list(res.keys())[0]
 def crt(i):
         res = json.loads(i.split("\n")[0])
         Z = np.zeros((12, 48603))
@@ -66,11 +81,9 @@ def crt(i):
                
         Y = []
         for o in range(Z.shape[0]):
-            if sum(Z[o,:]) > 0:
-                Y.append(1) 
-            if sum(Z[o,:]) == 0:
-                Y.append(0)      
+            Y.append(sum(Z[o,:])) 
         return np.reshape(np.array(Y), (1,12)), list(res.keys())[0]
+
 
 
 def func_rec(ID):
@@ -94,12 +107,12 @@ if __name__ == "__main__":
     
     
     start = time.time()
-    file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()[:3000]
+    file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()[:10000]
 
     print (time.time()-start) 
     func_rec(0)  
     print (G, len(file_arr_temp)) 
-    with open(f"out/test_claster_3.json", 'w') as js_file:
+    with open(f"out/test_claster_10000.json", 'w') as js_file:
         json.dump(G, js_file)  
 #    for i in range(100000):
 #        for o in get_batch():

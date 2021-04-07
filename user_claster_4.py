@@ -6,7 +6,91 @@ import json
 import utils as TG
 import time
 
-file_arr_temp = open("out/file_arr_temp_v2.txt", "r")  
+#file_arr_temp = open("out/file_arr_temp_v3.txt", "r")  
+file_arr_temp = open("out/1_create_file_arr.txt", "r").readlines()[:10000]
+tresh = .68
+G = {}
+
+def test():
+    # TEST
+    
+    p_open = TG.PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
+    product_arr = p_open.to_numpy()
+    ids_product_order = TG.func_return(product_arr, 0)
+##---------------------------------------------->
+    # Создаю словарь ID продуктов
+    ids_product = {}
+    vals_prod = np.unique(product_arr[:,1])
+    for ix, i in enumerate(vals_prod):
+        ids_product[i] = ix
+    num_ids = len(ids_product)
+
+##---------------------------------------------->    
+
+    o_open = TG.ORDER() #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']  
+    order_arr = o_open.to_numpy()
+    ids_order = TG.func_return(order_arr, 2)
+#    for i in ids_order:
+#        print (i, type(i))
+    
+    c_open = TG.CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']
+    customer_arr = c_open.to_numpy()
+    ids_customer = TG.func_return(customer_arr, 0)
+    print (num_ids, len(ids_customer))
+
+    F = json.load(open(f"out/test_claster_10000_v2.json", 'r'))
+    id_list = []
+    val_list = []
+    for i in F:
+        id_list.append(i)
+        val_list.append(len(F[i]))
+#        print (i, len(F[i]))
+#    print (max(val_list), val_list.index(max(val_list)), F[str(val_list.index(max(val_list)))])  
+#    print (min(val_list), val_list.index(min(val_list)), F[str(val_list.index(min(val_list)))])  
+    #-------------------------------------------
+#    for h in F:
+#        Sum = 0
+#        Con = 0
+#        SA = 0
+#        for i in F[h]:
+#            #print (i, ids_order[int(float(i))])
+#            for o  in ids_order[int(float(i))]:
+#                OR = order_arr[o,:].tolist()
+#                Sum += OR[4]
+#                Con += OR[3]
+#                SA += 1
+#        print (Sum, Con, Sum/Con, SA, Sum/SA, Con/SA, "USER IN GROUP:", len(F[h]))    
+    
+#    Sum = 0
+#    Con = 0
+#    for i in F[str(val_list.index(max(val_list)))]:
+#        #print (i, ids_order[int(float(i))])
+#        for o  in ids_order[int(float(i))]:
+#            OR = order_arr[o,:].tolist()
+#            Sum += OR[4]
+#            Con += OR[3]
+#    print (Sum, Con, len(F[str(val_list.index(max(val_list)))]))
+#
+#----------------------------------------->
+# Найти доминирующий товар
+# 
+#    for h in F:
+#        all_ = 0
+#        Sz = {}
+#        for i in F[h]:
+
+#            for o  in ids_order[int(float(i))]:
+#                OR = order_arr[o,:].tolist()
+#                #print (ids_product_order[OR[0]])
+#                for i in ids_product_order[OR[0]]:
+#                    all_ += 1
+#                    try:
+#                        Sz[i] += 1
+#                    except KeyError:
+#                        Sz[i] = 1
+#        print (Sz, all_)
+
+
 def get_batch():
     L = []
     for i in file_arr_temp:
@@ -20,6 +104,10 @@ def get_batch():
             if len(L) == 32:
                 yield np.array(L)
                 L = []       
+
+#    for i in range(100000):
+#        for o in get_batch():
+#            print (o.shape)   
 
 def plot_user():
     start = time.time()
@@ -76,9 +164,10 @@ def crt(i):
         Z = np.zeros((12, 48603))
         L1 = list(res.values())[0][0]
         L2 = list(res.values())[0][1]
+        L3 = list(res.values())[0][2]
         for i in range(len(L1)):
-             Z[L1[i],L2[i]] += 1  
-               
+#             Z[L1[i],L2[i]] += 1  
+               Z[L1[i],L2[i]] += L3[i]  
         Y = []
         for o in range(Z.shape[0]):
             Y.append(sum(Z[o,:])) 
@@ -100,22 +189,38 @@ def func_rec(ID):
                 del file_arr_temp[ix2]
         ID += 1
 
+def start_similarity():
 
-if __name__ == "__main__":
-    tresh = .68
-    G = {}
-    
-    
     start = time.time()
-    file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()[:10000]
-
+    file_arr_temp = open("out/1_create_file_arr.txt", "r").readlines()[:10000]
     print (time.time()-start) 
     func_rec(0)  
     print (G, len(file_arr_temp)) 
-    with open(f"out/test_claster_10000.json", 'w') as js_file:
+    with open(f"out/test_claster_10000_v2.json", 'w') as js_file:
         json.dump(G, js_file)  
-#    for i in range(100000):
-#        for o in get_batch():
-#            print (o.shape)        
-#        
-    
+        
+ 
+def load_():
+#     file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()
+     file_arr_temp = open("out/_create_file_arr.txt", "r").readlines()
+     print (len(file_arr_temp))
+     for i in file_arr_temp:
+        res = json.loads(i.split("\n")[0])
+        for p in res:
+            #print (res[p][0], res[p][1])
+            D = {}
+            for g in res[p][1]:
+                try:
+                    D[g] += 1
+                except KeyError:
+                    D[g] = 1
+            print (D)
+
+
+if __name__ == "__main__":
+    #----------------------------------------->
+    #load_() 
+    #start_similarity()
+    #----------------------------------------->
+
+                        

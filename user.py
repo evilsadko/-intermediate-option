@@ -23,7 +23,7 @@ class Sort_v1:
     def __init__(self):
         # Pandas
         self.customer_open = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
-        self.order_open = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_open = ORDER() #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         # Array
         self.customer_arr = self.customer_open.to_numpy()
         self.order_arr = self.order_open.to_numpy()

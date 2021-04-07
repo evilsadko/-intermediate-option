@@ -10,18 +10,6 @@ from utils import diag_circle, see_stat, CUSTOMER, PRODUCT, ORDER, PRODUCTNAME
 import utils
 import os
 
-    
-def ORDER():
-#    o_open = pd.read_csv('B24_dbo_Crm_orders.csv', delimiter=',')
-#    o_open.to_pickle("B24_dbo_Crm_orders.pk")
-
-    o_open = pd.read_pickle("in/B24_dbo_Crm_orders.pk")
-#    see_stat(o_open)
-    o_open = o_open[['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']]
-    o_open['price_before_discount'] = o_open['price_before_discount'].replace(np.nan, 0)
-    o_open['Items_Count'] = o_open['Items_Count'].replace(np.nan, 0)
-    return o_open.sort_values(by=['Order_Date'])
-        
 
 def branch_data():
     O = ORDER() # ['Order_Id', 'Batch', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']

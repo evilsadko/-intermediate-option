@@ -39,7 +39,7 @@ class Sort_v1:
     def diag_product_0(self):
         # Количество покупок с одним товаром
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 2) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = self.func_return(self.order_arr, 2) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         #self.product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']
         NO_ERROR = 0
         ERROR = 0
@@ -59,7 +59,7 @@ class Sort_v1:
 
     def diag_product_1(self):
         self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 2) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = self.func_return(self.order_arr, 2) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         fig, ax = plt.subplots(figsize=(10,10)) 
         M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
         for i in list(self.order_dict.keys())[:20]:
@@ -109,7 +109,7 @@ class Sort_v1:
 #############
         self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
         #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         fig, ax = plt.subplots(figsize=(10,10)) 
         dict_save = {}
         for i in CatID_1 :
@@ -157,7 +157,7 @@ class Sort_v1:
 
 #############
         self.product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
-        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         dict_save = {}
         for i in CatID_1:
 

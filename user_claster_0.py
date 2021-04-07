@@ -21,9 +21,9 @@ def create_file_arr():
 
 ##---------------------------------------------->    
 
-    o_open = TG.ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged']  
+    o_open = TG.ORDER() #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged']  
     order_arr = o_open.to_numpy()
-    ids_order = TG.func_return(order_arr, 1)
+    ids_order = TG.func_return(order_arr, 2)
 
     c_open = TG.CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']
     customer_arr = c_open.to_numpy()

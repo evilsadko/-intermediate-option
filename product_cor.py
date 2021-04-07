@@ -90,7 +90,7 @@ class Sort_v1:
     def products_date(self):
             #dict_to_encoding = json.load(open("out/dict_to_encoding.json",'r'))
             product_dict = self.func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-            order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
+            order_dict = self.func_return(self.order_arr, 0) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
             temp_dict = {}
             for i in product_dict:
                 #M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}

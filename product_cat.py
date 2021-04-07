@@ -13,7 +13,7 @@ class Sort_v1:
     def __init__(self):
         # Pandas
         #self.customer_open = CUSTOMER() #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']   
-        self.order_open = ORDER() #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_open = ORDER() #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         self.product_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
 #        # Array
 #        self.customer_arr = self.customer_open.to_numpy()
@@ -69,7 +69,7 @@ class Sort_v1:
     def products_date(self):
             #dict_to_encoding = json.load(open("out/dict_to_encoding.json",'r'))
             product_dict = func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-            order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
+            order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']
             temp_dict = {}
             for i in product_dict:
                 #M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
@@ -105,7 +105,7 @@ class Sort_v1:
         CatID_1 = func_return(name_arr, 3) # cat
         self.product_dict = func_return(self.product_arr, 1) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']   
         #self.customer_dict = self.func_return(self.customer_arr, 0) #['Customer_Id', 'consent', 'join_club_success', 'Could_send_sms', 'Could_send_email']  
-        self.order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
+        self.order_dict = func_return(self.order_arr, 0) #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date'] 
         fig, ax = plt.subplots(figsize=(10,10)) 
         dict_save = {}
         for i in CatID_1 :

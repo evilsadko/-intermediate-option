@@ -7,8 +7,8 @@ import utils as TG
 import time
 
 #file_arr_temp = open("out/file_arr_temp_v3.txt", "r")  
-file_arr_temp = open("out/1_create_file_arr.txt", "r").readlines()[:10000]
-tresh = .68
+file_arr_temp = open("out/1_create_file_arr.txt", "r").readlines()[:10000]#10000
+tresh = .87#.68
 G = {}
 
 def test():
@@ -38,12 +38,35 @@ def test():
     ids_customer = TG.func_return(customer_arr, 0)
     print (num_ids, len(ids_customer))
 
-    F = json.load(open(f"out/test_claster_10000_v2.json", 'r'))
-    id_list = []
-    val_list = []
-    for i in F:
-        id_list.append(i)
-        val_list.append(len(F[i]))
+    F = json.load(open(f"out/test_claster_10000_v4.json", 'r'))
+#----------------------------------------->
+# Найти доминирующий товар
+# 
+    for h in F:
+        all_ = 0
+        Sz = {}
+        for i in F[h]:
+
+            for o  in ids_order[int(float(i))]:
+                OR = order_arr[o,:].tolist()
+                #print (ids_product_order[OR[0]])
+                for i in ids_product_order[OR[0]]:
+                    #print (product_arr[i,:].tolist())
+                    all_ += 1
+                    try:
+                        Sz[product_arr[i,1]][1].append(1)
+                        Sz[product_arr[i,1]][0].append(i)
+                    except KeyError:
+#                        Sz[product_arr[i,1]] = 1
+                        Sz[product_arr[i,1]] = [[i],[1]]
+        print (Sz, all_)
+#---------------------------------------------->    
+    
+#    id_list = []
+#    val_list = []
+#    for i in F:
+#        id_list.append(i)
+#        val_list.append(len(F[i]))
 #        print (i, len(F[i]))
 #    print (max(val_list), val_list.index(max(val_list)), F[str(val_list.index(max(val_list)))])  
 #    print (min(val_list), val_list.index(min(val_list)), F[str(val_list.index(min(val_list)))])  
@@ -71,24 +94,7 @@ def test():
 #            Con += OR[3]
 #    print (Sum, Con, len(F[str(val_list.index(max(val_list)))]))
 #
-#----------------------------------------->
-# Найти доминирующий товар
-# 
-#    for h in F:
-#        all_ = 0
-#        Sz = {}
-#        for i in F[h]:
 
-#            for o  in ids_order[int(float(i))]:
-#                OR = order_arr[o,:].tolist()
-#                #print (ids_product_order[OR[0]])
-#                for i in ids_product_order[OR[0]]:
-#                    all_ += 1
-#                    try:
-#                        Sz[i] += 1
-#                    except KeyError:
-#                        Sz[i] = 1
-#        print (Sz, all_)
 
 
 def get_batch():
@@ -140,40 +146,38 @@ def imgs_v(x):
       cv2.waitKey(0)
       cv2.destroyAllWindows()
 
-
+# V1
+#def similarity(vector1, vector2):
+#        return np.dot(vector1, vector2.T) / np.dot(np.linalg.norm(vector1, axis=1, keepdims=True), np.linalg.norm(vector2.T, axis=0, keepdims=True))
+# V2
 def similarity(vector1, vector2):
-        return np.dot(vector1, vector2.T) / np.dot(np.linalg.norm(vector1, axis=1, keepdims=True), np.linalg.norm(vector2.T, axis=0, keepdims=True))
+    return np.dot(vector1, vector2.T) / np.dot(np.linalg.norm(vector1, axis=0, keepdims=True), np.linalg.norm(vector2.T, axis=0, keepdims=True))
 
+#------------------------------------------------------>
 #def crt(i):
 #        res = json.loads(i.split("\n")[0])
 #        Z = np.zeros((12, 48603))
 #        L1 = list(res.values())[0][0]
 #        L2 = list(res.values())[0][1]
+#        L3 = list(res.values())[0][2]
 #        for i in range(len(L1)):
-#             Z[L1[i],L2[i]] += 1  
-#               
+##             Z[L1[i],L2[i]] += 1  
+#               Z[L1[i],L2[i]] += L3[i]  
 #        Y = []
 #        for o in range(Z.shape[0]):
-#            if sum(Z[o,:]) > 0:
-#                Y.append(1) 
-#            if sum(Z[o,:]) == 0:
-#                Y.append(0)      
+#            Y.append(sum(Z[o,:])) 
 #        return np.reshape(np.array(Y), (1,12)), list(res.keys())[0]
 def crt(i):
         res = json.loads(i.split("\n")[0])
-        Z = np.zeros((12, 48603))
+        Z = np.zeros(48603)
         L1 = list(res.values())[0][0]
         L2 = list(res.values())[0][1]
         L3 = list(res.values())[0][2]
         for i in range(len(L1)):
-#             Z[L1[i],L2[i]] += 1  
-               Z[L1[i],L2[i]] += L3[i]  
-        Y = []
-        for o in range(Z.shape[0]):
-            Y.append(sum(Z[o,:])) 
-        return np.reshape(np.array(Y), (1,12)), list(res.keys())[0]
-
-
+            Z[L2[i]] += L3[i]
+            #print (L1[i],L2[i],L3[i])
+        return Z, list(res.keys())[0]
+#------------------------------------------------------>
 
 def func_rec(ID):
     print (len(file_arr_temp))
@@ -184,7 +188,10 @@ def func_rec(ID):
         for ix2, ii in enumerate(file_arr_temp):
             Z1 = crt(ii)
             KEF = similarity(Z0[0], Z1[0])
-            if KEF[0]>tresh:
+            # V1
+#            if KEF[0]>tresh:
+            # V2
+            if KEF>tresh:
                 G[ID].append(Z1[1])
                 del file_arr_temp[ix2]
         ID += 1
@@ -192,17 +199,18 @@ def func_rec(ID):
 def start_similarity():
 
     start = time.time()
-    file_arr_temp = open("out/1_create_file_arr.txt", "r").readlines()[:10000]
-    print (time.time()-start) 
+    #file_arr_temp = open("out/1_create_file_arr.txt", "r").readlines()[:10000]
+     
     func_rec(0)  
-    print (G, len(file_arr_temp)) 
-    with open(f"out/test_claster_10000_v2.json", 'w') as js_file:
+    print (time.time()-start, len(G))
+    #print (G, len(file_arr_temp)) 
+    with open(f"out/test_claster_10000_v4.json", 'w') as js_file:
         json.dump(G, js_file)  
         
  
 def load_():
 #     file_arr_temp = open("out/file_arr_temp_v3.txt", "r").readlines()
-     file_arr_temp = open("out/_create_file_arr.txt", "r").readlines()
+     file_arr_temp = open("out/1_create_file_arr.txt", "r").readlines()
      print (len(file_arr_temp))
      for i in file_arr_temp:
         res = json.loads(i.split("\n")[0])
@@ -221,6 +229,19 @@ if __name__ == "__main__":
     #----------------------------------------->
     #load_() 
     #start_similarity()
+    test()
     #----------------------------------------->
-
-                        
+#Нюансы:
+#Самый точная кластеризация для покупателя на векторе 12x48603
+#12 - месяца
+#48603 - классы продуктов в бд
+#Из за такого размера вектора у нас 583236 параметров, так как алгоритм работает по принципу сравнения двух векторов, получаем большую вычислительную сложность, которую нужно оптимизировать.
+#Нет времени для оптимизации, использовал идеи которые не отняли больше 2 часов на реализацию в коде:
+#1 сделал min max кодирование, взял из полученного самый длинный вектор и учитывать его длину(остальные векторы приравнял длине самого длинного вектора, и заполнил нулями ).
+#Эксперемент, получил не обьяснимю кластеризацию - не было пересечений продуктов в выявленных группах.
+#2 использовал вектор размерности 12x1, 12 - месяца, в каждой позиции месяца было кол во продуктов купленных покумателем, обсалютно неудачный эксперемент
+#3 испльзовал размерность вектора 1x48603 - в таком виде учитывал кол во купленных товаров за год, этот вариант использовал самым первым но получал ошибку, из за задчаи корреляции эта задача стала второстипенной. Для улучшения скорости, оптимезировал сортировку и хранение данных (создания вектора "на лету"), использовал подачу партиями по 10т.
+#Этот эксперемент создал группы пользователей у которых есть пересечения товаров, что доказывает правильность данного направления.
+#Доминирующий товар в группе, дает нам возможность предлагать пользователям группы, сопутствующий товар доминирующего, для повышения продаж этой пары.
+#Выводы: для решения задачи "Повышения прибыльности за счет продаж", использовал алгоритмы: класстеризация, корреляция, регрессия 
+#В класстеризации использован алгоритм косинусного расстояния, так же стоит проверить k-средних, EM-алгоритм, сети Кохонена. По моему мнению: покупательская активность за год предстваленная матрицей, самая точная характеристика покупателя. Данные о покупателе из бд использол для предворительной сортировки.

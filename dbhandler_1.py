@@ -147,11 +147,42 @@ if __name__ == "__main__":
     #D.createDB_1()
 
     D.show_tables()
+ 
+    print (D.client.execute("""
+    select parts.*,
+       columns.compressed_size,
+       columns.uncompressed_size,
+       columns.ratio
+from (
+         select table,
+                formatReadableSize(sum(data_uncompressed_bytes))          AS uncompressed_size,
+                formatReadableSize(sum(data_compressed_bytes))            AS compressed_size,
+                sum(data_compressed_bytes) / sum(data_uncompressed_bytes) AS ratio
+         from system.columns
+         where database = currentDatabase()
+         group by table
+         ) columns
+         right join (
+    select table,
+           sum(rows)                                            as rows,
+           max(modification_time)                               as latest_modification,
+           formatReadableSize(sum(bytes))                       as disk_size,
+           formatReadableSize(sum(primary_key_bytes_in_memory)) as primary_keys_size,
+           any(engine)                                          as engine,
+           sum(bytes)                                           as bytes_size
+    from system.parts
+    where active and database = currentDatabase()
+    group by database, table
+    ) parts on columns.table = parts.table
+order by parts.bytes_size desc;
     
-    p_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-    #[188860582.0, 7290001201596.0, 1.0, 10.4, 0.0]
-    product_arr = p_open.to_numpy()
-    print (product_arr.shape[0])
+    
+    """))
+    
+#    p_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
+#    #[188860582.0, 7290001201596.0, 1.0, 10.4, 0.0]
+#    product_arr = p_open.to_numpy()
+#    print (product_arr.shape[0])
 #    #---------------------------------------------->
 #    o_open = ORDER() #['Order_Id', 'Branch_Id', 'Customer_Id', 'Items_Count', 'price_before_discount', 'Amount_Charged', 'Order_Date']  
 #    order_arr = o_open.to_numpy()

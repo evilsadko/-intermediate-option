@@ -102,6 +102,8 @@ CREATE USER newuser WITH LOGIN ENCRYPTED PASSWORD '1234';
 GRANT ALL PRIVILEGES ON DATABASE yourdbname TO youruser;
 DROP DATABASE [IF EXISTS] database_name;
 https://www.postgresqltutorial.com/postgresql-list-users/
+https://habr.com/ru/post/461567/
+http://codeharmony.ru/materials/141
 DROP USER [USERNAME];
 \du
 \l+
@@ -129,5 +131,10 @@ pg_restore b24online.com-2021-04-26.psql - старая версия, созда
 
 \c name_db
 \dt смотрю все таблици
-
+https://github.com/maximdanilchenko/aiochclient
+https://github.com/long2ice/asynch
+https://gist.github.com/sanchezzzhak/511fd140e8809857f8f1d84ddb937015 - информация
+https://cloud.yandex.ru/docs/managed-clickhouse/operations/insert
+https://habr.com/ru/post/515606/
+https://altinity.com/blog/harnessing-the-power-of-clickhouse-arrays-part-1
 """

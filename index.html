@@ -1,0 +1,55 @@
+<h style="position:absolute;"></a>
+
+
+
+<button id="show_table" onclick="show_table()">show_table</button>
+
+<button id="show_user" onclick="show_user()">show_user</button>
+
+<button id="show_category1" onclick="show_category1()">show_category1</button>
+
+<script>
+var ws = new WebSocket("ws://192.168.1.50:8800/websocket"); // IP
+//ws.binaryType = 'arraybuffer';
+
+function show_table(){
+ //console.log("SRRRRS")
+     var send_str = JSON.stringify({
+      to: "show_tables",
+      data: ""
+    })
+    ws.send(send_str);
+}
+
+function show_user(){
+    var send_str = JSON.stringify({
+      to: "show_user",
+      data: "show_user_id"
+    })
+    ws.send(send_str);
+
+}
+
+
+function show_category1(){
+    var send_str = JSON.stringify({
+      to: "show_category1",
+      data: "show_category1_id"
+    })
+    ws.send(send_str);
+
+}
+
+
+// Вэб сокет
+ws.onopen = function() {
+    console.log("connection was established");
+};
+
+ws.onmessage = function(evt) {
+    var message_data = JSON.parse(evt.data);
+    console.log(message_data["from"], message_data['data']); // message_data["data"][1000][1], message_data["data"][0][0], message_data["data"].pop()[0], message_data["data"].pop()[1]
+    //message_data["from"] //message_data['data'][4][2]
+};
+
+</script>

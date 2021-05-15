@@ -129,4 +129,11 @@ def NAME():
     c_open = pd.read_csv('in/names - names.csv', delimiter=',')
     c_open = c_open[['1', '243995', 'היי', 'Unnamed: 3', '0 - женщины\n1 - мужчины']]
     c_open['Unnamed: 3'] = c_open['Unnamed: 3'].replace(np.nan, 2)
-    return c_open    
+    return c_open
+    
+if __name__ == "__main__":   
+    test_file = open("out/category.json", "r").readlines()
+    readsss = json.loads(test_file[0])
+
+    print (len(list(readsss.keys())))
+ 

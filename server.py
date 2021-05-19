@@ -39,7 +39,7 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
         print("WebSocket opened from: " + self.request.remote_ip)
 
     def on_message(self, message):
-        #print ("Info fro JS", message)
+        print ("Info fro JS", message)
         try:
             message = json.loads(message)
         except:
@@ -86,14 +86,56 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                 self.write_message(json.dumps({"from":"show_category1", "data":H}))
                 
                 
-                
-        if message["to"] == "script_SQL":
+        if message["to"] == "show_script_SQL":
                 H = DB.client.execute(f"""{message["data"]}""")
                 #test_data = np.array(H[200][2]) 
                 #res = test_data.reshape((test_data.shape[0], 1))               
                 #print (test_data.shape[0], res.shape, res[:,:])  
                 self.write_message(json.dumps({"from":"script_SQL","data":H}))
 
+        if message["to"] == "show_product":
+                H = DB.client.execute(f"""
+                            SELECT * FROM category1 
+                            order by sum                               
+                            """)
+                test_data = np.array(H[200][2]) 
+                res = test_data.reshape((test_data.shape[0], 1))               
+                print (test_data.shape[0], res.shape, res[:,:])  
+                self.write_message(json.dumps({"from":"show_category1", "data":H}))
+
+        if message["to"] == "sort_related_products":
+                H = DB.client.execute(f"""
+                            SELECT * FROM sort_related_products 
+                            order by sum                               
+                            """)
+                test_data = np.array(H[200][2]) 
+                res = test_data.reshape((test_data.shape[0], 1))               
+                print (test_data.shape[0], res.shape, res[:,:])  
+                self.write_message(json.dumps({"from":"sort_related_products", "data":H}))                
+
+        if message["to"] == "sort_category_by_user_id":                
+                    H = D.client.execute(f"""   
+                                                    SELECT
+                                                      SUM(Items_Count) as sum1, 
+                                                      SUM(Total_Amount) as sum2,
+                                                      Category1_Id
+                                                    FROM my_table
+                                                    WHERE my_table.Customer_Id = {message["id1"]} GROUP BY Category1_Id
+                                                    ORDER BY sum2
+                                                """)
+                    self.write_message(json.dumps({"from":"sort_category_by_user_id", "data":H}))   
+        if message["to"] == "sort_category_by_":                                                              
+                    ZS = D.client.execute(f"""   
+                                                    SELECT
+                                                      SUM(Items_Count) as sum1, 
+                                                      SUM(Total_Amount) as sum2,
+                                                      Category1_Id
+                                                    FROM my_table
+                                                    WHERE my_table.Customer_Id = {message["id1"]} 
+                                                    AND my_table.Category1_Id = {message["id2"]}
+                                                    GROUP BY Category1_Id
+                                                """)              
+                
 
 
     def on_close(self):

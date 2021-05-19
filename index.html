@@ -9,7 +9,7 @@
 <button id="show_category1" onclick="show_category1()">show_category1</button>
 
 <script>
-var ws = new WebSocket("ws://192.168.1.50:8800/websocket"); // IP
+var ws = new WebSocket("ws://178.158.131.41:8008/websocket"); // IP http://178.158.131.41/
 //ws.binaryType = 'arraybuffer';
 
 function show_table(){
@@ -40,6 +40,14 @@ function show_category1(){
 
 }
 
+function show_script_SQL(){
+    var send_str = JSON.stringify({
+      to: "show_script_SQL",
+      data: "SELECT * FROM category1 order by sum"
+    })
+    ws.send(send_str);
+
+}
 
 // Вэб сокет
 ws.onopen = function() {

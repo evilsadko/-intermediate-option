@@ -166,8 +166,126 @@ if __name__ == "__main__":
 #                                        WHERE my_table.Product_ID = {i[0]}
 #                                    """)
 #        print (i[0], len(ZS))
+#Category1_Id Category2_Id 
+#    _temp = D.client.execute("""
+#        SELECT DISTINCT Category1_Id FROM my_table
+#    """) 
+    
+    
+    _temp = D.client.execute("""
+        SELECT DISTINCT Customer_Id FROM my_table
+    """)      
+
+    # Count category
+#    def func_return(x, y):
+#        dict = {} 
+#        for i in range(x.shape[0]):
+#            try:
+#                dict[x[i,y]].append(i)
+#            except KeyError:
+#                dict[x[i,y]] = [i]
+#        return dict     
+             
+    Str = f""
+    print (len(_temp))
+    for i in _temp:
+    # WORK !!!
+#        ZS = D.client.execute(f"""   
+#                                        SELECT
+#                                          SUM(Items_Count) as sum1, 
+#                                          SUM(Total_Amount) as sum2,
+#                                          Category1_Id
+#                                        FROM my_table
+#                                        WHERE my_table.Customer_Id = {i[0]} GROUP BY Category1_Id
+#                                        ORDER BY sum2
+#                                    """)
+                                    
+#        ZS = D.client.execute(f"""   
+#                                        SELECT
+#                                          SUM(Items_Count) as sum1, 
+#                                          SUM(Total_Amount) as sum2,
+#                                          Category1_Id
+#                                        FROM my_table
+#                                        WHERE my_table.Customer_Id = {i[0]} 
+#                                        AND my_table.Category1_Id = 402 
+#                                        GROUP BY Category1_Id
+#                                    """)                                    
+
+
+
+
+        ZS = D.client.execute(f"""   
+                                        SELECT
+                                          SUM(Items_Count) as sum1, 
+                                          SUM(Total_Amount) as sum2,
+                                          Order_Date
+                                        FROM test
+                                        WHERE test.Customer_Id = {i[0]} 
+                                        AND test.Category1_Id = 402
+                                        GROUP BY Order_Date
+                                    """)   
+                                    #  
+#        ZS1 = D.client.execute(f"""   
+#                                        SELECT
+#                                          SUM(Items_Count) as sum1, 
+#                                          SUM(Total_Amount) as sum2,
+#                                          Order_Date
+#                                        FROM my_table
+#                                        WHERE my_table.Customer_Id = {i[0]} 
+#                                        AND my_table.Category1_Id = 402
+#                                        GROUP BY Order_Date
+#                                    """) 
+#        ZS = np.array(ZS) 
+#        A = func_return(ZS, -1) 
+#        for o in range(ZS.shape[0]):
+#            print (ZS[o,2:5], ZS[o,2:5]) 
+        #temp_dict = {}
+        M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
+        for op in range(len(ZS)):
+            try:   
+                temp_idx = str(ZS[op][-1]).split(" ")[0].split("-")[1]
+                M[temp_idx][0] += ZS[op][0]
+                M[temp_idx][1] += ZS[op][1]                  
+                #print (len(ZS), M[temp_idx], ZS[op][0], ZS[op][1])#, ZS[-1]) #ZS[10, 1:2]  ZS[:, :] ZS[10]
+            except IndexError:
+                print (ZS)
+        print ("ID=", i[0],"...........................", M)
+        
+        a = np.array(list(M.values())).reshape((12, 3))#list(JS[o].keys())[:-1] 
+        #sum 
+        #b = JS[o]#list(JS[o].values())[:-1] 
+        
+        print (a.shape, sum(a[:, 0]), sum(a[:, 1]))
+        s1, s2 = a[:, 0].tolist(), a[:, 1].tolist()
+        print (s1, s2)
+        
+ #    _temp = D.client.execute("""
+#       SELECT SUM(Customer_Id), Order_Date, SUM(Total_Amount) FROM test GROUP BY Order_Date ORDER BY Order_Date
+#    """)        
+        
+# OUT
+#user[o] = {
+#"id_cat" [ 2, 323, 323 ,323 ...]
+#"sum" [0 0 0 0 ... ]
+#}
+#                                (Order_ID Int64, 
+#                                 Product_ID Int64, 
+#                                 Items_Count Float64, 
+#                                 Total_Amount Float64, 
+#                                 TotalDiscount Float64, 
+#                                 Branch_Id Int64, 
+#                                 Customer_Id Int64,
+#                                 Order_Date DateTime64,
+#                                 Category1_Id Int64, 
+#                                 Category2_Id Int64)
+
+#    _temp = D.client.execute("""
+#        SELECT Category1_Id as IDS FROM my_table WHERE Order_ID IN (SELECT Order_ID AS Product_num FROM my_table GROUP BY Order_ID)
+#    """)    
+
+
 #-------------------------------------->        
-       
+  #(194469565, 8437646, 1.0, 0.1, 0.0, 79, 2852748, '2020-07-04 17:20:00.000', 160, 1605),     
    #.................................. 
 #   # Кол во проданных продуктов
 #    _temp = D.client.execute("""

@@ -56,9 +56,9 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
             _temp = DB.client.execute("""
                                         SELECT Customer_Id, SUM(Items_Count) AS ass_sum FROM test GROUP BY Customer_Id ORDER BY ass_sum DESC
                                       """)    #GROUP BY Customer_Id ORDER BY ass_sum   
-            print (len(_temp), _temp[0], _temp[100], _temp[-1])      
+            #print (len(_temp), _temp[0], _temp[100], _temp[-1])      
             arr = np.array(_temp)
-            print(arr.shape, arr[0,1])
+            #print(arr.shape, arr[0,1])
             self.write_message(json.dumps({"from":"show_user", "data":_temp}))
             
             
@@ -82,7 +82,7 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                             """)
                 test_data = np.array(H[200][2]) 
                 res = test_data.reshape((test_data.shape[0], 1))               
-                print (test_data.shape[0], res.shape, res[:,:])  
+                #print (test_data.shape[0], res.shape, res[:,:])  
                 self.write_message(json.dumps({"from":"show_category1", "data":H}))
                 
                 
@@ -114,18 +114,107 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                 self.write_message(json.dumps({"from":"sort_related_products", "data":H}))                
 
         if message["to"] == "sort_category_by_user_id":                
-                    H = D.client.execute(f"""   
+                    H = DB.client.execute(f"""   
                                                     SELECT
                                                       SUM(Items_Count) as sum1, 
                                                       SUM(Total_Amount) as sum2,
                                                       Category1_Id
                                                     FROM my_table
-                                                    WHERE my_table.Customer_Id = {message["id1"]} GROUP BY Category1_Id
+                                                    WHERE my_table.Customer_Id = {message["data"]} GROUP BY Category1_Id
                                                     ORDER BY sum2
                                                 """)
-                    self.write_message(json.dumps({"from":"sort_category_by_user_id", "data":H}))   
-        if message["to"] == "sort_category_by_":                                                              
+                    self.write_message(json.dumps({"from":"sort_category_by_user_id", "data":H})) 
+        if message["to"] == "sort_product_by_user_id_rt":
+                    t = DB.client.execute(f"""   
+                                            SELECT
+                                            *
+                                            FROM my_table
+                                            WHERE my_table.Customer_Id = {message['data']}
+                                            ORDER BY Items_Count
+                                          """)
+
+                    print (len(t))
+                    start = time.time()
+                    dict_ = {}
+                    for iz in t:
+                        count = iz[2]
+                        p_id = iz[1]
+                        t_sum = iz[3]
+                        d_month = iz[7].split(" ")[0].split("-")[1]
+                        c_id = iz[6]
+                        print (c_id, iz[7], d_month, count, t_sum, p_id) 
+                        try:
+                            dict_[p_id][d_month][0] += count
+                            dict_[p_id][d_month][1] += t_sum
+                        except KeyError:
+                            dict_[p_id] = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]}
+                            dict_[p_id][d_month][0] += count
+                            dict_[p_id][d_month][1] += t_sum
+                    self.write_message(json.dumps({"from":"sort_product_by_user_id_rt", "data":dict_}))     
+                    
+        if message["to"] == "sort_category1_by_user_id_rt":
                     ZS = D.client.execute(f"""   
+                                                            SELECT
+                                                              SUM(Items_Count) as sum1, 
+                                                              SUM(Total_Amount) as sum2,
+                                                              Order_Date
+                                                            FROM test
+                                                            WHERE test.Customer_Id = {message["data"][0]} 
+                                                            AND test.Category1_Id = {message["data"][1]}
+                                                            GROUP BY Order_Date
+                                                        """)   
+                    M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
+                    for op in range(len(ZS)):
+                                try:   
+                                    temp_idx = str(ZS[op][-1]).split(" ")[0].split("-")[1]
+                                    M[temp_idx][0] += ZS[op][0]
+                                    M[temp_idx][1] += ZS[op][1]                  
+                                except IndexError:
+                                    print (ZS)
+                            print ("ID=", i[0],"...........................", M)
+                            
+                            a = np.array(list(M.values())).reshape((12, 3))#list(JS[o].keys())[:-1] 
+                            
+                            print (a.shape, sum(a[:, 0]), sum(a[:, 1]))
+                            s1, s2 = a[:, 0].tolist(), a[:, 1].tolist()
+                            
+                            
+                    self.write_message(json.dumps({"from":"sort_category_by_user_id_rt", "data":dict_}))  
+
+        if message["to"] == "sort_category2_by_user_id_rt":
+                    ZS = D.client.execute(f"""   
+                                                            SELECT
+                                                              SUM(Items_Count) as sum1, 
+                                                              SUM(Total_Amount) as sum2,
+                                                              Order_Date
+                                                            FROM test
+                                                            WHERE test.Customer_Id = {message["data"][0]} 
+                                                            AND test.Category2_Id = {message["data"][1]}
+                                                            GROUP BY Order_Date
+                                                        """)   
+                    M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
+                    for op in range(len(ZS)):
+                                try:   
+                                    temp_idx = str(ZS[op][-1]).split(" ")[0].split("-")[1]
+                                    M[temp_idx][0] += ZS[op][0]
+                                    M[temp_idx][1] += ZS[op][1]                  
+                                except IndexError:
+                                    print (ZS)
+                            print ("ID=", i[0],"...........................", M)
+                            
+                            a = np.array(list(M.values())).reshape((12, 3))#list(JS[o].keys())[:-1] 
+                            
+                            print (a.shape, sum(a[:, 0]), sum(a[:, 1]))
+                            s1, s2 = a[:, 0].tolist(), a[:, 1].tolist()
+                            
+                            
+                    self.write_message(json.dumps({"from":"sort_category2_by_user_id_rt", "data":dict_}))  
+
+
+
+                                              
+        if message["to"] == "sort_category_by_":                                                              
+                    ZS = DB.client.execute(f"""   
                                                     SELECT
                                                       SUM(Items_Count) as sum1, 
                                                       SUM(Total_Amount) as sum2,
@@ -135,7 +224,7 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                                     AND my_table.Category1_Id = {message["id2"]}
                                                     GROUP BY Category1_Id
                                                 """)              
-                
+                  
 
 
     def on_close(self):

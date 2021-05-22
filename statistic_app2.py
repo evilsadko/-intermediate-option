@@ -358,6 +358,30 @@ def func_insert(x1, x2):
                         VALUES ({s1}, {s2}, {izz[0]}, {i[0]}, {str(sum(s1))})
                      """)      
 
+def product_correlation():     
+    D.delete("product_correlation")
+    D.client.execute(f"""
+                CREATE TABLE product_correlation
+                (Product_ID Int64,
+                 floats1 Array(String),
+                 floats2 Array(Array(Float64)))
+                ENGINE = MergeTree()
+                ORDER BY Product_ID
+             """)
+     
+    F = json.load(open("out/correlation_products.json", 'r'))#.readlines()
+    for  i in F:
+        D.client.execute(f"""
+                INSERT INTO product_correlation 
+                  (Product_ID, floats1, floats2) 
+                VALUES ({i.split("_")[-1]}, {F[i][0]}, {F[i][1]})
+             """)    
+    
+        #print(i, len(F[i]), len(F[i][0]), len(F[i][1]))
+    print (len(F))
+    print (D.show_tables()) 
+
+
 def product_by_user():
     D.delete("product_by_user")
     D.client.execute(f"""
@@ -375,13 +399,84 @@ def product_by_user():
                         ORDER BY Customer_Id
                      """)
 #--------------------------------->
-    t = D.client.execute(f"SELECT * FROM my_table")
-    print (len(t), t[0])
-    #89144855 (188860582, 7290001201596, 1.0, 10.4, 0.0, 21, 0, '2020-01-01 00:04:00.000', 530, 5300)
+### WORK !!!
+#    t = D.client.execute(f"SELECT * FROM my_table")
+#    print (len(t), t[0])
+#    #89144855 (188860582, 7290001201596, 1.0, 10.4, 0.0, 21, 0, '2020-01-01 00:04:00.000', 530, 5300)
+##    _temp1 = D.client.execute("""
+##        SELECT DISTINCT Customer_Id FROM my_table
+##    """)      
+#    start = time.time()
+#    dict_ = {}
+#    for iz in t:
+#        count = iz[2]
+#        t_sum = iz[3]
+#        d_month = iz[7].split(" ")[0].split("-")[1]
+#        c_id = iz[6]
+#        #print (c_id, iz[7], d_month, count, t_sum) 
+#        
+#        try:
+#            dict_[c_id][iz[1]][d_month][0] += count
+#            dict_[c_id][iz[1]][d_month][0] += t_sum
+#            print (dict_[c_id][iz[1]][d_month])
+#        except KeyError:
+#            dict_[c_id] = {iz[1]: {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]}}
+#            dict_[c_id][iz[1]][d_month][0] += count
+#            dict_[c_id][iz[1]][d_month][0] += t_sum
+#------------------------------------------------->
+# vers 2
+    t = D.client.execute(f"""   
+                            SELECT
+                            *
+                            FROM my_table
+                            WHERE my_table.Customer_Id = 3
+                            ORDER BY Items_Count
+                          """)
     
+    print (len(t))
     start = time.time()
-    for iz in i:
-        iz[]
+    dict_ = {}
+    for iz in t:
+        count = iz[2]
+        p_id = iz[1]
+        t_sum = iz[3]
+        d_month = iz[7].split(" ")[0].split("-")[1]
+        c_id = iz[6]
+        print (c_id, iz[7], d_month, count, t_sum, p_id) 
+#        try:
+#            dict_[c_id].append({'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]})
+#        except:
+#            dict_[c_id] = [{'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]}]
+        
+        try:
+            dict_[p_id][d_month][0] += count
+            dict_[p_id][d_month][1] += t_sum
+           # print (dict_[c_id][iz[1]][d_month])
+        except KeyError:
+            dict_[p_id] = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]}
+            dict_[p_id][d_month][0] += count
+            dict_[p_id][d_month][1] += t_sum
+#    print (time.time()-start, len(dict_), 
+#    "\n", dict_[list(dict_.keys())[0]], list(dict_.keys())[0],
+#    "\n", dict_[list(dict_.keys())[-1]], list(dict_.keys())[-1],
+#    "\n", dict_[list(dict_.keys())[-2]], list(dict_.keys())[-2]) #dir(dict_), list(dict_.keys())[0], 
+    #a = np.array(list(M.values())).reshape((12, 3))
+    for z in dict_:
+#        sums = 0
+#        for zz in dict_[z]:
+#            sums += dict_[z][zz][0]
+#            #print ("..................", dict_[z][zz])
+#        print (sums, list(dict_[z].values()), "<<<<<<<<<<<<<<<<<<<<<<<<<<END")
+        a = np.array(list(dict_[z].values())).reshape((12, 3))
+        print (a.shape, a[:,1], a[:,0])
+#----------------------------------------------->
+            
+            #print (dict_[c_id][iz[1]])
+            
+    #print (len(dict_))
+#    for k in dict_:
+#        for p in dict_[k] 
+#        M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
 #                                (Order_ID Int64, 
 #                                 Product_ID Int64, 
 #                                 Items_Count Float64, 
@@ -392,7 +487,6 @@ def product_by_user():
 #                                 Order_Date DateTime64,
 #                                 Category1_Id Int64, 
 #                                 Category2_Id Int64)    
-    print (time.time()-start)
 #-----------------------------------?
 
 
@@ -488,8 +582,33 @@ if __name__ == "__main__":
     # Категории пользователи
     #category_by_user()  
     # Продукты пользователи
-    product_by_user()
+    #product_by_user()
+    D.delete("product_correlation")
+    D.client.execute(f"""
+                CREATE TABLE product_correlation
+                (Product_ID Int64,
+                 floats1 Array(String),
+                 floats2 Array(Array(Float64)))
+                ENGINE = MergeTree()
+                ORDER BY Product_ID
+             """)
      
+    F = json.load(open("out/correlation_products.json", 'r'))#.readlines()
+    for  i in F:
+        print (F[i][0], F[i][1])
+#        arr1 = []
+#        arr2 = []
+#        for ii in range(len(F[i][1])):
+#            print (F[i][1][ii])
+        D.client.execute(f"""
+                INSERT INTO product_correlation 
+                  (Product_ID, floats1, floats2) 
+                VALUES ({i.split("_")[-1]}, {F[i][0]}, {F[i][1]})
+             """)    
+    
+        #print(i, len(F[i]), len(F[i][0]), len(F[i][1]))
+    print (len(F))
+    print (D.show_tables()) 
     #print (len(H))
 # !!!!!!!!
 #        D.client.execute(f"""

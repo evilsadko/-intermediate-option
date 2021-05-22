@@ -49,6 +49,26 @@ function show_script_SQL(){
 
 }
 
+function sort_product_by_user_id_rt(){
+    var send_str = JSON.stringify({
+      to: "sort_product_by_user_id_rt",
+      data: 3
+    })
+    ws.send(send_str);
+
+}
+
+function sort_category_by_user_id_rt(){
+    var send_str = JSON.stringify({
+      to: "sort_category_by_user_id",
+      data: 3
+    })
+    ws.send(send_str);
+
+}
+
+
+
 // Вэб сокет
 ws.onopen = function() {
     console.log("connection was established");

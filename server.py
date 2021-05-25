@@ -152,63 +152,63 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                             dict_[p_id][d_month][1] += t_sum
                     self.write_message(json.dumps({"from":"sort_product_by_user_id_rt", "data":dict_}))     
                     
-        if message["to"] == "sort_category1_by_user_id_rt":
-                    ZS = D.client.execute(f"""   
-                                                            SELECT
-                                                              SUM(Items_Count) as sum1, 
-                                                              SUM(Total_Amount) as sum2,
-                                                              Order_Date
-                                                            FROM test
-                                                            WHERE test.Customer_Id = {message["data"][0]} 
-                                                            AND test.Category1_Id = {message["data"][1]}
-                                                            GROUP BY Order_Date
-                                                        """)   
-                    M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
-                    for op in range(len(ZS)):
-                                try:   
-                                    temp_idx = str(ZS[op][-1]).split(" ")[0].split("-")[1]
-                                    M[temp_idx][0] += ZS[op][0]
-                                    M[temp_idx][1] += ZS[op][1]                  
-                                except IndexError:
-                                    print (ZS)
-                            print ("ID=", i[0],"...........................", M)
-                            
-                            a = np.array(list(M.values())).reshape((12, 3))#list(JS[o].keys())[:-1] 
-                            
-                            print (a.shape, sum(a[:, 0]), sum(a[:, 1]))
-                            s1, s2 = a[:, 0].tolist(), a[:, 1].tolist()
-                            
-                            
-                    self.write_message(json.dumps({"from":"sort_category_by_user_id_rt", "data":dict_}))  
+#        if message["to"] == "sort_category_by_user_id_rt":
+#                    ZS = D.client.execute(f"""   
+#                                                            SELECT
+#                                                              SUM(Items_Count) as sum1, 
+#                                                              SUM(Total_Amount) as sum2,
+#                                                              Order_Date
+#                                                            FROM test
+#                                                            WHERE test.Customer_Id = {message["data"][0]} 
+#                                                            AND test.Category1_Id = {message["data"][1]}
+#                                                            GROUP BY Order_Date
+#                                                        """)   
+#                    M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
+#                    for op in range(len(ZS)):
+#                                try:   
+#                                    temp_idx = str(ZS[op][-1]).split(" ")[0].split("-")[1]
+#                                    M[temp_idx][0] += ZS[op][0]
+#                                    M[temp_idx][1] += ZS[op][1]                  
+#                                except IndexError:
+#                                    print (ZS)
+#                            print ("ID=", i[0],"...........................", M)
+#                            
+#                            a = np.array(list(M.values())).reshape((12, 3))#list(JS[o].keys())[:-1] 
+#                            
+#                            print (a.shape, sum(a[:, 0]), sum(a[:, 1]))
+#                            s1, s2 = a[:, 0].tolist(), a[:, 1].tolist()
+#                            
+#                            
+#                    self.write_message(json.dumps({"from":"sort_category_by_user_id_rt", "data":dict_}))  
 
-        if message["to"] == "sort_category2_by_user_id_rt":
-                    ZS = D.client.execute(f"""   
-                                                            SELECT
-                                                              SUM(Items_Count) as sum1, 
-                                                              SUM(Total_Amount) as sum2,
-                                                              Order_Date
-                                                            FROM test
-                                                            WHERE test.Customer_Id = {message["data"][0]} 
-                                                            AND test.Category2_Id = {message["data"][1]}
-                                                            GROUP BY Order_Date
-                                                        """)   
-                    M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
-                    for op in range(len(ZS)):
-                                try:   
-                                    temp_idx = str(ZS[op][-1]).split(" ")[0].split("-")[1]
-                                    M[temp_idx][0] += ZS[op][0]
-                                    M[temp_idx][1] += ZS[op][1]                  
-                                except IndexError:
-                                    print (ZS)
-                            print ("ID=", i[0],"...........................", M)
-                            
-                            a = np.array(list(M.values())).reshape((12, 3))#list(JS[o].keys())[:-1] 
-                            
-                            print (a.shape, sum(a[:, 0]), sum(a[:, 1]))
-                            s1, s2 = a[:, 0].tolist(), a[:, 1].tolist()
-                            
-                            
-                    self.write_message(json.dumps({"from":"sort_category2_by_user_id_rt", "data":dict_}))  
+#        if message["to"] == "sort_category_by_user_id_rt":
+#                    ZS = D.client.execute(f"""   
+#                                                            SELECT
+#                                                              SUM(Items_Count) as sum1, 
+#                                                              SUM(Total_Amount) as sum2,
+#                                                              Order_Date
+#                                                            FROM test
+#                                                            WHERE test.Customer_Id = {message["data"][0]} 
+#                                                            AND test.Category1_Id = {message["data"][1]}
+#                                                            GROUP BY Order_Date
+#                                                        """)   
+#                    M = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]} 
+#                    for op in range(len(ZS)):
+#                                try:   
+#                                    temp_idx = str(ZS[op][-1]).split(" ")[0].split("-")[1]
+#                                    M[temp_idx][0] += ZS[op][0]
+#                                    M[temp_idx][1] += ZS[op][1]                  
+#                                except IndexError:
+#                                    print (ZS)
+#                            print ("ID=", i[0],"...........................", M)
+#                            
+#                            a = np.array(list(M.values())).reshape((12, 3))#list(JS[o].keys())[:-1] 
+#                            
+#                            print (a.shape, sum(a[:, 0]), sum(a[:, 1]))
+#                            s1, s2 = a[:, 0].tolist(), a[:, 1].tolist()
+#                            
+#                            
+#                    self.write_message(json.dumps({"from":"sort_category_by_user_id_rt", "data":dict_}))  
 
 
 

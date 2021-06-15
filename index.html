@@ -1,19 +1,56 @@
-<h style="position:absolute;"></a>
-
-
-
+<script src="chart.min.js"></script>
+ 
 <button id="show_table" onclick="show_table()">show_table</button>
 
 <button id="show_user" onclick="show_user()">show_user</button>
 
-<button id="show_category1" onclick="show_category1()">show_category1</button>
+<button id="show_category1" onclick="show_category1()">статистика по категории #1</button>
 
+<button id="sort_product_by_user_id_rt" onclick="sort_product_by_user_id_rt()">Сортировка продуктов по пользователю в реальном времени, ID = 3</button>
+
+
+<canvas id="popChart" width="600" height="400" style="width:940px;margin: 0px auto;"></canvas>
+
+
+
+
+<style type="text/css">
+   #popChart { 
+    display: block;
+    box-sizing: border-box;
+    width: 940px;
+    margin: 0px auto;
+    position: relative;
+    height: 625.714px;
+   }
+  </style>
 <script>
+var canvas = document.getElementById("popChart");
+var popCanvas = document.getElementById("popChart").getContext("2d");
+var DDD = new Chart(popCanvas);
+
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+];
+
+const T = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+
+
 var ws = new WebSocket("ws://178.158.131.41:8008/websocket"); // IP http://178.158.131.41/
 //ws.binaryType = 'arraybuffer';
 
 function show_table(){
- //console.log("SRRRRS")
      var send_str = JSON.stringify({
       to: "show_tables",
       data: ""
@@ -74,10 +111,145 @@ ws.onopen = function() {
     console.log("connection was established");
 };
 
+var dynamicColors = function() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgb(" + r + "," + g + "," + b + ")";
+};
+
 ws.onmessage = function(evt) {
     var message_data = JSON.parse(evt.data);
-    console.log(message_data["from"], message_data['data']); // message_data["data"][1000][1], message_data["data"][0][0], message_data["data"].pop()[0], message_data["data"].pop()[1]
+    //console.log(message_data["from"], message_data['data']); 
+    // message_data["data"][1000][1], message_data["data"][0][0], message_data["data"].pop()[0], message_data["data"].pop()[1]
     //message_data["from"] //message_data['data'][4][2]
+    if (message_data["from"] == "sort_product_by_user_id_rt") {
+        //console.log(message_data['data'], Object.keys(message_data['data']).length); 
+        var datas = [];
+        //var dict = {};
+        Object.entries(message_data['data']).forEach(([key, value]) => {
+            var dC = dynamicColors;
+
+            
+            var P = [];
+            for (let i = 0; i < T.length; i++) {
+                console.log(value[T[i]][1]);
+                P.push(value[T[i]][0]);
+            }
+            datas.push({
+                label: key,
+                data: P,
+                fill: false,
+                borderColor: dC,
+                
+            });
+            
+        });
+        
+            DDD["config"]._config.type = 'line';
+            DDD.data.labels = MONTHS;
+            
+            
+            DDD["config"]["switch"] = "show_category_product";
+            DDD["config"]._config.options.plugins.title = {
+                                        display: true,
+                                        text: 'Статистика для продуктов'
+                                      }
+            DDD["config"]["req_id"] = "OOO";                                    
+            DDD.data.datasets =  datas;
+
+            DDD.update();
+    }
+    //--------------------------------------------------------->    
+    if (message_data["from"] == "show_category1") {
+            console.log(message_data['data'], message_data['data'].length); 
+            let t_arr = message_data['data'];
+            console.log(t_arr.slice(0, 2))
+            var cat = [];
+            var datas = [];
+            var dict = {};
+            
+            for (let i = 0; i < t_arr.length; i++) {
+                    cat.push(t_arr[i][0]);
+                    datas.push(t_arr[i][1]);
+                    dict[t_arr[i][0]] = t_arr[i][t_arr[i].length-1];
+                    //console.log(t_arr[i][0], t_arr[i][1]); //t_arr[i][t_arr[i].length-1]
+            }
+            
+            
+            DDD["config"]._config.data.datasets = [];
+            DDD["config"]._config.type = "bar";
+            DDD["config"]._config.data.labels = cat;
+            DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas})
+            DDD["config"]._config.options["responsive"] = true;
+            DDD["config"]._config.options.plugins.title = {
+                                        display: true,
+                                        text: 'Статистика категорий'
+                                      }
+            DDD["config"]["switch"] = "show_category1";                    
+            DDD["config"]._config.options.onClick = function (e) {
+                            
+                            //console.log(e); //['chart']
+                        },
+            //console.log(DDD["$context"].type, DDD["config"]._config.data.datasets, DDD["config"]["switch"]);
+            DDD.update();
+
+
+    canvas.onclick = function (evt) {
+        //console.log(DDD["config"]._config.options.plugins.title.text);
+        var activePoints = DDD.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+        if (DDD["config"]["switch"] == 'show_category1'){
+            if (activePoints.length) {
+                var firstPoint = activePoints[0];
+                var label = DDD.data.labels[firstPoint.index];
+                var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                //console.log(label, value);
+                //console.log(dict[label]);
+                //barChart.destroy();
+                //barChart.clear();
+                //------------------------------------>
+                DDD["config"]._config.type = 'line';
+                DDD.data.labels = MONTHS;
+                
+                
+                DDD["config"]["switch"] = "show_category_product";
+                DDD["config"]._config.options.plugins.title = {
+                                            display: true,
+                                            text: 'Статистика для категории ' + label + ' по месяцам'
+                                          }
+                DDD["config"]["req_id"] = label;                                    
+                DDD.data.datasets.forEach((dataset) => {
+                    dataset.data = dict[label];
+                });
+                DDD.update();
+
+                //------------------------------------>
+            }
+        }
+        
+        if (DDD["config"]["switch"] == "show_category_product"){
+            if (activePoints.length) {
+                var firstPoint = activePoints[0];
+                    var label = DDD.data.labels[firstPoint.index];
+                    var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                    console.log(label, value);
+                    console.log(DDD["config"]["req_id"]);
+            }
+        
+        
+        }
+    };            
+
+
+
+   
+   
+    
+    }
+        
+    
+    
+    
 };
 
 </script>

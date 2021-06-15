@@ -1,0 +1,714 @@
+<script src="chart.min.js"></script>
+ 
+<!--<p><b>ID пользователя</b><br>-->
+<input id="id_user" type="text" size="40" style="display:none;"></in>
+ 
+ 
+<!--<button id="show_table" onclick="show_table()">show_table</button>-->
+
+<button id="show_user" onclick="show_user()">Показать всех пользователей с сортировкой по возрастанию</button>
+
+<button id="show_category1" onclick="show_category1()">Статистика категории #1</span></button>
+
+<button id="show_category2" onclick="show_category2()">Статистика категории #2</span></button>
+
+<!--<button id="show_category2" onclick="sort_product_id_user_id('7290004127329')">!!!!!!!!!!</span></button>-->
+
+<!--<button id="sort_product_by_user_id_rt" onclick="sort_product_by_user_id_rt()">Статистика продуктов для пользователя ID = <span id="change_see"></span></button>-->
+
+<!--<button id="sort_category_by_user_id" onclick="sort_category_by_user_id_rt()">Статистика категорий для пользователя ID = <span id="change_see"></span></button>-->
+
+
+
+
+<canvas id="popChart"></canvas>
+<div id="new_block">
+<button id="back" onclick="back()">Предыдущие</button>
+<span id="parts"></span>
+<button id="next" onclick="next()">Следующие</button>
+</div>
+
+<canvas id="popChartAdd"></canvas>
+<div id="loader"></div>
+
+
+
+
+
+<style type="text/css">
+#popChart { 
+display: block;
+box-sizing: border-box;
+margin: 0px auto;
+position: relative;
+width:940px;
+height:600px;
+}
+
+
+#loader {
+border: 16px solid #f3f3f3; /* Light grey */
+border-top: 16px solid #3498db; /* Blue */
+border-radius: 50%;
+width: 120px;
+height: 120px;
+margin: 10% auto;
+animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+   
+  </style>
+<script>
+var canvas = document.getElementById("popChart");
+canvas.style.display = "none";
+var canvasAdd = document.getElementById("popChartAdd");
+canvasAdd.style.display = "none";
+document.getElementById("new_block").style.display = "none";
+
+
+var t_el = document.getElementById("loader");
+
+var popCanvas = document.getElementById("popChart").getContext("2d");
+var popChartAdd = document.getElementById("popChartAdd").getContext("2d");
+
+var A = new Chart(popChartAdd);
+var DDD = new Chart(popCanvas);
+
+var big_data;
+var start_idx;
+var start_slice;
+var parts = document.getElementById("parts");
+
+DDD.canvas.parentNode.style.height = '128px'
+DDD["config"]._config.options.onClick = function (e) {};
+
+DDD.options.responsive = true;
+DDD.options.aspectRatio = 4;
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+];
+
+const T = [0,0,0,0,0,0,0,0,0,0,0,0]//["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+var id_user_value = 0
+var id_user = document.getElementById("id_user");
+id_user.addEventListener('input', (event) => {
+    console.log(event.target.value, document.querySelectorAll('[id=change_see]'));
+    var change_see = document.querySelectorAll('[id=change_see]');
+    for (let i = 0; i < change_see.length; i++) {
+        id_user_value = event.target.value;
+        change_see[i].innerHTML = id_user_value;
+    }
+    //document.getElementById("change_see")//.innerHTML = 
+});
+
+
+var ws = new WebSocket("ws://178.158.131.41:8008/websocket"); // IP http://178.158.131.41/
+//ws.binaryType = 'arraybuffer';
+
+function next() {
+        var datas = [];
+        var cat = []; //message_data['data'].length
+        console.log("next");
+        parts.innerHTML = start_idx + " из " + Math.ceil(big_data.length/20);
+        var TTT = big_data.slice(start_slice, start_slice+20);
+        console.log(TTT)
+        for (let i = 0; i < TTT.length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(TTT[i][0])
+            cat.push(TTT[i][TTT[i].length-1])
+        }
+        DDD["config"]._config.type = "bar";
+        DDD["config"]._config.options.legend = {
+                                                  display: true,
+                                                };
+        DDD["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика пользователей'
+                                  }
+        //DDD["config"]._config.options.scales = {
+        //        beginAtZero: false
+        //    }
+            
+        DDD["config"]._config.data.datasets = [];
+        DDD["config"]._config.data.labels = cat;
+        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        
+        //DDD["config"]["switch"] = "show_user";
+        t_el.style.display = "none";
+        canvas.style.display = "block";
+        DDD.update(); 
+        start_slice += 20;  
+        start_idx += 1;
+};
+function back() {
+        start_slice -= 20;  
+        start_idx -= 1;
+        console.log("back");
+        var datas = [];
+        var cat = []; //message_data['data'].length
+        parts.innerHTML = start_idx + " из " + Math.ceil(big_data.length/20);
+        var TTT = big_data.slice(start_slice, start_slice+20);
+        console.log(TTT)
+        for (let i = 0; i < TTT.length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(TTT[i][0])
+            cat.push(TTT[i][TTT[i].length-1])
+        }
+        DDD["config"]._config.type = "bar";
+        DDD["config"]._config.options.legend = {
+                                                  display: true,
+                                                };
+        DDD["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика пользователей'
+                                  }
+        //DDD["config"]._config.options.scales = {
+        //        beginAtZero: false
+        //    }
+            
+        DDD["config"]._config.data.datasets = [];
+        DDD["config"]._config.data.labels = cat;
+        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        
+        //DDD["config"]["switch"] = "show_user";
+        t_el.style.display = "none";
+        canvas.style.display = "block";
+        DDD.update(); 
+
+};
+
+function show_table(){
+     var send_str = JSON.stringify({
+      to: "show_tables",
+      data: ""
+    })
+    ws.send(send_str);
+}
+
+function show_user(){
+    canvasAdd.style.display = "none";
+    var send_str = JSON.stringify({
+      to: "show_user",
+      data: "show_user_id",
+      asc_desc: "DESC", //DESC ASC
+      offset: 0, 
+      limit: 50
+    })
+    ws.send(send_str);
+    document.getElementById("new_block").style.display = "block";
+}
+
+
+function show_category1(){
+    var send_str = JSON.stringify({
+      to: "show_category1",
+      data: "show_category1_id"
+    })
+    DDD["config"]["switch"] = "show_category1";  
+    ws.send(send_str);
+
+}
+
+function show_category2(){
+    var send_str = JSON.stringify({
+      to: "show_category2",
+      data: "show_category2_id"
+    })
+    DDD["config"]["switch"] = "show_category1";
+    ws.send(send_str);
+}
+
+
+
+
+function show_script_SQL(){
+    var send_str = JSON.stringify({
+      to: "show_script_SQL",
+      data: "SELECT * FROM category1 order by sum"
+    })
+    ws.send(send_str);
+
+}
+
+function sort_product_by_user_id_rt(){
+    var send_str = JSON.stringify({
+      to: "sort_product_by_user_id_rt",
+      data: id_user_value
+    })
+    DDD["config"]["switch"] = "show_category_product";
+    ws.send(send_str);
+
+}
+
+function sort_category_by_user_id_rt(){
+    var send_str = JSON.stringify({
+      to: "sort_category_by_user_id_rt",
+      data: id_user_value
+    })
+    DDD["config"]["switch"] = "sort_category_by_user_id_rt";  
+    DDD["config"]["req_id"] = id_user_value;
+    ws.send(send_str);
+
+}
+
+function sort_product_by_user_id_and_category_rt(label){
+    var send_str = JSON.stringify({
+      to: "sort_product_by_user_id_and_category_rt",
+      data: {
+             id_user: DDD["config"]["req_id"],
+             id_category: label
+             }
+    })
+    //DDD["config"]["switch"] = "sort_product_by_user_id_and_category_rt";
+    ws.send(send_str);
+}
+
+function sort_product_id_user_id(label){
+    var send_str = JSON.stringify({
+      to: "sort_product_id_user_id",
+      data: {
+             id_user: DDD["config"]["req_id"], //2745593,
+             id_product: label
+             }
+    })
+    //DDD["config"]["switch"] = "sort_product_by_user_id_and_category_rt";
+    ws.send(send_str);
+}
+
+
+
+// Вэб сокет
+ws.onopen = function() {
+    console.log("connection was established");
+};
+
+function dynamicColors() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgb(" + r + "," + g + "," + b + ")";
+};
+
+ws.onmessage = function(evt) {
+    var message_data = JSON.parse(evt.data);
+    console.log(message_data["from"], message_data['data']); 
+    // message_data["data"][1000][1], message_data["data"][0][0], message_data["data"].pop()[0], message_data["data"].pop()[1]
+    //message_data["from"] //message_data['data'][4][2]
+    var dict = {};
+    
+    
+    
+    if (message_data["from"] == "sort_category_by_user_id_rt") {
+<!--            var datas = [];-->
+<!--            var cat = [];-->
+<!--            for (let i = 0; i < message_data['data'].length; i++) {-->
+<!--                console.log(message_data['data'][i][0], message_data['data'][i]);-->
+<!--                datas.push(message_data['data'][i][0])-->
+<!--                cat.push(message_data['data'][i][message_data['data'][i].length-1])-->
+<!--            }-->
+<!--            DDD["config"]._config.type = "bar";-->
+<!--            -->
+<!--            DDD["config"]._config.options.legend = {-->
+<!--                                                      display: true,-->
+<!--                                                    };-->
+<!--            DDD["config"]._config.options.plugins.title = {-->
+<!--                                        display: true,-->
+<!--                                        text: 'Статистика категорий для пользователя ID = ' + DDD["config"]["req_id"]-->
+<!--                                      }-->
+<!--            //DDD["config"]._config.options.scales = {-->
+<!--            //        beginAtZero: false-->
+<!--            //    }-->
+<!--                -->
+<!--            DDD["config"]._config.data.datasets = [];-->
+<!--            DDD["config"]._config.data.labels = cat;-->
+<!--            DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});-->
+<!--            -->
+<!--            -->
+<!--            t_el.style.display = "none";-->
+<!--            canvas.style.display = "block";-->
+<!--            DDD.update();-->
+
+        var datas = [];
+        var cat = []; //message_data['data'].length
+        big_data = message_data['data'];
+        console.log(Math.ceil(big_data.length/20));
+        start_idx = 1;
+        start_slice = 0;
+        
+        parts.innerHTML = start_idx + " из " + Math.ceil(big_data.length/20);
+        
+        var TTT = big_data.slice(start_slice, start_slice+20);
+        console.log(TTT)
+        for (let i = 0; i < TTT.length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(TTT[i][0])
+            cat.push(TTT[i][TTT[i].length-1])
+        }
+        DDD["config"]._config.type = "bar";
+        DDD["config"]._config.options.legend = {
+                                                  display: true,
+                                                };
+        DDD["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика категорий для пользователя ID = ' + DDD["config"]["req_id"]
+                                  }
+        //DDD["config"]._config.options.scales = {
+        //        beginAtZero: false
+        //    }
+            
+        DDD["config"]._config.data.datasets = [];
+        DDD["config"]._config.data.labels = cat;
+        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        
+        DDD.update(); 
+        start_slice += 20;  
+        start_idx += 1;
+
+
+
+    }
+    //---------------------------------------------------------->
+    if (message_data["from"] == "sort_product_by_user_id_rt") {
+        //console.log(message_data['data'], Object.keys(message_data['data']).length); 
+        var datas = [];
+        //var dict = {};
+        Object.entries(message_data['data']).forEach(([key, value]) => {
+            var dC = dynamicColors();
+
+            
+            var P = [];
+            for (let i = 0; i < T.length; i++) {
+                console.log(value[T[i]][1]);
+                P.push(value[T[i]][0]);
+            }
+            datas.push({
+                label: key,
+                data: P,
+                fill: false,
+                borderColor: dC,
+                
+            });
+            
+        });
+        
+            DDD["config"]._config.type = 'line';
+            DDD.data.labels = MONTHS;
+            DDD["config"]._config.options.plugins.title = {
+                                        display: true,
+                                        text: 'Статистика для продуктов'
+                                      }
+            DDD["config"]["req_id"] = "OOO";                                    
+            DDD.data.datasets =  datas;
+            t_el.style.display = "none";
+            canvas.style.display = "block";
+            DDD.update();
+    }
+    //--------------------------------------------------------->    
+    if (message_data["from"] == "show_category1") {
+            console.log(message_data['data'], message_data['data'].length); 
+            let t_arr = message_data['data'];
+            console.log(t_arr.slice(0, 2))
+            var cat = [];
+            var datas = [];
+            
+            
+            for (let i = 0; i < t_arr.length; i++) {
+                    cat.push(t_arr[i][0]);
+                    datas.push(t_arr[i][1]);
+                    dict[t_arr[i][0]] = t_arr[i][t_arr[i].length-1];
+                    //console.log(t_arr[i][0], t_arr[i][1]); //t_arr[i][t_arr[i].length-1]
+            }
+            
+            
+            DDD["config"]._config.data.datasets = [];
+            DDD["config"]._config.type = "bar";
+            DDD["config"]._config.data.labels = cat;
+            DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas})
+            DDD["config"]._config.options["responsive"] = true;
+            DDD["config"]._config.options.plugins.title = {
+                                        display: true,
+                                        text: 'Статистика категорий'
+                                      }
+                              
+            t_el.style.display = "none";
+            canvas.style.display = "block";
+            //console.log(DDD["$context"].type, DDD["config"]._config.data.datasets, DDD["config"]["switch"]);
+            DDD.update();
+
+    }
+    if (message_data["from"] == "sort_product_by_user_id_and_category_rt") {
+        console.log("WORK sort_product_by_user_id_and_category_rt");
+<!--        var datas = [];-->
+<!--        //var dict = {};-->
+<!--        Object.entries(message_data['data']).forEach(([key, value]) => {-->
+<!--            var dC = dynamicColors();-->
+
+<!--            -->
+<!--            var P = [];-->
+<!--            for (let i = 0; i < T.length; i++) {-->
+<!--                console.log(value[T[i]][1]);-->
+<!--                P.push(value[T[i]][0]);-->
+<!--            }-->
+<!--            datas.push({-->
+<!--                label: key,-->
+<!--                data: P,-->
+<!--                fill: false,-->
+<!--                borderColor: dC,-->
+<!--                -->
+<!--            });-->
+<!--            -->
+<!--        });        -->
+<!--        -->
+<!--        DDD["config"]._config.type = 'line';-->
+<!--        DDD["config"]._config.options.plugins.title = {-->
+<!--                            display: true,-->
+<!--                            text: 'Статистика продуктов из категори ' +  DDD["config"]["req_cat_id"] + ' для пользователя ID = ' + DDD["config"]["req_id"]-->
+<!--                          }-->
+<!--        DDD.data.labels = MONTHS;-->
+<!--        DDD.data.datasets =  datas;-->
+<!--        t_el.style.display = "none";-->
+<!--        DDD.update();-->
+
+        var datas = [];
+        var cat = [];
+        
+        big_data = message_data['data'];
+        console.log(Math.ceil(big_data.length/20));
+        start_idx = 1;
+        start_slice = 0;
+        
+        parts.innerHTML = start_idx + " из " + Math.ceil(big_data.length/20);
+        
+        var TTT = big_data.slice(start_slice, start_slice+20);
+        console.log(TTT)        
+        
+        
+        
+        for (let i = 0; i < TTT.length; i++) {
+            console.log(TTT[i][0], TTT[i]);
+            datas.push(TTT[i][0])
+            cat.push(TTT[i][TTT[i].length-1])
+        }
+        DDD["config"]._config.type = "bar";
+        DDD["config"]._config.options.legend = {
+                                                  display: true,
+                                                };
+        DDD["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика продуктов пользователю ID = ' + DDD["config"]["req_id"],  
+                                  }
+        //DDD["config"]._config.options.scales = {
+        //        beginAtZero: false
+        //    }
+            
+        DDD["config"]._config.data.datasets = [];
+        DDD["config"]._config.data.labels = cat;
+        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        
+        
+        DDD["config"]["switch"] = "sort_product_id_user_id";
+        DDD.update();     
+
+
+
+
+
+
+    }
+    
+    //------------------------------------------------->
+    if (message_data["from"] == "show_user") {
+        var datas = [];
+        var cat = []; //message_data['data'].length
+        big_data = message_data['data'];
+        console.log(Math.ceil(big_data.length/20));
+        start_idx = 1;
+        start_slice = 0;
+        
+        parts.innerHTML = start_idx + " из " + Math.ceil(big_data.length/20);
+        
+        var TTT = big_data.slice(start_slice, start_slice+20);
+        console.log(TTT)
+        for (let i = 0; i < TTT.length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(TTT[i][0])
+            cat.push(TTT[i][TTT[i].length-1])
+        }
+        DDD["config"]._config.type = "bar";
+        DDD["config"]._config.options.legend = {
+                                                  display: true,
+                                                };
+        DDD["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика пользователей'
+                                  }
+        //DDD["config"]._config.options.scales = {
+        //        beginAtZero: false
+        //    }
+            
+        DDD["config"]._config.data.datasets = [];
+        DDD["config"]._config.data.labels = cat;
+        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        
+        DDD["config"]["switch"] = "show_user";
+        t_el.style.display = "none";
+        canvas.style.display = "block";
+        DDD.update(); 
+        start_slice += 20;  
+        start_idx += 1;
+    }
+    
+    if (message_data["from"] == "sort_product_id_user_id") {
+    
+        for (let i = 0; i < message_data['data'].length; i++) {
+            console.log(message_data['data'][i][0], message_data['data'][i]);
+            //datas.push(message_data['data'][i][0])
+            T[message_data['data'][i][2]] = message_data['data'][i][0];
+        }
+
+
+
+
+        canvasAdd.style.display = "block";
+        
+        A["config"]._config.type = "line";
+        A["config"]._config.options.legend = {
+                                                  display: true,
+                                                };        
+        A["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика продукта '+DDD["config"]["req_id_prod"]+' по месяцам'
+                                  };     
+        A["config"]._config.data.datasets = [];
+        A["config"]._config.data.labels = MONTHS;
+        A["config"]._config.data.datasets.push({label: 'продажи', data: T});
+        
+        A.update();                                        
+                                  
+                                     
+    
+    }
+
+//--------------------------->
+
+canvas.onclick = function (evt) {
+    //console.log(DDD["config"]._config.options.plugins.title.text);
+    var activePoints = DDD.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+    if (DDD["config"]["switch"] == 'show_category1'){
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+            var label = DDD.data.labels[firstPoint.index];
+            var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            //console.log(label, value);
+            //console.log(dict[label]);
+            //barChart.destroy();
+            //barChart.clear();
+            //------------------------------------>
+            DDD["config"]._config.type = 'line';
+            DDD.data.labels = MONTHS;
+            
+            DDD["config"]["switch"] = "show_category_product";
+            DDD["config"]._config.options.plugins.title = {
+                                        display: true,
+                                        text: 'Статистика для категории ' + label + ' по месяцам'
+                                      }
+            DDD["config"]["req_id"] = label;                                    
+            DDD.data.datasets.forEach((dataset) => {
+                dataset.data = dict[label];
+            });
+            
+            t_el.style.display = "none";
+            canvas.style.display = "block";   
+            DDD.update();
+
+            //------------------------------------>
+        }
+    }
+    
+    if (DDD["config"]["switch"] == "show_category_product"){
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+                var label = DDD.data.labels[firstPoint.index];
+                var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                console.log(label, value);
+                console.log(DDD["config"]["req_id"]);
+        }
+    
+    
+    }
+    //---------------------------------------->
+    if (DDD["config"]["switch"] == "sort_category_by_user_id_rt"){
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+            var label = DDD.data.labels[firstPoint.index];
+            var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            console.log(label, value, DDD["config"]["req_id"]);
+            DDD["config"]["req_cat_id"] = label;
+            //DDD["config"]["switch"] = "sort_product_by_user_id_rt"
+            sort_product_by_user_id_and_category_rt(label);
+            canvas.style.display = "block";  
+            canvasAdd.style.display = "block";  
+        }
+    
+    }
+    //----------------------------------------------->
+    if (DDD["config"]["switch"] == "show_user"){
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+            var label = DDD.data.labels[firstPoint.index];
+            var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            console.log(label, value); //DDD["config"]["req_id"]
+            //DDD["config"]["req_cat_id"] = label;
+            //sort_product_by_user_id_and_category_rt(label);
+            //DDD["config"]["switch"] = "sort_product_by_user_id_rt"
+            //sort_product_by_user_id_and_category_rt(label);
+            var send_str = JSON.stringify({
+              to: "sort_category_by_user_id_rt",
+              data: label
+            })
+            DDD["config"]["switch"] = "sort_category_by_user_id_rt";  
+            DDD["config"]["req_id"] = label;
+            ws.send(send_str);
+            
+        }
+    
+    }
+    //--------------------------------------------------------->
+    if (DDD["config"]["switch"] == "sort_product_id_user_id"){
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+            var label = DDD.data.labels[firstPoint.index];
+            var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            console.log("sort_product_id_user_id", label, value, DDD["config"]["req_cat_id"], DDD["config"]["req_id"]); //DDD["config"]["req_id"]
+            sort_product_id_user_id(label);
+            
+            DDD["config"]["switch"] = "sort_product_id_user_id";
+            DDD["config"]["req_id_prod"] = label;
+        }
+    
+    }
+    
+};        
+    
+};
+
+
+
+
+   
+</script>

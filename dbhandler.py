@@ -80,7 +80,7 @@ def create_file_arr():
 #               "\n......................"
 #               )
 
-create_file_arr()
+#create_file_arr()
 
 
 # product ['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount', 'Branch_Id', 'Customer_Id', 'Order_Date', 'Category1_Id', 'Category2_Id']

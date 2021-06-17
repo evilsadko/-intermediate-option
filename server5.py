@@ -212,26 +212,88 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                 print (test_data.shape[0], res.shape, res[:,:])  
                 self.write_message(json.dumps({"from":"sort_related_products", "data":H}))                         
         if message["to"] == "sort_product_id_user_id":
-                    dict_ = DB.client.execute(f"""  
-                                        SELECT
-                                           SUM(columns.sum1) as s1,
-                                           SUM(columns.sum2) as S2,
-                                           columns.time
-                                        FROM
-                                        (SELECT
-                                        toMonth(Order_Date) as time,
-                                        SUM(Items_Count) as sum1,
-                                        SUM(Total_Amount) as sum2
-                                        FROM test
-                                        WHERE Customer_Id = {message["data"]["id_user"]}
-                                        AND Product_ID = {message["data"]["id_product"]}
-                                        GROUP BY Order_Date) columns
-                                        GROUP BY columns.time
-                                        ORDER BY columns.time
-                                        ASC
-                                                """)#ORDER BY Items_Count   AND Category1_Id = 500
-                    print (dict_)                             
-                    self.write_message(json.dumps({"from":"sort_product_id_user_id", "data":dict_}))   
+                dict_ = DB.client.execute(f"""  
+                                    SELECT
+                                       SUM(columns.sum1) as s1,
+                                       SUM(columns.sum2) as S2,
+                                       columns.time
+                                    FROM
+                                    (SELECT
+                                    toMonth(Order_Date) as time,
+                                    SUM(Items_Count) as sum1,
+                                    SUM(Total_Amount) as sum2
+                                    FROM test
+                                    WHERE Customer_Id = {message["data"]["id_user"]}
+                                    AND Product_ID = {message["data"]["id_product"]}
+                                    GROUP BY Order_Date) columns
+                                    GROUP BY columns.time
+                                    ORDER BY columns.time
+                                    ASC
+                                            """)#ORDER BY Items_Count   AND Category1_Id = 500
+                print (dict_)                             
+                self.write_message(json.dumps({"from":"sort_product_id_user_id", "data":dict_}))   
+
+        if message["to"] == "show_correlation":
+            print (message)
+            T = DB.client.execute(f"""
+                                    SELECT
+                                         Order_ID, 
+                                         Product_ID, 
+                                         Items_Count, 
+                                         Total_Amount, 
+                                         Customer_Id,
+                                         toMonth(Order_Date) as time
+                                    FROM test
+                                    WHERE test.Customer_Id = {message["data"]["id_user"]} 
+                                    AND test.Product_ID = {message["data"]["id_product"]}
+                                    """)    
+            G = {}
+            t_str = ""
+            t_count = 0
+            G[message["data"]["id_product"]] = [0,0,0,0,0,0,0,0,0,0,0,0]
+            for i in T:
+                t_str += f"OR test.Order_ID = {i[0]}\n"
+                t_count += i[2]
+                G[message["data"]["id_product"]][(i[-1])] += i[2]
+                   
+            a = DB.client.execute(f"""
+                            SELECT
+                                 Order_ID, 
+                                 Product_ID, 
+                                 Items_Count, 
+                                 Total_Amount, 
+                                 Customer_Id,
+                                 toMonth(Order_Date) as time
+                            FROM test
+                            WHERE test.Customer_Id = {message["data"]["id_user"]}
+                            AND NOT test.Product_ID = {message["data"]["id_product"]}
+                            AND ({t_str[3:]})
+                            
+                            """)
+            dict_data = {}   
+            #print (a)  
+            A = {}
+            P1 = t_count   
+            for r in a:
+                try:
+                    dict_data[r[1]][0][(r[-1])] += r[2]  
+                    dict_data[r[1]][1] += r[2]
+                except KeyError:
+                    dict_data[r[1]] = [[0,0,0,0,0,0,0,0,0,0,0,0], 0] 
+                    dict_data[r[1]][0][(r[-1])] += r[2]
+                    dict_data[r[1]][1] += r[2]  
+                #print (r[-1])  
+
+            for r in dict_data:
+                P2 = dict_data[r][1]
+                P = (P2/P1)*100  
+                if P > 5:  
+                    G[r] = dict_data[r][0]  
+                    #print (dict_data[r], P, P1, P2)    
+            print (G)
+            
+                            
+            self.write_message(json.dumps({"from":"show_correlation", "data":G})) 
 
     def on_close(self):
         ImageWebSocket.clients.remove(self)
@@ -253,8 +315,6 @@ print("Starting server: http://xxx.xx.xx.xxx:8800/") # IP
 tornado.ioloop.IOLoop.current().start()
 
 ##https://tobiasahlin.com/blog/chartjs-charts-to-get-you-started/
-git push --set-upstream origin v0.2
-git commit -m "update"
 
 #import dbhandler_2
 #DB = dbhandler_2.DataBase()

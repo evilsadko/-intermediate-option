@@ -76,13 +76,13 @@ class Sort_v1:
             new_dict[j] = Z.tolist()
         print ("END", time.time()-start, len(new_dict))
 
-        #---------------------------------------->
-        # Сохраняю файл
-        with open("out/related_products.json", 'w') as js_file:
-            json.dump(new_dict, js_file)
-        #---------------------------------------->
-        with open("out/dict_to_encoding.json", 'w') as js_file:
-            json.dump(dict_to_encoding, js_file)
+#        #---------------------------------------->
+#        # Сохраняю файл
+#        with open("out/related_products.json", 'w') as js_file:
+#            json.dump(new_dict, js_file)
+#        #---------------------------------------->
+#        with open("out/dict_to_encoding.json", 'w') as js_file:
+#            json.dump(dict_to_encoding, js_file)
 
     # Сортировка сопутствующего товара по месяцам
     # TO DO
@@ -373,10 +373,10 @@ def dynamic_price():
 
 if __name__ == "__main__":
     #NAME = PRODUCTNAME()
-    #S = Sort_v1()
+    S = Sort_v1()
 #----------------->
     # Сопутствующие продукты
-    #S.related_products()
+    S.related_products()
     #related_product_sort()
     #visual_related_product()
 #----------------->
@@ -391,9 +391,9 @@ if __name__ == "__main__":
 #    heatmap_prep()
 #    dynamic_price()
 
-    D = json.load(open("out/popular_product_category.json","r"))
-    for i in D:
-        print (D[i])
+#    D = json.load(open("out/popular_product_category.json","r"))
+#    for i in D:
+#        print (D[i])
        
 # correlation          
 #                    M[_date][0] += temp[2] #'Items_Count'

@@ -301,7 +301,19 @@ function sort_product_id_user_id(label){
     ws.send(send_str);
 }
 
-
+function show_correlation(x,y) {
+    //console.log(x,y)
+    var send_str = JSON.stringify({
+      to: "show_correlation",
+      data: {
+             id_user: y, //2745593,
+             id_product: x
+             }
+    })
+    //DDD["config"]["switch"] = "sort_product_by_user_id_and_category_rt";
+    ws.send(send_str);    
+    
+};
 
 // Вэб сокет
 ws.onopen = function() {
@@ -521,7 +533,8 @@ ws.onmessage = function(evt) {
                                                 };
         DDD["config"]._config.options.plugins.title = {
                                     display: true,
-                                    text: 'Статистика продуктов пользователю ID = ' + DDD["config"]["req_id"],  
+                                    //text: 'Статистика продуктов пользователю ID = ' + DDD["config"]["req_id"],  
+                                     text: 'Статистика продуктов из категори ID = ' +  DDD["config"]["req_cat_id"] + ' для пользователя ID = ' + DDD["config"]["req_id"]
                                   }
         //DDD["config"]._config.options.scales = {
         //        beginAtZero: false
@@ -585,7 +598,19 @@ ws.onmessage = function(evt) {
     }
     
     if (message_data["from"] == "sort_product_id_user_id") {
-    
+        try {
+            var temp_div = document.getElementById("correlation");
+            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Кореляция</span></button>";
+        }
+        catch (e) {
+                var temp_div = document.createElement("div");
+                temp_div.id = "correlation";
+                temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Кореляция</span></button>";
+                document.body.append(temp_div);
+                
+        }
+
+        
         for (let i = 0; i < message_data['data'].length; i++) {
             console.log(message_data['data'][i][0], message_data['data'][i]);
             //datas.push(message_data['data'][i][0])
@@ -610,11 +635,29 @@ ws.onmessage = function(evt) {
         A["config"]._config.data.datasets.push({label: 'продажи', data: T});
         
         A.update();                                        
-                                  
-                                     
-    
     }
 
+    if (message_data["from"] == "show_correlation") {
+        var datas = [];
+        //var dict = {};
+        Object.entries(message_data['data']).forEach(([key, value]) => {
+            var dC = dynamicColors();
+            A["config"]._config.data.datasets.push({
+                label: key,
+                data: value,
+                fill: false,
+                borderColor: dC,
+                
+            });
+            
+        });        
+        console.log(datas);
+        A["config"]._config.type = 'line';
+        A.data.labels = MONTHS;
+        //A.data.datasets =  datas;
+        
+        A.update();   
+    }
 //--------------------------->
 
 canvas.onclick = function (evt) {
@@ -705,7 +748,7 @@ canvas.onclick = function (evt) {
             var firstPoint = activePoints[0];
             var label = DDD.data.labels[firstPoint.index];
             var value = DDD.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
-            console.log("sort_product_id_user_id", label, value, DDD["config"]["req_cat_id"], DDD["config"]["req_id"]); //DDD["config"]["req_id"]
+            console.log("sort_product_id_user_id canvas", label, value, DDD["config"]["req_cat_id"], DDD["config"]["req_id"]); //DDD["config"]["req_id"]
             sort_product_id_user_id(label);
             
             DDD["config"]["switch"] = "sort_product_id_user_id";

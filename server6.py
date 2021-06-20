@@ -252,30 +252,37 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
             t_count = 0
             G[message["data"]["id_product"]] = [0,0,0,0,0,0,0,0,0,0,0,0]
             ixz = 0
-            for i in T:
-                t_str += f"OR test.Order_ID = {i[0]}\n"
-                t_count += i[2]
-                G[message["data"]["id_product"]][(i[-1])] += i[2]
-                ixz += 1
-            print (ixz)
+            LS = []
+            for batch_idx, i in enumerate(T):
+                if batch_idx % 100 == 0:
+                    t_str += f"OR test.Order_ID = {i[0]}\n"
+                    t_count += i[2]
+                    G[message["data"]["id_product"]][(i[-1])] += i[2]
+                    ixz += 1
+#            print (ixz)
                    
-            a = DB.client.execute(f"""
-                            SELECT
-                                 Order_ID, 
-                                 Product_ID, 
-                                 Items_Count, 
-                                 Total_Amount, 
-                                 Customer_Id,
-                                 toMonth(Order_Date) as time
-                            FROM test
-                            WHERE test.Customer_Id = {message["data"]["id_user"]}
-                            AND NOT test.Product_ID = {message["data"]["id_product"]}
-                            AND ({t_str[3:]})
-                            
-                            """)
+                    a = DB.client.execute(f"""
+                                    SELECT
+                                         Order_ID, 
+                                         Product_ID, 
+                                         Items_Count, 
+                                         Total_Amount, 
+                                         Customer_Id,
+                                         toMonth(Order_Date) as time
+                                    FROM test
+                                    WHERE test.Customer_Id = {message["data"]["id_user"]}
+                                    AND NOT test.Product_ID = {message["data"]["id_product"]}
+                                    AND ({t_str[3:]})
+                                    
+                                    """)
+#                    LS.append(a[:])
+                    LS += a 
+                    
+            a = LS                                            
+            print ("!@#>>>>>>>>>>>>>>>",LS, len(LS))
             dict_data = {}   
             #print (a)  
-            A = {}
+            #A = {}
             P1 = t_count   
             for r in a:
                 try:

@@ -41,8 +41,7 @@ display: block;
 box-sizing: border-box;
 margin: 0px auto;
 position: relative;
-width:940px;
-height:600px;
+width: 1000px;
 }
 
 
@@ -435,7 +434,7 @@ ws.onmessage = function(evt) {
                                         display: true,
                                         text: 'Статистика для продуктов'
                                       }
-            DDD["config"]["req_id"] = "OOO";                                    
+            //DDD["config"]["req_id"] = "OOO";                                    
             DDD.data.datasets =  datas;
             t_el.style.display = "none";
             canvas.style.display = "block";
@@ -542,7 +541,7 @@ ws.onmessage = function(evt) {
             
         DDD["config"]._config.data.datasets = [];
         DDD["config"]._config.data.labels = cat;
-        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas, backgroundColor: 'rgb(75, 192, 150)'});
         
         
         DDD["config"]["switch"] = "sort_product_id_user_id";
@@ -587,7 +586,7 @@ ws.onmessage = function(evt) {
             
         DDD["config"]._config.data.datasets = [];
         DDD["config"]._config.data.labels = cat;
-        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        DDD["config"]._config.data.datasets.push({label: 'продажи', data: datas, backgroundColor: 'rgb(54, 162, 235)'});
         
         DDD["config"]["switch"] = "show_user";
         t_el.style.display = "none";
@@ -646,6 +645,7 @@ ws.onmessage = function(evt) {
                 label: key,
                 data: value,
                 type: 'bar',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 fill: false,
                 borderColor: dC,
                 

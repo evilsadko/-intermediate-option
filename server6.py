@@ -86,13 +86,16 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
 
         if message["to"] == "show_product":
                 H = DB.client.execute(f"""
-                            SELECT * FROM category1 
-                            order by sum                               
+                            SELECT
+                                 count(Product_ID) as SM1,
+                                 Product_ID
+                            FROM test 
+                            GROUP BY Product_ID
+                            ORDER BY SM1
+                            DESC
                             """)
-                test_data = np.array(H[200][2]) 
-                res = test_data.reshape((test_data.shape[0], 1))               
-                print (test_data.shape[0], res.shape, res[:,:])  
-                self.write_message(json.dumps({"from":"show_category1", "data":H}))
+                print (len(H))
+                self.write_message(json.dumps({"from":"show_product", "data":H}))
 
 
         if message["to"] == "sort_category_by_user_id_rt":                
@@ -114,31 +117,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                     self.write_message(json.dumps({"from":"sort_category_by_user_id_rt", "data":H})) 
                     
         if message["to"] == "sort_product_by_user_id_and_category_rt":         
-#            t = DB.client.execute(f"""   
-#                                                    SELECT *
-#                                                    FROM my_table
-#                                                    WHERE my_table.Customer_Id = {message["data"]["id_user"]} 
-#                                                    AND my_table.Category1_Id = {message["data"]["id_category"]}
-#                                                    ORDER BY Items_Count
-#                                                """)   
-#            #print (len(t)) 
-#            dict_ = {}
-#            for iz in t:
-#                count = iz[2]
-#                p_id = iz[1]
-#                t_sum = iz[3]
-#                d_month = iz[7].split(" ")[0].split("-")[1]
-#                c_id = iz[6]
-#                #print (c_id, iz[7], d_month, count, t_sum, p_id) 
-#                try:
-#                    dict_[p_id][d_month][0] += count
-#                    dict_[p_id][d_month][1] += t_sum
-#                except KeyError:
-#                    dict_[p_id] = {'01':[0,0,0], '02':[0,0,0], '03':[0,0,0], '04':[0,0,0], '05':[0,0,0], '06':[0,0,0], '07':[0,0,0], '08':[0,0,0], '09':[0,0,0], '10':[0,0,0], '11':[0,0,0], '12':[0,0,0]}
-#                    dict_[p_id][d_month][0] += count
-#                    dict_[p_id][d_month][1] += t_sum
-#            print (len(dict_))
-#            self.write_message(json.dumps({"from":"sort_product_by_user_id_and_category_rt", "data":dict_}))    
 
             t = DB.client.execute(f"""
                                     SELECT 
@@ -201,16 +179,7 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                                     GROUP BY Category1_Id
                                                 """)           
                                                 
-         #                                          
-        if message["to"] == "sort_related_products":
-                H = DB.client.execute(f"""
-                            SELECT * FROM sort_related_products 
-                            order by sum                               
-                            """)
-                test_data = np.array(H[200][2]) 
-                res = test_data.reshape((test_data.shape[0], 1))               
-                print (test_data.shape[0], res.shape, res[:,:])  
-                self.write_message(json.dumps({"from":"sort_related_products", "data":H}))                         
+                                   
         if message["to"] == "sort_product_id_user_id":
                 dict_ = DB.client.execute(f"""  
                                     SELECT
@@ -259,8 +228,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                     t_count += i[2]
                     G[message["data"]["id_product"]][(i[-1])] += i[2]
                     ixz += 1
-#            print (ixz)
-                   
                     a = DB.client.execute(f"""
                                     SELECT
                                          Order_ID, 
@@ -275,14 +242,10 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                     AND ({t_str[3:]})
                                     
                                     """)
-#                    LS.append(a[:])
                     LS += a 
                     
             a = LS                                            
-            print ("!@#>>>>>>>>>>>>>>>",LS, len(LS))
             dict_data = {}   
-            #print (a)  
-            #A = {}
             P1 = t_count   
             for r in a:
                 try:
@@ -305,13 +268,37 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                             
             self.write_message(json.dumps({"from":"show_correlation", "data":G})) 
 
+
+        if message["to"] == "sort_product_id":
+                T = DB.client.execute(f"""
+                        SELECT
+                           count(columns.sum1) as s1,
+                           columns.time
+                        FROM
+                        (SELECT
+                        toMonth(Order_Date) as time,
+                        count(Product_ID) as sum1
+                        FROM test
+                        WHERE Product_ID = {message["data"]["id_product"]}
+                        GROUP BY Order_Date) columns
+                        GROUP BY columns.time
+                        ORDER BY columns.time
+                        ASC    
+                                            
+                        """)  
+                print (T,  len(T))
+                self.write_message(json.dumps({"from":"sort_product_id", "data":T})) 
+
+                        
+                          
+            
     def on_close(self):
         ImageWebSocket.clients.remove(self)
         print("WebSocket closed from: " + self.request.remote_ip)
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index_4.html", title="Нейронная сеть/Тренировка")
+        self.render("index_5.html", title="Нейронная сеть/Тренировка")
 
 app = tornado.web.Application([
         (r"/", MainHandler),

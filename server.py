@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
-##import ctypes
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
-
 import cv2
 import numpy as np
-
 import os, sys
 import base64, json, time
 
-import dbhandler_2
+import dbhandler
 
+DB = dbhandler.DataBase()
 
-
-
-DB = dbhandler_2.DataBase()
 class ImageWebSocket(tornado.websocket.WebSocketHandler):
     clients = set()
     
@@ -35,8 +30,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
             pass 
         
         if message["to"] == "show_tables":
-            print (DB.show_tables())
-            #self.write_message("from python")#, binary=True
             self.write_message(json.dumps({"from":"show_tables", "data":DB.show_tables()}))
         if message["to"] == "show_user":
             _temp = DB.client.execute(f"""   
@@ -54,7 +47,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
 #                                          OFFSET 10   
                                           #ASC
                                           #DESC
-            print (_temp, len(_temp), message["offset"], message["limit"])
             self.write_message(json.dumps({"from":"show_user", "data":_temp}))
             
             
@@ -94,7 +86,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                             ORDER BY SM1
                             DESC
                             """)
-                print (len(H))
                 self.write_message(json.dumps({"from":"show_product", "data":H}))
 
 
@@ -113,11 +104,9 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                                 """)
 #                                                    LIMIT 20
 #                                                    OFFSET 0 
-                    print (H)
                     self.write_message(json.dumps({"from":"sort_category_by_user_id_rt", "data":H})) 
                     
         if message["to"] == "sort_product_by_user_id_and_category_rt":         
-
             t = DB.client.execute(f"""
                                     SELECT 
                                         SUM(Items_Count) as sum1, 
@@ -130,7 +119,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                     ORDER BY sum1
                                     DESC
                                     """)            
-            print (t)
             self.write_message(json.dumps({"from":"sort_product_by_user_id_and_category_rt", "data":t}))  
               
         if message["to"] == "sort_product_by_user_id_rt":
@@ -145,8 +133,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                             OFFSET 0 
                                             
                                           """)
-
-                    #print ("sort_product_by_user_id_rt",len(t))
                     start = time.time()
                     dict_ = {}
                     for iz in t:
@@ -155,7 +141,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                         t_sum = iz[3]
                         d_month = iz[7].split(" ")[0].split("-")[1]
                         c_id = iz[6]
-                        #print (c_id, iz[7], d_month, count, t_sum, p_id) 
                         try:
                             dict_[p_id][d_month][0] += count
                             dict_[p_id][d_month][1] += t_sum
@@ -164,8 +149,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                             dict_[p_id][d_month][0] += count
                             dict_[p_id][d_month][1] += t_sum
                     self.write_message(json.dumps({"from":"sort_product_by_user_id_rt", "data":dict_}))     
-                    
-
                                               
         if message["to"] == "sort_category_by_":                                                              
                     ZS = DB.client.execute(f"""   
@@ -199,7 +182,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                     ORDER BY columns.time
                                     ASC
                                             """)#ORDER BY Items_Count   AND Category1_Id = 500
-                print (dict_)                             
                 self.write_message(json.dumps({"from":"sort_product_id_user_id", "data":dict_}))   
 
         if message["to"] == "show_correlation":
@@ -243,7 +225,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                     
                                     """)
                     LS += a 
-                    
             a = LS                                            
             dict_data = {}   
             P1 = t_count   
@@ -262,10 +243,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                 P = (P2/P1)*100  
                 if P > 5:  
                     G[r] = dict_data[r][0]  
-                    #print (dict_data[r], P, P1, P2)    
-            #print (G)
-            
-                            
             self.write_message(json.dumps({"from":"show_correlation", "data":G})) 
 
 
@@ -286,7 +263,6 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                         ASC    
                                             
                         """)  
-                print (T,  len(T))
                 self.write_message(json.dumps({"from":"sort_product_id", "data":T})) 
 
                         
@@ -306,35 +282,5 @@ app = tornado.web.Application([
         (r"/(chart.min.js)", tornado.web.StaticFileHandler, {'path':'./node_modules/chart.js/dist/'}),
     ])
 app.listen(8800)
-
-print("Starting server: http://xxx.xx.xx.xxx:8800/") # IP
-
 tornado.ioloop.IOLoop.current().start()
 
-##https://tobiasahlin.com/blog/chartjs-charts-to-get-you-started/
-
-#import dbhandler_2
-#DB = dbhandler_2.DataBase()
-#t = DB.client.execute(f"""  
-#                            SELECT
-#                               columns.time,
-#                               SUM(columns.sum1) as s1,
-#                               SUM(columns.sum2) as S2
-#                            FROM
-#                            (SELECT
-#                            toMonth(Order_Date) as time,
-#                            SUM(Items_Count) as sum1,
-#                            SUM(Total_Amount) as sum2
-#                            FROM test
-#                            WHERE Customer_Id = 0 
-#                            AND Product_ID = 72940761.0
-#                            AND Category1_Id = 500
-#                            GROUP BY Order_Date) columns
-#                            GROUP BY columns.time
-#                            ORDER BY columns.time
-#                            """)#ORDER BY Items_Count
-#                                                
-#print (t[0], t[-1], len(t))#AND test.Category1_Id = 500
-
-#('2020-01-01 00:04:00.000', 10.0, 29.4) 
-#('2020-10-06 10:28:00.000', 4.0, 12.399999999999999)

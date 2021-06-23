@@ -84,8 +84,6 @@ def T(p_arr):
             except KeyError:
                 print (product_arr[i,1])
                 _category = [0,0,0,0,0,0]
-                
-            #new_arr = [int(product_arr[i,0]), int(product_arr[i,1]), product_arr[i,2], product_arr[i,3], product_arr[i,4], _order[1], _order[2], _order[-1], _category[3], _category[5]]
             str_temp += f"""({product_arr[i,0]}, {product_arr[i,1]}, {product_arr[i,2]}, {product_arr[i,3]}, {product_arr[i,4]}, 
                          {_order[1]}, {_order[2]}, '{_order[-1]}', {_category[3]}, {_category[5]}),"""
         POO = str_temp[:-1]
@@ -109,9 +107,7 @@ def chunks(lst, count):
 
 
 def create_file_arr():
-    
     start = time.time()
-    
     ty = chunks(product_arr[:,:],4)
     threads = []
     for f_list in ty:
@@ -148,36 +144,6 @@ if __name__ == "__main__":
 
     D.show_tables()
  
-    print (D.client.execute("""
-    select parts.*,
-       columns.compressed_size,
-       columns.uncompressed_size,
-       columns.ratio
-from (
-         select table,
-                formatReadableSize(sum(data_uncompressed_bytes))          AS uncompressed_size,
-                formatReadableSize(sum(data_compressed_bytes))            AS compressed_size,
-                sum(data_compressed_bytes) / sum(data_uncompressed_bytes) AS ratio
-         from system.columns
-         where database = currentDatabase()
-         group by table
-         ) columns
-         right join (
-    select table,
-           sum(rows)                                            as rows,
-           max(modification_time)                               as latest_modification,
-           formatReadableSize(sum(bytes))                       as disk_size,
-           formatReadableSize(sum(primary_key_bytes_in_memory)) as primary_keys_size,
-           any(engine)                                          as engine,
-           sum(bytes)                                           as bytes_size
-    from system.parts
-    where active and database = currentDatabase()
-    group by database, table
-    ) parts on columns.table = parts.table
-order by parts.bytes_size desc;
-    
-    
-    """))
     
 #    p_open = PRODUCT() #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
 #    #[188860582.0, 7290001201596.0, 1.0, 10.4, 0.0]

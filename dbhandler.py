@@ -116,11 +116,14 @@ class DataBase():
             product_arr = p_arr[ii*step:end, :]
             str_temp = f""
             for i in range(product_arr.shape[0]):
-                _order = self.order_arr[self.ids_order[p_arr[i,0]],:][0]
+                _order = self.order_arr[self.ids_order[product_arr[i,0]],:][0]
+                
+                #_order = self.o_open.loc[self.o_open['Order_Id'] == p_arr[i,0]].to_numpy()[0]
+                #print (_order)
                 try:
                     _category = self.product_name_arr[self.ids_product_name[product_arr[i,1]],:][0]
                 except KeyError:
-                    print (product_arr[i,1])
+                    #print (product_arr[i,1])
                     _category = [0,0,0,0,0,0]
                 #print (_order[-1])   2020-10-05 22:35:00.000
                 #new_arr = [int(product_arr[i,0]), int(product_arr[i,1]), product_arr[i,2], product_arr[i,3], product_arr[i,4], _order[1], _order[2], _order[-1], _category[3], _category[5]]
@@ -130,6 +133,7 @@ class DataBase():
                              {_order[1]}, {_order[2]}, '{_order[-1]}', {_category[3]}, {_category[5]}),"""  
                                                         
             POO = str_temp[:-1]
+            #print (POO)
             D.client.execute(f"""INSERT INTO {t_name} 
                             (Order_ID, Product_ID, Items_Count, 
                              Total_Amount, TotalDiscount, Branch_Id, 
@@ -192,7 +196,8 @@ if __name__ == "__main__":
     #print (D.client.execute('SHOW DATABASES'))
     #D.client.execute("SYSTEM DROP UNCOMPRESSED CACHE")
     #------------------------>
-    #clean("test")
+    clean("test")
+    #clean("test2")
     
     #D.delete("my_table")
     

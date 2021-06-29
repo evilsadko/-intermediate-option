@@ -136,7 +136,8 @@ if __name__ == "__main__":
     
     #D.get_all_data("my_table") #"test" / my_table 35 show 100 000 000
     D.show_count_tables("my_table")
-    
+    D.show_count_tables("test")
+    D.show_count_tables("test2")
     #D.createDB_0()
     
     #D.test()  

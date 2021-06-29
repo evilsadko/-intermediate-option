@@ -1,222 +1,110 @@
 import threading
 from utils import *
-from dbhandler_2 import *
-
+import dbhandler
+DB = dbhandler.DataBase()
 
 if __name__ == "__main__":
-    D = DataBase()
+    
+    P = PRODUCT()
+    A = P.loc[P['Product_ID'] == 554815] #554815 #313528
+    O = ORDER()
+    
+    #554815
+    #print (A)
+    A = A.to_numpy()
+    cats = ['Jan', 'Feb', 'Mar', 'Apr','May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+    for i in A:
+        OID = i[0]
+        
+        O_t = O.loc[O['Order_Id'] == OID]
+        data = O_t.to_numpy()[0][-1]
+        s_mon = data.split(" ")[0].split("-")[1]
+        M[s_mon] += 1 #i[3]
+        print (i[1], OID, data, s_mon)
+        #print (OID,list(i), len(cats))
+    print (M)   
+#{1: 401, 2: 82, 3: 1074, 4: 1332, 5: 1136, 6: 91, 7: 572, 8: 688, 9: 719, 10: 1044, 11: 1709, 12: 2303}
+
+#{'01': 131963.43000000008, '02': 118786.96999999978, '03': 165455.81000000046, '04': 203461.25000000093, '05': 227038.53000000026, '06': 152014.69000000015, '07': 162823.32000000105, '08': 150667.54000000024, '09': 155146.86000000016, '10': 177031.57999999897, '11': 141911.0500000001, '12': 161564.06999999966}
+
     
     
-#        self.client.execute(f"""CREATE TABLE {x} 
-#                                (Order_ID Int64, 
-#                                 Product_ID Int64, 
-#                                 Items_Count Float64, 
-#                                 Total_Amount Float64, 
-#                                 TotalDiscount Float64, 
-#                                 Branch_Id Int64, 
-#                                 Customer_Id Int64,
-#                                 Order_Date DateTime64,
-#                                 Category1_Id Int64, 
-#                                 Category2_Id Int64) 
-#                            ENGINE = MergeTree() 
-#                            
-#                            ORDER BY Order_Date""")  
-    #print (D.show_tables())  
-#    T = D.client.execute(f"""   
-#                                            SELECT
-#                                              SUM(Items_Count) as sum1, 
-#                                              SUM(Total_Amount) as sum2,
-#                                              Customer_Id
-#                                            FROM test
-#                                            GROUP BY Customer_Id
-#                                            ORDER BY sum1
-#                          """)
+#    {'01': 101639.75999999631, '02': 82335.62000000032, '03': 73239.76000000202, '04': 67848.46000000316, '05': 81354.9100000005, '06': 63359.62000000348, '07': 69590.65000000274, '08': 76650.01000000129, '09': 86164.85999999921, '10': 99933.39999999681, '11': 80033.54000000052, '12': 87513.42999999908}
+
+#    T = DB.client.execute(f"""
+#            SELECT
+#               count(columns.sum1) as s1,
+#               columns.time
+#            FROM
+#            (SELECT
+#            toMonth(Order_Date) as time,
+#            count(Product_ID) as sum1
+#            FROM my_table
+#            WHERE Product_ID = 554815
+#            GROUP BY Order_Date) columns
+#            GROUP BY columns.time
+#            ORDER BY columns.time
+#            ASC    
+#            """)  # test
 
 
-#dict_ = DB.client.execute(f"""  
-#                    SELECT
-#                       SUM(columns.sum1) as s1,
-#                       SUM(columns.sum2) as S2,
-#                       columns.time
-#                    FROM
-#                    (SELECT
-#                    toMonth(Order_Date) as time,
-#                    SUM(Items_Count) as sum1,
-#                    SUM(Total_Amount) as sum2
-#                    FROM test
-#                    WHERE Customer_Id = {message["data"]["id_user"]}
-#                    AND Product_ID = {message["data"]["id_product"]}
-#                    GROUP BY Order_Date) columns
-#                    GROUP BY columns.time
-#                    ORDER BY columns.time
-#                    ASC
-#                            """)#OR
-
-
-#    vals_prod  = D.client.execute(f"""
-#                        SELECT 
-#                        count() 
-#                        FROM 
-#                            (SELECT DISTINCT 
-#                             Product_ID
-#                             FROM test)
-#                            """)[0][0]
-    #Z = np.zeros((vals_prod))
-#    print (Z.shape)
-#    T = D.client.execute(f"""
-#                            SELECT
-#                                  *
-#                            FROM test
-#                            WHERE test.Customer_Id = 5123650 
-#                            AND test.Product_ID = 7290011017873
-#                            """)
-#    G = {}
-#    izs = 0
-#    for i in T:
-#    
-#        a = D.client.execute(f"""
-#                        SELECT
-#                            *
-#                        FROM test
-#                        WHERE test.Customer_Id = 5123650 
-#                        AND test.Order_ID = {i[0]}
-#                        """)
-#        izs += len(a)
-#        for k in a:
-#            if k[1] != 7290011017873:
-#                print (k)                
-#        G[i[0]] = len(a)
-        #new_dict[j] = Z.tolist()                
-        #print (a[0], len(a), i[0])
-#    print (G, izs)#(T[0], T[-1], len(T), len(G))
-    
-    
-#------------------------------------------>
-    # Работает для небольших запросов      
-    T = D.client.execute(f"""
-                            SELECT
-                                 Order_ID, 
-                                 Product_ID, 
-                                 Items_Count, 
-                                 Total_Amount, 
-                                 Customer_Id,
-                                 toMonth(Order_Date) as time
-                            FROM test
-                            WHERE test.Customer_Id = 5123650 
-                            AND test.Product_ID = 7290011017873
-                            """)    
-    G = {}
-    t_str = ""
-    t_count = 0
-    G[7290011017873] = [0,0,0,0,0,0,0,0,0,0,0,0]
+    T = DB.client.execute(f"""
+            SELECT
+                toMonth(Order_Date) as time
+            FROM test
+            WHERE Product_ID = 554815
+            """) #554815 #313528
+    #print (T)
+    #M = {'01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0}
+    M = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0}
     for i in T:
-        t_str += f"OR test.Order_ID = {i[0]}\n"
-        t_count += i[2]
-        G[7290011017873][(i[-1]-1)] += i[2]
-           
-    a = D.client.execute(f"""
-                    SELECT
-                         Order_ID, 
-                         Product_ID, 
-                         Items_Count, 
-                         Total_Amount, 
-                         Customer_Id,
-                         toMonth(Order_Date) as time
-                    FROM test
-                    WHERE test.Customer_Id = 5123650
-                    AND NOT test.Product_ID = 7290011017873
-                    AND ({t_str[3:]})
-                    
-                    """)
-    dict_data = {}   
-    print (a)  
-    
-    P1 = t_count   
-    for r in a:
-        try:
-            dict_data[r[1]][0][(r[-1]-1)] += r[2]  
-            dict_data[r[1]][1] += r[2]
-        except KeyError:
-            dict_data[r[1]] = [[0,0,0,0,0,0,0,0,0,0,0,0], 0] 
-            dict_data[r[1]][0][(r[-1])] += r[2]
-            dict_data[r[1]][1] += r[2]  
-        print (r[-1])  
-    
-    for r in dict_data:
-        P2 = dict_data[r][1]
-        P = (P2/P1)*100  
-        if P > 5:  
-            G[r] = dict_data[r]   
-            print (dict_data[r], P, P1, P2)    
-    print (G)    
-    #print (t_count, dict_data)#(dict_data, len(T), len(a), t_count, G)    
-#    for x in a:
-#        print (x)
+        #data = i[-3]
+        #s_mon = data.split(" ")[0].split("-")[1]
+        #print (data, s_mon)
+        s_mon = i[0]
+        M[s_mon] += 1#i[2]
+        
+    print (M)
+#    
     
     
-    """
-    Сопутствующие товары для пользователя
-    
-    получаю все данные с ид товара, ид пользователя
-
-    извлекаю все покупки из этих данных 
-    
-    смотрю какие товары продовались   
-    """
-    # Кореляция
     
     
-    #P 7290011017873 CATeG-350  USER
-#f"SELECT count() FROM {x}"
-
-#    def related_products(self):
-#        product_dict = self.func_return(self.product_arr, 0) #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-#        product_open = self.product_open.sort_values(['Items_Count']) # Сортировка
-#        vals_prod = self.product_open.drop_duplicates("Product_ID") # Убрать дубликаты
-#        vals_prod = vals_prod["Product_ID"] 
-#        print (len(vals_prod)) # Узнать кол во ID продуктов
-#        #----------------------->
-#        # Декодирование кодирование в словарь
-#        dict_to_coding = {}
-#        dict_to_encoding = {}
-#        for ix, ij in enumerate(vals_prod):
-#            dict_to_coding[ij] = ix 
-#            dict_to_encoding[ix] = ij
-#        
-#        #------------------------------------->
-#        # Обработка файлов
-#        start = time.time()
-#        new_dict = {}
-#        _product_dict = self.func_return(self.product_arr, 1)  #['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount'] 
-#        for j in vals_prod[:]:
-#            #print (len(_product_dict[j])) # Кол во покупок с этим товаром
-#            Z = np.zeros((len(vals_prod)))
-#            for k in _product_dict[j]:
-#                _id_o = self.product_arr[k,0]    #получаю ИД oredr и продукта
-#                for u in product_dict[_id_o]:
-#                     ix_z = int(self.product_arr[u,1])
-#                     if int(j) != int(ix_z): 
-#                        ix_z = dict_to_coding[ix_z]
-#                        Z[ix_z] += self.product_arr[u,2]
-
-#            new_dict[j] = Z.tolist()
-#        print ("END", time.time()-start, len(new_dict))
-
-#        data = new_dict
-#        for i in data:
-#            P1 = sum(data[i])
-#            t_d = {}
-#            for ix, o in enumerate(data[i]):
-#                    try:
-#                        if o > 0:
-#                            P = o / int(P1) * 100
-#                            if P > 0.5:
-#                                #t_d[ix] = o
-#                                t_d[dict_to_encoding[str(ix)]] = o
-#                                P1 = P1 - o
-#                    except:
-#                           print (o, P1, i)   
-#                    
-#            if P1 > 0:
-#                t_d["остальные"] = P1
-#                _dict[i] = t_d  
+    
+    
+    
+    
+    
+#    if __name__ == "__main__":
+#    o_open = ORDER()  #['Order_Id', 'Customer_Id', ', 'price_before_discount', 'Amount_Charged', 'Order_Date']
+#    o_open = o_open.sort_values(by=['Order_Date']) #, inplace=True, ascending=False
+#    o_open = o_open.to_numpy()
+#    #cats = ['Jan', 'Feb', 'Mar', 'Apr','May','Jun', 'Jul', 'Aug','Sep', 'Oct', 'Nov', 'Dec']
+#    
+#    dicts = {}
+#    dicts2 = {}
+#    M = "11"
+#    for i in range(o_open.shape[0]):
+#        t = o_open[i,:].tolist()
+#        o_id = t[0]
+#        cust_id = t[1]
+#        items_count = t[2]
+#        date = t[-1]
+#        s_mon = date.split(" ")[0].split("-")[1]
+#        s_day = date.split(" ")[0].split("-")[-1]
+#        if s_mon == M:
+#            try:
+#                dicts[s_day] += 1
+#            except KeyError:
+#                dicts[s_day] = 1       
+#            try:
+#                dicts2[s_day] += int(items_count)
+#            except KeyError:
+#                dicts2[s_day] = int(items_count) 
+#        #print (o_id, items_count, date.split(" ")[0].split("-")[1])#, IDX[0], len(IDX[0].tolist()))   
+#    #print (list(dicts.keys()), list(dicts.values()))
+##----------------------------->
+#    plt.plot(list(dicts.keys()), list(dicts.values()))
+#    plt.plot(list(dicts2.keys()), list(dicts2.values()))
+#    plt.show()

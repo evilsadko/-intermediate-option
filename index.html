@@ -18,7 +18,7 @@
 <!--<button id="sort_product_by_user_id_rt" onclick="sort_product_by_user_id_rt()">Статистика продуктов для пользователя ID = <span id="change_see"></span></button>-->
 
 <!--<button id="sort_category_by_user_id" onclick="sort_category_by_user_id_rt()">Статистика категорий для пользователя ID = <span id="change_see"></span></button>-->
-
+	<div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
 
 
 
@@ -30,13 +30,71 @@
 </div>
 
 <canvas id="popChartAdd"></canvas>
+
+
 <div id="loader"></div>
 
 
 
+<div id="b-popup">
+                <div id="SeeBox"style="font-family: Roboto,helvetica,arial,sans-serif;">
+                     <div id="stat_cell">
+                        <canvas id="popChartAdd_up"></canvas>
+                        </div>
+                </div>
+
+    <div id="b-popup-content">
+    </div>
+    <div class="pv_close_btn" onclick="Close(0)" style="display: block;"></div>
+</div>
 
 
 <style type="text/css">
+.pv_close_btn {
+    background-image: url('/pv_layer_controls.png');
+    width: 16px;
+    height: 16px;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background-position: -3px 0px;
+    opacity: 0.5;
+    transition: opacity 100ms linear;
+    cursor: pointer;
+    }
+
+#SeeBox {
+    font-family: Arial;
+    background: #FFF;
+    padding: 20px;
+    position: relative;
+    height: auto;
+    border: 1px solid #DFDFDF;
+    -webkit-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+    -webkit-border-radius: 11px;
+    -moz-border-radius: 11px;
+    border-radius: 11px;
+    margin: 0 auto;
+}
+#b-popup{
+    width:100%;
+    min-height:100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow:hidden;
+    position:fixed;
+    top:0px;
+}
+#b-popup #b-popup-content{
+    margin:40px auto 0px auto;
+    min-width: 100px;
+    padding:10px;
+    background-color: #c5c5c5;
+    border-radius:5px;
+}
+
+
 #popChart { 
 display: block;
 box-sizing: border-box;
@@ -44,6 +102,48 @@ margin: 0px auto;
 position: relative;
 width: 1000px;
 }
+
+
+#left_block {
+    display: block;
+    float: left;
+}
+
+#left_block div{
+    margin: 9px 7px;
+    padding: 11px 0px;
+}
+
+
+#bottom_block {
+    display: block;
+    left: 120px;
+    position: relative;
+    width: 100%;
+    float: left;
+
+}
+#bottom_block div{
+    margin: 9px 10px;
+    padding: 11px 0px;
+    display: block;
+    float: left;
+    width: 30px;
+    /* FF3.5+ */
+    -moz-transform: rotate(-90.0deg);
+    /* Opera 10.5 */
+    -o-transform: rotate(-90.0deg);
+    /* Saf3.1+, Chrome */
+    -webkit-transform: rotate(-90.0deg);
+    /* IE6,IE7 */
+    filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=0.083);
+    /* IE8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
+    /* Standard */
+    transform: rotate(-90.0deg);
+    
+}
+
 
 
 #loader {
@@ -63,17 +163,26 @@ animation: spin 2s linear infinite;
    
   </style>
 <script>
+var b_popup = document.getElementById('b-popup');
+var b_popup_content = document.getElementById('b-popup-content');
+b_popup.style.display = "none";
+
+
+
 var canvas = document.getElementById("popChart");
 canvas.style.display = "none";
 var canvasAdd = document.getElementById("popChartAdd");
 canvasAdd.style.display = "none";
 document.getElementById("new_block").style.display = "none";
+var canvasAdd_up = document.getElementById("popChartAdd_up");
 
 
 var t_el = document.getElementById("loader");
 
 var popCanvas = document.getElementById("popChart").getContext("2d");
 var popChartAdd = document.getElementById("popChartAdd").getContext("2d");
+var popChartAdd_up = document.getElementById("popChartAdd_up").getContext("2d");
+
 
 var A = new Chart(popChartAdd);
 var DDD = new Chart(popCanvas);
@@ -119,6 +228,13 @@ id_user.addEventListener('input', (event) => {
 
 var ws = new WebSocket("ws://178.158.131.41:8008/websocket"); // IP http://178.158.131.41/
 //ws.binaryType = 'arraybuffer';
+
+function Close() {
+  console.log("Close");
+  b_popup.style.display = "none";
+  document.getElementById('SeeBox').style.display = "none";
+}
+
 
 function next() {
         var datas = [];
@@ -336,6 +452,20 @@ function show_correlation(x,y) {
     
 };
 
+function show_correlation_product(x) {
+    //console.log(x,y)
+    var send_str = JSON.stringify({
+      to: "show_correlation_product",
+      data: {
+             id_product: x
+             }
+    })
+    //DDD["config"]["switch"] = "sort_product_by_user_id_and_category_rt";
+    ws.send(send_str);    
+    
+};
+
+
 // Вэб сокет
 ws.onopen = function() {
     console.log("connection was established");
@@ -347,6 +477,28 @@ function dynamicColors() {
     var b = Math.floor(Math.random() * 255);
     return "rgb(" + r + "," + g + "," + b + ")";
 };
+
+var coorAns;
+var stat_cell;
+function getMousePos(cc, evt){
+   var rect = cc.getBoundingClientRect();
+   return {x: evt.clientX - rect.left,
+           y: evt.clientY - rect.top};
+};
+
+function getAnswHuman(mousePos){
+   for (var i = 0; i < coorAns.length; i++) {
+       if ((mousePos.x>coorAns[i][0])&&(mousePos.y>coorAns[i][1])&&(mousePos.x<coorAns[i][2])&&(mousePos.y<coorAns[i][3])) {
+             return i; 
+       };
+   };
+};
+
+//var ctx = canvasAdd.getContext('2d');
+var size_cell = 50;
+
+
+
 
 ws.onmessage = function(evt) {
     var message_data = JSON.parse(evt.data);
@@ -748,10 +900,130 @@ ws.onmessage = function(evt) {
         A["config"]._config.data.labels = MONTHS;
         A["config"]._config.data.datasets.push({label: 'продажи', data: T});
         
-        A.update();    
-    
-    
+        A.update(); 
+        
+
+        
+        try {
+            var temp_div = document.getElementById("correlation");
+            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Сопутствующие продукты</span></button>";
+        }
+        catch (e) {
+            var temp_div = document.createElement("div");
+            temp_div.id = "correlation";
+            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Сопутствующие продукты</span></button>";
+            document.body.append(temp_div);
+                
+        }
+        
+        //Кореляция продуктов
+
     }
+    
+    if (message_data["from"] == "show_correlation_product") {
+            b_popup.style.display = "block";
+            //console.log(message_data['data'][0], message_data['data'][1].length);
+            var cor_data = message_data['data'][0];
+            var cor_info = message_data['data'][1];
+            
+            popChartAdd_up.clearRect(0, 0, canvasAdd.width, canvasAdd.height);
+
+            //canvasAdd
+            var len_corr = message_data['data'][1].length;
+            
+
+            canvasAdd_up.width = len_corr*size_cell;
+            canvasAdd_up.height = len_corr*size_cell;
+
+
+
+            popChartAdd_up.beginPath();
+
+            coorAns = [];
+            stat_cell = [];
+            info_cell = [];
+            // Draw line
+            
+            for (let x = 0; x <= canvasAdd_up.width; x += size_cell) { 
+               //var OXX2 = 0;
+               for (let y = 0; y <= canvasAdd_up.width; y += size_cell) {
+                   popChartAdd_up.lineWidth = 1;  
+                   popChartAdd_up.strokeStyle = "#ccc";
+                   popChartAdd_up.moveTo(0, y);
+                   popChartAdd_up.lineTo(canvasAdd_up.width, y);
+                   popChartAdd_up.moveTo(x, 0);
+                   popChartAdd_up.lineTo(x, canvasAdd_up.width);
+                   
+                   //ctx.fillText(cor_data[OXX2][OXX1].toFixed(1), x+5, y-5);
+                   
+                   //stat_cell.push([cor_data[OXX1][OXX2].toFixed(1)]);
+                   if (y < canvasAdd_up.width && x < canvasAdd_up.width) {
+                        coorAns.push([x, y, x+size_cell, y+size_cell]);
+                   }
+                   //console.log(OXX1, OXX2, x, y)//cor_data[OXX1][OXX2].toFixed(1)
+                   //OXX2 += 1;
+                }
+                //OXX1 += 1;
+            }
+            popChartAdd_up.stroke();
+            // Draw Text
+            var OXX = 0;
+            try {
+                var left_block_div = document.getElementById("left_block");
+                var bottom_block_div = document.getElementById("bottom_block");
+                left_block_div.innerHTML = "";
+                bottom_block_div.innerHTML = "";
+            }
+            catch (e){
+                var left_block_div = document.createElement("div");
+                var bottom_block_div = document.createElement("div");
+                bottom_block_div.id = "bottom_block";
+                left_block_div.id = "left_block";
+            
+            
+            }
+            for (let x = 0; x < len_corr; x++) { 
+                console.log(cor_info[x]);
+                var temp_div = document.createElement("div");
+                temp_div.id = "info_cell_"+x;
+                temp_div.innerHTML = cor_info[x];
+                left_block_div.append(temp_div);
+                
+                var temp_div = document.createElement("div");
+                temp_div.id = "info_cell_"+x;
+                temp_div.innerHTML = cor_info[x];
+                bottom_block_div.append(temp_div);
+                
+                for (let y = 0; y < len_corr; y++) { 
+                    //console.log(x, y, coorAns.length, OXX, cor_data[y][x].toFixed(1), cor_data[x][y].toFixed(1))
+                    //console.log(OXX);
+                    popChartAdd_up.font = "16px serif";
+                    popChartAdd_up.textBaseline = "top";
+                    //ctx.fillText(OXX, coorAns[OXX][0]+15, coorAns[OXX][1]+15);
+                    popChartAdd_up.fillText(cor_data[x][y].toFixed(1), coorAns[OXX][0]+15, coorAns[OXX][1]+15);
+                    stat_cell.push([cor_data[x][y].toFixed(1)]);
+                    info_cell.push([cor_info[x], cor_info[y]])
+                    OXX++;
+                    
+                }
+            }
+            document.getElementById("stat_cell").append(left_block_div);
+            document.getElementById("stat_cell").append(bottom_block_div);
+        
+        
+    }
+    
+canvasAdd_up.onclick = function (evt) {
+      var mousePos = getMousePos(canvasAdd, evt);
+      var answ = getAnswHuman(mousePos);
+      console.log("ok", evt, mousePos, answ, stat_cell[answ], info_cell[answ], popChartAdd_up.fillStyle);
+      popChartAdd_up.fillStyle = "rgba(70, 77, 77, 0.5)";
+      popChartAdd_up.fillRect(Math.floor(evt.offsetX / size_cell) * size_cell,
+        Math.floor(evt.offsetY / size_cell) * size_cell,
+        size_cell, size_cell);          
+    //}
+};          
+    
 //--------------------------->
 
 canvas.onclick = function (evt) {

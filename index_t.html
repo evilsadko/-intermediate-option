@@ -1,0 +1,332 @@
+<script src="chart.min.js"></script>
+ 
+
+<button id="show_product" onclick="show_correlation_product(602)">Статистика продуктов</span></button> 
+<!--554815-->
+<!--<button id="show_category2" onclick="sort_product_id_user_id('7290004127329')">!!!!!!!!!!</span></button>-->
+
+<!--<button id="sort_product_by_user_id_rt" onclick="sort_product_by_user_id_rt()">Статистика продуктов для пользователя ID = <span id="change_see"></span></button>-->
+
+<!--<button id="sort_category_by_user_id" onclick="sort_category_by_user_id_rt()">Статистика категорий для пользователя ID = <span id="change_see"></span></button>-->
+
+
+
+<canvas id="popChart"></canvas>
+<div id="new_block">
+<button id="back" onclick="back()">Предыдущие</button>
+<span id="parts"></span>
+<button id="next" onclick="next()">Следующие</button>
+</div>
+
+<div id="stat_cell">
+<canvas id="popChartAdd"></canvas>
+</div>
+
+<div id="loader"></div>
+
+<canvas id="canvas" width="600px" height="600px"></canvas>
+
+
+
+
+<style type="text/css">
+#left_block {
+    display: block;
+    float: left;
+}
+
+#left_block div{
+    margin: 9px 7px;
+    padding: 11px 0px;
+}
+
+
+#bottom_block {
+    display: block;
+    left: 120px;
+    position: relative;
+    top: 90px;
+
+}
+#bottom_block div{
+    margin: 9px 10px;
+    padding: 11px 0px;
+    display: block;
+    float: left;
+    width: 30px;
+    /* FF3.5+ */
+    -moz-transform: rotate(-90.0deg);
+    /* Opera 10.5 */
+    -o-transform: rotate(-90.0deg);
+    /* Saf3.1+, Chrome */
+    -webkit-transform: rotate(-90.0deg);
+    /* IE6,IE7 */
+    filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=0.083);
+    /* IE8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
+    /* Standard */
+    transform: rotate(-90.0deg);
+    
+}
+
+
+#popChart { 
+display: block;
+box-sizing: border-box;
+margin: 0px auto;
+position: relative;
+}
+
+
+#loader {
+border: 16px solid #f3f3f3; /* Light grey */
+border-top: 16px solid #3498db; /* Blue */
+border-radius: 50%;
+width: 120px;
+height: 120px;
+margin: 10% auto;
+animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+   
+  </style>
+<script>
+var canvas = document.getElementById("popChart");
+canvas.style.display = "none";
+var canvasAdd = document.getElementById("popChartAdd");
+//canvasAdd.style.display = "none";
+document.getElementById("new_block").style.display = "none";
+
+
+var t_el = document.getElementById("loader");
+
+var popCanvas = document.getElementById("popChart").getContext("2d");
+var popChartAdd = document.getElementById("popChartAdd").getContext("2d");
+
+//var A = new Chart(popChartAdd);
+var DDD = new Chart(popCanvas);
+
+var big_data;
+var start_idx;
+var start_slice;
+var parts = document.getElementById("parts");
+
+//DDD.canvas.parentNode.style.height = '128px'
+DDD["config"]._config.options.onClick = function (e) {};
+
+DDD.options.responsive = true;
+DDD.options.aspectRatio = 4;
+
+
+
+var ws = new WebSocket("ws://178.158.131.41:8008/websocket"); // IP http://178.158.131.41/
+//ws.binaryType = 'arraybuffer';
+
+ws.onopen = function() {
+    console.log("connection was established");
+};
+
+function show_correlation_product(x) {
+    //console.log(x,y)
+    var send_str = JSON.stringify({
+      to: "show_correlation_product",
+      data: {
+             id_product: x
+             }
+    })
+    //DDD["config"]["switch"] = "sort_product_by_user_id_and_category_rt";
+    ws.send(send_str);    
+    
+};
+
+// Вэб сокет
+var coorAns;
+var stat_cell;
+function getMousePos(canvas, evt){
+   var rect = canvas.getBoundingClientRect();
+   return {x: evt.clientX - rect.left,
+           y: evt.clientY - rect.top};
+};
+
+function getAnswHuman(mousePos){
+   for (var i = 0; i < coorAns.length; i++) {
+       if ((mousePos.x>coorAns[i][0])&&(mousePos.y>coorAns[i][1])&&(mousePos.x<coorAns[i][2])&&(mousePos.y<coorAns[i][3])) {
+             return i; 
+       };
+   };
+};
+
+//var ctx = canvasAdd.getContext('2d');
+var size_cell = 50;
+
+ws.onmessage = function(evt) {
+        var message_data = JSON.parse(evt.data);
+        //console.log(message_data["from"], message_data['data']); 
+
+
+        if (message_data["from"] == "show_correlation_product") {
+
+            //console.log(message_data['data'][0], message_data['data'][1].length);
+            var cor_data = message_data['data'][0];
+            var cor_info = message_data['data'][1];
+            
+            popChartAdd.clearRect(0, 0, canvasAdd.width, canvasAdd.height);
+
+            //canvasAdd
+            var len_corr = message_data['data'][1].length;
+            
+
+            canvasAdd.width = len_corr*size_cell;
+            canvasAdd.height = len_corr*size_cell;
+
+
+
+            popChartAdd.beginPath();
+
+            coorAns = [];
+            stat_cell = [];
+            info_cell = [];
+            // Draw line
+            
+            for (let x = 0; x <= canvasAdd.width; x += size_cell) { 
+               //var OXX2 = 0;
+               for (let y = 0; y <= canvasAdd.width; y += size_cell) {
+                   popChartAdd.lineWidth = 1;  
+                   popChartAdd.strokeStyle = "#ccc";
+                   popChartAdd.moveTo(0, y);
+                   popChartAdd.lineTo(canvasAdd.width, y);
+                   popChartAdd.moveTo(x, 0);
+                   popChartAdd.lineTo(x, canvasAdd.width);
+                   
+                   //ctx.fillText(cor_data[OXX2][OXX1].toFixed(1), x+5, y-5);
+                   
+                   //stat_cell.push([cor_data[OXX1][OXX2].toFixed(1)]);
+                   if (y < canvasAdd.width && x < canvasAdd.width) {
+                        coorAns.push([x, y, x+size_cell, y+size_cell]);
+                   }
+                   //console.log(OXX1, OXX2, x, y)//cor_data[OXX1][OXX2].toFixed(1)
+                   //OXX2 += 1;
+                }
+                //OXX1 += 1;
+            }
+            popChartAdd.stroke();
+            // Draw Text
+            var OXX = 0;
+            var left_block_div = document.createElement("div");
+            var bottom_block_div = document.createElement("div");
+            bottom_block_div.id = "bottom_block";
+            left_block_div.id = "left_block";
+            for (let x = 0; x < len_corr; x++) { 
+                console.log(cor_info[x]);
+                var temp_div = document.createElement("div");
+                temp_div.id = "info_cell_"+x;
+                temp_div.innerHTML = cor_info[x];
+                left_block_div.append(temp_div);
+                
+                var temp_div = document.createElement("div");
+                temp_div.id = "info_cell_"+x;
+                temp_div.innerHTML = cor_info[x];
+                bottom_block_div.append(temp_div);
+                
+                for (let y = 0; y < len_corr; y++) { 
+                    //console.log(x, y, coorAns.length, OXX, cor_data[y][x].toFixed(1), cor_data[x][y].toFixed(1))
+                    //console.log(OXX);
+                    popChartAdd.font = "16px serif";
+                    popChartAdd.textBaseline = "top";
+                    //ctx.fillText(OXX, coorAns[OXX][0]+15, coorAns[OXX][1]+15);
+                    popChartAdd.fillText(cor_data[x][y].toFixed(1), coorAns[OXX][0]+15, coorAns[OXX][1]+15);
+                    stat_cell.push([cor_data[x][y].toFixed(1)]);
+                    info_cell.push([cor_info[x], cor_info[y]])
+                    OXX++;
+                    
+                }
+            }
+            document.getElementById("stat_cell").append(left_block_div);
+            document.getElementById("stat_cell").append(bottom_block_div);
+        }
+    
+    
+//--------------------------->
+
+    canvasAdd.onclick = function (evt) {
+         var mousePos = getMousePos(canvasAdd, evt);
+         var answ = getAnswHuman(mousePos);
+        console.log("ok", evt, mousePos, answ, stat_cell[answ], info_cell[answ], popChartAdd.fillStyle);
+        //alert(stat_cell[answ], "Связь продуктов", info_cell[answ])
+        //if (popChartAdd.fillStyle == "rgba(70, 77, 77, 0.501960784313726)"){
+          //ctx.globalCompositeOperation = 'destination-out';
+//          popChartAdd.fillStyle = "rgba(255,255,255,1)";
+  //        popChartAdd.clearRect(Math.floor(evt.offsetX / size_cell) * size_cell,
+    //        Math.floor(evt.offsetY / size_cell) * size_cell,
+      //      size_cell, size_cell);       
+        //} else {
+          //ctx.globalCompositeOperation = 'destination-out';
+          popChartAdd.fillStyle = "rgba(70, 77, 77, 0.5)";
+          popChartAdd.fillRect(Math.floor(evt.offsetX / size_cell) * size_cell,
+            Math.floor(evt.offsetY / size_cell) * size_cell,
+            size_cell, size_cell);          
+        //}
+    };        
+    
+};
+
+
+//------------------------------------------------>
+//Получаю ответ
+
+
+
+
+<!--var canvas = document.getElementById("canvas"),-->
+<!--    c = canvas.getContext("2d"),-->
+<!--    boxSize = 40,-->
+<!--    boxes = Math.floor(600 / boxSize);-->
+<!--canvas.addEventListener('click', handleClick);-->
+<!--//canvas.addEventListener('mousemove', handleClick);-->
+<!--function drawBox() {-->
+<!--  c.beginPath();-->
+<!--  c.fillStyle = "white";-->
+<!--  c.lineWidth = 3;-->
+<!--  c.strokeStyle = 'black';-->
+<!--  for (var row = 0; row < boxes; row++) {-->
+<!--    for (var column = 0; column < boxes; column++) {-->
+<!--      var x = column * boxSize;-->
+<!--      var y = row * boxSize;-->
+<!--      console.log(x, y, boxSize)-->
+<!--      c.rect(x, y, boxSize, boxSize);-->
+<!--      c.fill();-->
+<!--      c.stroke();-->
+<!--    }-->
+<!--  }-->
+<!--  c.closePath();-->
+<!--}-->
+
+<!--function handleClick(e) {-->
+<!--  console.log(c.fillStyle, e);-->
+<!--  if (c.fillStyle == "#000000"){-->
+<!--      c.fillStyle = "white";-->
+
+<!--      c.fillRect(Math.floor(e.offsetX / boxSize) * boxSize,-->
+<!--        Math.floor(e.offsetY / boxSize) * boxSize,-->
+<!--        boxSize, boxSize);  -->
+<!--  }-->
+<!--  else {-->
+<!--  c.fillStyle = "black";-->
+
+<!--  c.fillRect(Math.floor(e.offsetX / boxSize) * boxSize,-->
+<!--    Math.floor(e.offsetY / boxSize) * boxSize,-->
+<!--    boxSize, boxSize);-->
+<!--    -->
+<!--    -->
+<!--  }-->
+<!--    -->
+<!--}-->
+
+<!--drawBox();-->
+
+   
+</script>

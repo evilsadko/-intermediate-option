@@ -8,6 +8,7 @@ import os, sys
 import base64, json, time
 
 import dbhandler
+from temp import heatmap_vis
 
 DB = dbhandler.DataBase()
 
@@ -37,7 +38,7 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                               SUM(Items_Count) as sum1, 
                                               SUM(Total_Amount) as sum2,
                                               Customer_Id
-                                            FROM my_table
+                                            FROM test
                                             GROUP BY Customer_Id
                                             ORDER BY sum1
                                             {message["asc_desc"]}
@@ -95,8 +96,8 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                                       SUM(Items_Count) as sum1, 
                                                       SUM(Total_Amount) as sum2,
                                                       Category1_Id
-                                                    FROM my_table
-                                                    WHERE my_table.Customer_Id = {message["data"]} 
+                                                    FROM test
+                                                    WHERE test.Customer_Id = {message["data"]} 
                                                     GROUP BY Category1_Id
                                                     ORDER BY sum1
                                                     DESC
@@ -112,9 +113,9 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                         SUM(Items_Count) as sum1, 
                                         SUM(Total_Amount) as sum2,
                                         Product_ID
-                                    FROM my_table
-                                    WHERE my_table.Customer_Id = {message["data"]["id_user"]} 
-                                    AND my_table.Category1_Id = {message["data"]["id_category"]}
+                                    FROM test
+                                    WHERE test.Customer_Id = {message["data"]["id_user"]} 
+                                    AND test.Category1_Id = {message["data"]["id_category"]}
                                     GROUP BY Product_ID
                                     ORDER BY sum1
                                     DESC
@@ -125,8 +126,8 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                     t = DB.client.execute(f"""   
                                             SELECT
                                             *
-                                            FROM my_table
-                                            WHERE my_table.Customer_Id = {message['data']}
+                                            FROM test
+                                            WHERE test.Customer_Id = {message['data']}
                                             ORDER BY Items_Count
                                             DESC 
                                             LIMIT 20
@@ -156,9 +157,9 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                                                       SUM(Items_Count) as sum1, 
                                                       SUM(Total_Amount) as sum2,
                                                       Category1_Id
-                                                    FROM my_table
-                                                    WHERE my_table.Customer_Id = {message["id1"]} 
-                                                    AND my_table.Category1_Id = {message["id2"]}
+                                                    FROM test
+                                                    WHERE test.Customer_Id = {message["id1"]} 
+                                                    AND test.Category1_Id = {message["id2"]}
                                                     GROUP BY Category1_Id
                                                 """)           
                                                 
@@ -244,6 +245,60 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                 if P > 5:  
                     G[r] = dict_data[r][0]  
             self.write_message(json.dumps({"from":"show_correlation", "data":G})) 
+        if message["to"] == "show_correlation_product":
+            T = DB.client.execute(f"""
+                                    SELECT
+                                        SUM(Items_Count) as IC,
+                                        toMonth(Order_Date) as time
+                                    FROM test
+                                    WHERE test.Product_ID = {message["data"]["id_product"]} 
+                                    GROUP BY time
+                                    """) 
+            Z = np.array(T)[:,0]
+            print (np.array(T)[:,0])
+                                     
+            T = DB.client.execute(f"""
+                     SELECT 
+                        Items_Count,
+                        Product_ID,
+                        Order_ID,
+                        toMonth(Order_Date) as time
+                       FROM test              
+                       WHERE Order_ID IN (                        
+                                    SELECT
+                                         Order_ID
+                                    FROM test
+                                    WHERE test.Product_ID = {message["data"]["id_product"]}
+                                   )
+                                    """)    
+            D = {}  
+            #print (T)                       
+            for k in T:
+                try:
+                    D[k[1]][k[-1]] += k[0]
+                    #print (k[1], D[k[1]])
+                except KeyError:
+                    D[k[1]] = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0}
+                    D[k[1]][k[-1]] += k[0]
+            #print (len(D), D)
+            T_data0 = []
+            ID_s = []
+            
+            T_data0.append(Z)
+            ID_s.append(message["data"]["id_product"])
+            for k in D:
+                #print (np.mean(Z), np.mean(np.array(list(D[k].values()))))
+                P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
+                if P > 10:
+                    print (Z, np.array(list(D[k].values())), np.mean(Z), np.mean(np.array(list(D[k].values()))))
+                    T_data0.append(np.array(list(D[k].values())))
+                    ID_s.append(k)        
+            T_data0 = np.array(T_data0)
+            corr_0 = np.corrcoef(T_data0)
+            print (corr_0.shape, ID_s) 
+            #heatmap_vis(corr_0, ID_s, f"ic_heatmap_{message['data']['id_product']}.jpg")  
+                        
+            self.write_message(json.dumps({"from":"show_correlation_product", "data":[corr_0.tolist(), list(ID_s)]}))
 
 
         if message["to"] == "sort_product_id":
@@ -280,6 +335,7 @@ app = tornado.web.Application([
         (r"/", MainHandler),
         (r"/websocket", ImageWebSocket),
         (r"/(chart.min.js)", tornado.web.StaticFileHandler, {'path':'./node_modules/chart.js/dist/'}),
+        (r"/(pv_layer_controls.png)", tornado.web.StaticFileHandler, {'path':'./'})
     ])
 app.listen(8800)
 tornado.ioloop.IOLoop.current().start()

@@ -1,8 +1,8 @@
 <script src="chart.min.js"></script>
  
 
-<button id="show_product" onclick="show_correlation_product(602)">Статистика продуктов</span></button> 
-<!--554815-->
+<button id="show_product" onclick="show_correlation_product(554815)">Статистика продуктов</span></button> 
+<!---->
 <!--<button id="show_category2" onclick="sort_product_id_user_id('7290004127329')">!!!!!!!!!!</span></button>-->
 
 <!--<button id="sort_product_by_user_id_rt" onclick="sort_product_by_user_id_rt()">Статистика продуктов для пользователя ID = <span id="change_see"></span></button>-->
@@ -163,6 +163,12 @@ function getAnswHuman(mousePos){
 //var ctx = canvasAdd.getContext('2d');
 var size_cell = 50;
 
+var heatmap_color = {};
+for (var i=-1.0; i<1; i+=0.1) {
+    //console.log(i.toFixed(1), 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')');
+    heatmap_color[i.toFixed(1)] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+    }
+
 ws.onmessage = function(evt) {
         var message_data = JSON.parse(evt.data);
         //console.log(message_data["from"], message_data['data']); 
@@ -235,10 +241,20 @@ ws.onmessage = function(evt) {
                 for (let y = 0; y < len_corr; y++) { 
                     //console.log(x, y, coorAns.length, OXX, cor_data[y][x].toFixed(1), cor_data[x][y].toFixed(1))
                     //console.log(OXX);
+                    
+                  popChartAdd.fillStyle = heatmap_color[cor_data[x][y].toFixed(1)];
+                  popChartAdd.fillRect(Math.floor(coorAns[OXX][0] / size_cell) * size_cell,
+                    Math.floor(coorAns[OXX][1] / size_cell) * size_cell,
+                    size_cell, size_cell);
+                    
+                    popChartAdd.fillStyle = "black";
                     popChartAdd.font = "16px serif";
                     popChartAdd.textBaseline = "top";
                     //ctx.fillText(OXX, coorAns[OXX][0]+15, coorAns[OXX][1]+15);
                     popChartAdd.fillText(cor_data[x][y].toFixed(1), coorAns[OXX][0]+15, coorAns[OXX][1]+15);
+                    
+
+                       
                     stat_cell.push([cor_data[x][y].toFixed(1)]);
                     info_cell.push([cor_info[x], cor_info[y]])
                     OXX++;
@@ -252,24 +268,46 @@ ws.onmessage = function(evt) {
     
 //--------------------------->
 
+function removeItemOnce(arr, value) {
+  var index = arr.indexOf(value);
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
+}
+
+    var triger = [];
     canvasAdd.onclick = function (evt) {
          var mousePos = getMousePos(canvasAdd, evt);
          var answ = getAnswHuman(mousePos);
-        console.log("ok", evt, mousePos, answ, stat_cell[answ], info_cell[answ], popChartAdd.fillStyle);
-        //alert(stat_cell[answ], "Связь продуктов", info_cell[answ])
-        //if (popChartAdd.fillStyle == "rgba(70, 77, 77, 0.501960784313726)"){
-          //ctx.globalCompositeOperation = 'destination-out';
-//          popChartAdd.fillStyle = "rgba(255,255,255,1)";
-  //        popChartAdd.clearRect(Math.floor(evt.offsetX / size_cell) * size_cell,
-    //        Math.floor(evt.offsetY / size_cell) * size_cell,
-      //      size_cell, size_cell);       
-        //} else {
-          //ctx.globalCompositeOperation = 'destination-out';
+         //popChartAdd.triger = 1;
+         
+        console.log("ok", evt, mousePos, answ, stat_cell[answ], info_cell[answ], popChartAdd.fillStyle, triger);
+        if (triger.includes(answ)){
+            //popChartAdd.globalCompositeOperation = 'destination-out';
+            console.log("OFF", coorAns[answ][0]+15, coorAns[answ][1]+15, stat_cell[answ][0]);
+            //popChartAdd.clearRect(Math.floor(evt.offsetX / size_cell) * size_cell, Math.floor(evt.offsetY / size_cell) * size_cell, size_cell, size_cell);       
+            //popChartAdd.triger = 1;
+            //triger = answ;
+          popChartAdd.fillStyle = "rgba(255, 255, 255, 1)";
+          popChartAdd.fillRect((Math.floor(evt.offsetX / size_cell) * size_cell)+1,
+            (Math.floor(evt.offsetY / size_cell) * size_cell)+1,
+            size_cell-2, size_cell-2); 
+          popChartAdd.font = "16px serif";
+          popChartAdd.fillStyle = "black";
+          popChartAdd.fillText(stat_cell[answ][0], coorAns[answ][0]+15, coorAns[answ][1]+15);
+          popChartAdd.fill();
+          removeItemOnce(triger, answ)
+            
+        } else {
+          //popChartAdd.globalCompositeOperation = 'destination-out';
+          //triger = answ;
+          triger.push(answ)
           popChartAdd.fillStyle = "rgba(70, 77, 77, 0.5)";
           popChartAdd.fillRect(Math.floor(evt.offsetX / size_cell) * size_cell,
             Math.floor(evt.offsetY / size_cell) * size_cell,
             size_cell, size_cell);          
-        //}
+        }
     };        
     
 };

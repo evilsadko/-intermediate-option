@@ -273,7 +273,7 @@ if __name__ == "__main__":
         print ('Прогнозирование') 
         y_pred_batch = sess.run(pred, {X: train_X})
         print (y_pred_batch)
-        print (train_Y)
+        print (train_Y, train_X)
         #Graphic display
         plt.plot(train_X, train_Y, 'ro', label='Original data')
         plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')

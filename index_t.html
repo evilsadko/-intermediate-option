@@ -1,8 +1,8 @@
 <script src="chart.min.js"></script>
  
 
-<button id="show_product" onclick="show_correlation_product(554815)">Статистика продуктов</span></button> 
-<!---->
+<button id="show_product" onclick="show_correlation_product(602)">Статистика продуктов</span></button> 
+<!--554815-->
 <!--<button id="show_category2" onclick="sort_product_id_user_id('7290004127329')">!!!!!!!!!!</span></button>-->
 
 <!--<button id="sort_product_by_user_id_rt" onclick="sort_product_by_user_id_rt()">Статистика продуктов для пользователя ID = <span id="change_see"></span></button>-->
@@ -67,6 +67,11 @@
     /* Standard */
     transform: rotate(-90.0deg);
     
+}
+#id_regression {
+position: absolute;
+top: 0px;
+left: 200px;
 }
 
 
@@ -159,16 +164,103 @@ function getAnswHuman(mousePos){
        };
    };
 };
+//-------------------------------->
 
+/* Convert a hex string to an RGB triplet */
+function hex (c) {
+  var s = "0123456789abcdef";
+  var i = parseInt (c);
+  if (i == 0 || isNaN (c))
+    return "00";
+  i = Math.round (Math.min (Math.max (0, i), 255));
+  return s.charAt ((i - i % 16) / 16) + s.charAt (i % 16);
+}
+
+/* Convert an RGB triplet to a hex string */
+function convertToHex (rgb) {
+  return hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
+}
+
+function convertToRGB (hex) {
+  var color = [];
+  color[0] = parseInt ((trim(hex)).substring (0, 2), 16);
+  color[1] = parseInt ((trim(hex)).substring (2, 4), 16);
+  color[2] = parseInt ((trim(hex)).substring (4, 6), 16);
+  return color;
+}
+/* Remove '#' in color hex string */
+function trim (s) { return (s.charAt(0) == '#') ? s.substring(1, 7) : s }
+
+function generateColor(colorStart, colorEnd, colorCount){
+
+    // The beginning of your gradient
+    var start = convertToRGB (colorStart);    
+
+    // The end of your gradient
+    var end   = convertToRGB (colorEnd);    
+
+    // The number of colors to compute
+    var len = colorCount;
+
+    //Alpha blending amount
+    var alpha = 0.0;
+
+    var saida = [];
+
+    for (i = 0; i < len; i++) {
+        var c = [];
+        alpha += (1.0/len);
+        
+        c[0] = start[0] * alpha + (1 - alpha) * end[0];
+        c[1] = start[1] * alpha + (1 - alpha) * end[1];
+        c[2] = start[2] * alpha + (1 - alpha) * end[2];
+
+        saida.push(convertToHex(c));
+        
+    }
+
+    return saida;
+
+}
+
+
+
+
+//----------------------------------->
 //var ctx = canvasAdd.getContext('2d');
 var size_cell = 50;
 
 var heatmap_color = {};
+var heatmap_color_list = []
 for (var i=-1.0; i<1; i+=0.1) {
     //console.log(i.toFixed(1), 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')');
+    //heatmap_color[i.toFixed(1)] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+    if (i.toFixed(1) == 0.0) {
+        heatmap_color["-0.0"] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+        heatmap_color["0.0"] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+        heatmap_color_list.push("0.0");
+        heatmap_color_list.push("-0.0")
+    }
     heatmap_color[i.toFixed(1)] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+    heatmap_color_list.push(i.toFixed(1))
+    //255, 69, 0
     }
 
+<!--for (var i=-1.0; i<1; i+=0.1) {-->
+<!--    //console.log(i.toFixed(1), 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')');-->
+<!--    //heatmap_color[i.toFixed(1)] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';-->
+<!--    if (i>=0.8) {-->
+<!--     heatmap_color[i.toFixed(1)] = 'rgb(255,'+ Math.floor(69-(i*30)) + ', 0)'; //Math.floor(255-10.0*i) +')'-->
+<!--     //Math.floor(255-10.0*i) +')' 255, 69, 0-->
+<!--    } else {-->
+<!--     heatmap_color[i.toFixed(1)] = 'rgb(255,'+ Math.floor(255-42.5*i) + ', 0)';-->
+<!--    } -->
+<!--    //255, 69, 0-->
+<!--    }-->
+
+var tmp = generateColor('#FF4500', '#FFFFE0', heatmap_color_list.length);
+console.log(tmp, ">>>>>>>>>", heatmap_color, "<<<<<<<<>>>>>>>>", heatmap_color_list.length);
+    
 ws.onmessage = function(evt) {
         var message_data = JSON.parse(evt.data);
         //console.log(message_data["from"], message_data['data']); 
@@ -240,9 +332,11 @@ ws.onmessage = function(evt) {
                 
                 for (let y = 0; y < len_corr; y++) { 
                     //console.log(x, y, coorAns.length, OXX, cor_data[y][x].toFixed(1), cor_data[x][y].toFixed(1))
-                    //console.log(OXX);
-                    
-                  popChartAdd.fillStyle = heatmap_color[cor_data[x][y].toFixed(1)];
+                    //console.log(cor_data[x][y].toFixed(1), heatmap_color[cor_data[x][y].toFixed(1)])
+                  
+                  var IDX = heatmap_color_list.indexOf(cor_data[x][y].toFixed(1));
+                  console.log(tmp[IDX], IDX)
+                  popChartAdd.fillStyle = "#"+tmp[IDX];//heatmap_color[cor_data[x][y].toFixed(1)];
                   popChartAdd.fillRect(Math.floor(coorAns[OXX][0] / size_cell) * size_cell,
                     Math.floor(coorAns[OXX][1] / size_cell) * size_cell,
                     size_cell, size_cell);
@@ -289,7 +383,10 @@ function removeItemOnce(arr, value) {
             //popChartAdd.clearRect(Math.floor(evt.offsetX / size_cell) * size_cell, Math.floor(evt.offsetY / size_cell) * size_cell, size_cell, size_cell);       
             //popChartAdd.triger = 1;
             //triger = answ;
-          popChartAdd.fillStyle = "rgba(255, 255, 255, 1)";
+          //popChartAdd.fillStyle = "rgba(255, 255, 255, 1)";
+          var IDX = heatmap_color_list.indexOf(stat_cell[answ][0]);
+          popChartAdd.fillStyle = "#"+tmp[IDX];
+          
           popChartAdd.fillRect((Math.floor(evt.offsetX / size_cell) * size_cell)+1,
             (Math.floor(evt.offsetY / size_cell) * size_cell)+1,
             size_cell-2, size_cell-2); 
@@ -298,6 +395,15 @@ function removeItemOnce(arr, value) {
           popChartAdd.fillText(stat_cell[answ][0], coorAns[answ][0]+15, coorAns[answ][1]+15);
           popChartAdd.fill();
           removeItemOnce(triger, answ)
+        
+        
+         try { 
+            document.getElementById("id_regression").remove();
+          } catch(e) {
+            console.log("OK");
+          
+          }
+        
             
         } else {
           //popChartAdd.globalCompositeOperation = 'destination-out';
@@ -306,7 +412,21 @@ function removeItemOnce(arr, value) {
           popChartAdd.fillStyle = "rgba(70, 77, 77, 0.5)";
           popChartAdd.fillRect(Math.floor(evt.offsetX / size_cell) * size_cell,
             Math.floor(evt.offsetY / size_cell) * size_cell,
-            size_cell, size_cell);          
+            size_cell, size_cell);   
+            
+          //------------------------->
+          try { 
+            document.getElementById("id_regression").remove();
+          } catch(e) {
+          var K = document.createElement("div");
+          K.id = "id_regression"
+          K.innerHTML = "<button>Регрессия</button>";
+          document.getElementById("stat_cell").append(K);
+          
+          }
+
+            
+                   
         }
     };        
     

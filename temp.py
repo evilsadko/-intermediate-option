@@ -3,6 +3,9 @@ from utils import *
 import dbhandler
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
+import tensorflow as tf
+import numpy
+
 
 DB = dbhandler.DataBase()
 
@@ -197,6 +200,86 @@ if __name__ == "__main__":
     #heatmap_vis(corr_0, ID_s, f"ic_heatmap_554815.jpg")   
     print (corr_0.shape, len(ID_s))
                            
+    #-------------------->
+    
+    for x in range(corr_0.shape[0]):
+        for y in range(corr_0.shape[1]):
+            if corr_0[x,y] >= 0.9:
+                print (ID_s[x], ID_s[y], corr_0[x,y])
+    #8437646 554815
+    
+    
+    Data_1 = list(D[554815].values())
+    Data_2 = list(D[8437646].values())   
+    #print (Data_1, Data_2)   
+       
+       
+    rng = numpy.random
+
+    # Parameters
+    learning_rate = 0.001
+    training_epochs = 5000
+    display_step = 50
+
+
+    # Training Data
+    train_X = numpy.array(Data_2, dtype="float32")#.reshape((12, 1)) #f_list[100,0][2]#numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,7.042,10.791,5.313,7.997,5.654,9.27,3.1])
+    train_Y = numpy.array(Data_1, dtype="float32")#.reshape((12, 1)) #f_list[100,1][0][2]#numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,2.827,3.465,1.65,2.904,2.42,2.94,1.3])
+
+    print (train_X, train_Y)
+
+    n_samples = train_X.shape[0]
+    print (train_Y.shape, train_X.shape, n_samples)
+
+    # tf Graph Input
+    X = tf.placeholder("float")
+    Y = tf.placeholder("float")
+
+    # Set model weights
+    W = tf.Variable(rng.randn(), name="weight")
+    b = tf.Variable(rng.randn(), name="bias")
+
+    # Construct a linear model
+    pred = tf.add(tf.multiply(X, W), b)
+
+
+    # Mean squared error
+    cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
+    # Gradient descent
+    #optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
+
+    # Initialize the variables (i.e. assign their default value)
+    init = tf.global_variables_initializer()
+
+    # Start training
+    with tf.Session() as sess:
+        sess.run(init)
+
+        # Fit all training data
+        for epoch in range(training_epochs):
+            for (x, y) in zip(train_X, train_Y):
+                sess.run(optimizer, feed_dict={X: x, Y: y})
+
+            #Display logs per epoch step
+            if (epoch+1) % display_step == 0:
+                c = sess.run(cost, feed_dict={X: train_X, Y:train_Y})
+                print ("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(c), \
+                    "W=", sess.run(W), "b=", sess.run(b))
+
+        print ("Optimization Finished!")
+        training_cost = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
+        print ("Training cost=", training_cost, "W=", sess.run(W), "b=", sess.run(b), '\n')
+        print ('Прогнозирование') 
+        y_pred_batch = sess.run(pred, {X: train_X})
+        print (y_pred_batch)
+        print (train_Y)
+        #Graphic display
+        plt.plot(train_X, train_Y, 'ro', label='Original data')
+        plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')
+        plt.legend()
+        plt.show()                           
+                           
 #    T = DB.client.execute(f"""
 #            SELECT
 #               count(columns.sum1) as s1,
@@ -283,3 +366,42 @@ if __name__ == "__main__":
 #https://habr.com/ru/company/retailrocket/blog/441366/
 
 #https://github.com/mourner/simpleheat/blob/gh-pages/simpleheat.js
+
+#https://stackoverflow.com/questions/3080421/javascript-color-gradient
+
+#https://habr.com/ru/post/514818/
+
+#https://habr.com/ru/company/ods/blog/322076/
+
+#https://vc.ru/flood/43786-kak-uskorit-rabotu-redakcii-internet-magazina-v-10-raz-s-pomoshchyu-mashinnogo-obucheniya
+
+#https://habr.com/ru/company/otus/blog/485972/
+
+#Где именно спрятано машинное обучение
+
+#Все представленные на рынке сервисы с машинным обучением решают два типа бизнес-задач:
+
+#Прогнозирование продаж на уровне клиента
+#Какая вероятность продажи конкретного товара в зависимости от истории покупок клиента на данном сайте или других сторонних сайтах, контекста запроса, цвета кнопки на сайте или канала, из которого пришел клиент. «Под капотом» решаются задачи бинарной классификации, коллаборативной фильтрации или вычисления сходства с уже купленными товарами (content-based рекомендации).
+#Прогнозирование продаж на уровне товара и магазина
+#Прогнозирование временных рядов.
+#Таким образом, прогнозируется либо событие с двумя исходами (купит, не купит), либо временной ряд. Прогноз бинарного события в свое очередь сводится либо к стандартной задаче бинарной классификации, либо к задаче коллаборативной фильтрации.
+
+#Обучение прогностических моделей, по всей видимости, происходит на данных той платформы, которая предоставляет сервис. После того, как модель обучена, сервис встраивается в интернет-магазин и вычисляет прогнозы, опираясь как на данные самой платформы, так и на данные продаж и поведение пользователя в интернет-магазине. Впоследствии возможно дообучение или обновление модели на новых данных.
+
+
+
+
+
+#Какую архитектуру нейросети вы используете?
+#Совсем технические детали: мы используем ансамбль нейросетей из сверточной сети над эмбеддингами слов для извлечения информации из названия и описания товара и сверточной сети resnet50 для извлечения информации из изображения, над которыми надстроен общий классификатор для результирующего предсказания.
+
+#Итого
+#Типовые задачи редакции интернет-магазина можно ускорить в 5-50 раз, если усилить редакцию с помощью машинного обучения.
+
+#Категоризация товаров и присвоение товарам характеристик – это хорошо решаемая с помощью нейросетей задача. Первые хорошие результаты можно получить уже через неделю работы.
+
+#Но совсем без редакции обойтись не получится: люди нужны для контроля работы нейросети и решения новых возникающих задач.
+
+
+

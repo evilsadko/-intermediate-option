@@ -299,7 +299,10 @@ function Close() {
   console.log("Close");
   popChartAdd_corr.style.display = "none";
   canvas.style.display = "block";
+  canvasAdd.style.display = "block";
   close_el.style.display = "none";
+  
+  
 }
 
 
@@ -885,12 +888,12 @@ ws.onmessage = function(evt) {
     if (message_data["from"] == "sort_product_id_user_id") {
         try {
             var temp_div = document.getElementById("correlation");
-            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Кореляция</span></button>";
+            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Сопутствующие продукты</span></button>";
         }
         catch (e) {
                 var temp_div = document.createElement("div");
                 temp_div.id = "correlation";
-                temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Кореляция</span></button>";
+                temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Сопутствующие продукты</span></button>";
                 document.getElementById("button_div").append(temp_div);
                 
         }
@@ -1023,12 +1026,12 @@ ws.onmessage = function(evt) {
         
         try {
             var temp_div = document.getElementById("correlation");
-            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Сопутствующие продукты</span></button>";
+            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Корреляция</span></button>";
         }
         catch (e) {
             var temp_div = document.createElement("div");
             temp_div.id = "correlation";
-            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Сопутствующие продукты</span></button>";
+            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Корреляция</span></button>";
             //document.body.append(temp_div);
             document.getElementById("button_div").append(temp_div);    
         }
@@ -1042,8 +1045,10 @@ ws.onmessage = function(evt) {
             
             //A.destroy()
             //popChartAdd = canvasAdd_up.getContext("2d");
+            new_block.style.display = "none";
             popChartAdd_corr.style.display = "block";
             canvas.style.display = "none"
+            canvasAdd.style.display = "none";
             close_el.style.display = "block";
             
             var cor_data = message_data['data'][0];

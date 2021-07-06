@@ -52,6 +52,14 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
             
             
         if message["to"] == "show_category1":
+#                H = DB.client.execute(f"""
+#                            SELECT * FROM category1 
+#                            order by sum  
+#                            DESC
+#                            LIMIT 50
+#                            OFFSET 0                                                              
+#                            """)
+#                self.write_message(json.dumps({"from":"show_category1", "data":H}))
                 H = DB.client.execute(f"""
                             SELECT * FROM category1 
                             order by sum  
@@ -60,6 +68,7 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                             OFFSET 0                                                              
                             """)
                 self.write_message(json.dumps({"from":"show_category1", "data":H}))
+
 
         if message["to"] == "show_category2":
                 H = DB.client.execute(f"""
@@ -244,6 +253,8 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                 P = (P2/P1)*100  
                 if P > 5:  
                     G[r] = dict_data[r][0]  
+                    
+                    
             self.write_message(json.dumps({"from":"show_correlation", "data":G})) 
         if message["to"] == "show_correlation_product":
             T = DB.client.execute(f"""

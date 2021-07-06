@@ -3,16 +3,16 @@ from utils import *
 import dbhandler
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
-import tensorflow as tf
-import numpy
-import keras
-from keras.layers import Dense
-from keras.models import Sequential
-from keras.optimizers import Adam 
-from keras.callbacks import EarlyStopping
-from keras.utils import np_utils
-from keras.layers import LSTM
-from sklearn.model_selection import KFold, cross_val_score, train_test_split
+#import tensorflow as tf
+#import numpy
+#import keras
+#from keras.layers import Dense
+#from keras.models import Sequential
+#from keras.optimizers import Adam 
+#from keras.callbacks import EarlyStopping
+#from keras.utils import np_utils
+#from keras.layers import LSTM
+#from sklearn.model_selection import KFold, cross_val_score, train_test_split
 
 
 
@@ -157,140 +157,227 @@ if __name__ == "__main__":
 #                            FROM test
 #                            WHERE test.Product_ID = 554815
 #                            """)   
+######################################################################    
+######################################################################    
+######################################################################   
+#    H = DB.client.execute(f"""
+#                SELECT * FROM category1 
+#                order by sum  
+#                DESC
+#                                                            
+#                """)
+#    print (H[0],len(H))
+    
+#    T = DB.client.execute(f"""
+#                SELECT
+#                     Category1_Id,
+#                     SUM(Items_Count) as IC
+#                FROM test
+#                GROUP BY Category1_Id   
+#                ORDER BY IC
+#                DESC                                         
+#                """)
+#    T = DB.client.execute(f"""
+#                SELECT
+#                     Category1_Id,
+#                     groupArray(time) AS eventstimes
+#                FROM 
+#                (
+#                    SELECT
+#                         Category1_Id,
+#                         toMonth(Order_Date) as time
+#                    FROM test
+#                )
+#                GROUP BY Category1_Id
+#                """)#,toMonth(Order_Date) as time
+#    T = DB.client.execute(f"""
+#                    SELECT
+#                        Category1_Id,
+#                        SUM(Items_Count) AS IC,
+#                        groupArray(toMonth(Order_Date)) AS eventstimes
+#                    FROM test
+#                    GROUP BY Category1_Id
+#                """)
+#    #print (T[2][0], len(T[2][1]), len(T))
+#    print (T[0][0], T[0][1], T[0][2], len(T))
+
+#    T = DB.client.execute(f"""
+#                    SELECT
+#                        Category1_Id,
+#                        SUM(Items_Count) AS IC,
+#                        groupArrayArray([toMonth(Order_Date), Items_Count]) AS eventstimes
+#                    FROM test
+#                    GROUP BY Category1_Id
+#                """)
+
+
+#    T = DB.client.execute(f"""
+#                    SELECT
+#                        Category1_Id,
+#                        groupArray(Items_Count) AS IC,
+#                        groupArray(toMonth(Order_Date)) AS eventstimes
+#                    FROM test
+#                    GROUP BY Category1_Id
+#                """)
+
     T = DB.client.execute(f"""
-                            SELECT
-                                SUM(Items_Count) as IC,
-                                toMonth(Order_Date) as time
-                            FROM test
-                            WHERE test.Product_ID = 554815 
-                            GROUP BY time
-                            """) 
-    Z = np.array(T)[:,0]
-    print (np.array(T)[:,0])
+                    SELECT
+                        Category1_Id,
+                        groupArray(Items_Count) AS IC,
+                        groupArray(toMonth(Order_Date)) AS eventstimes
+                    FROM test
+                    GROUP BY Category1_Id
+                """)
+
+    #print (T[2][0], len(T[2][1]), len(T))
+    print (T[0][0], len(T[0][1]), len(T[0][2]), len(T))
+
+
+######################################################################    
+######################################################################    
+######################################################################    
+#Регрессия
+
+#    T = DB.client.execute(f"""
+#                            SELECT
+#                                SUM(Items_Count) as IC,
+#                                toMonth(Order_Date) as time
+#                            FROM test
+#                            WHERE test.Product_ID = 554815 
+#                            GROUP BY time
+#                            """) 
+#    Z = np.array(T)[:,0]
+#    print (np.array(T)[:,0])
+#                             
+#    T = DB.client.execute(f"""
+#             SELECT 
+#                Items_Count,
+#                Total_Amount,
+#                Product_ID,
+#                Order_ID,
+#                toMonth(Order_Date) as time
+#               FROM test              
+#               WHERE Order_ID IN (                        
+#                            SELECT
+#                                 Order_ID
+#                            FROM test
+#                            WHERE test.Product_ID = 554815
+#                           )
+#                            """)    
+#    D = {}  
+#    #print (T)                       
+#    for k in T:
+#        try:
+#            D[k[2]][k[-1]][0] += k[0]
+#            #print (k[1], D[k[1]])
+#        except KeyError:
+#            D[k[2]] = {1:[0,0], 2:[0,0], 3:[0,0], 4:[0,0], 5:[0,0], 6:[0,0], 7:[0,0], 8:[0,0], 9:[0,0], 10:[0,0], 11:[0,0], 12:[0,0]}
+#            D[k[2]][k[-1]][0] += k[0]
+#            D[k[2]][k[-1]][1] += k[1]
+#    #print (len(D), D)
+#    T_data0 = []
+#    ID_s = []
+#    
+#    T_data0.append(Z)
+#    ID_s.append(554815)
+#    for k in D:
+#        #print (np.mean(Z), np.mean(np.array(list(D[k].values()))))
+#        P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
+#        if P > 10:
+#            print (Z, np.array(list(D[k].values())), np.mean(Z), np.mean(np.array(list(D[k].values()))))
+#            T_data0.append(np.array(list(D[k].values()))[:,0])
+#            ID_s.append(k)        
+#    T_data0 = np.array(T_data0)
+#    corr_0 = np.corrcoef(T_data0) 
+#    #heatmap_vis(corr_0, ID_s, f"ic_heatmap_554815.jpg")   
+#    print (corr_0.shape, len(ID_s))
+#                           
+#    #-------------------->
+#    
+#    for x in range(corr_0.shape[0]):
+#        for y in range(corr_0.shape[1]):
+#            if corr_0[x,y] >= 0.9:
+#                print (ID_s[x], ID_s[y], corr_0[x,y])
+#    #8437646 554815
+#    
+#    
+#    Data_1 = list(D[554815].values())
+#    Data_2 = list(D[8437646].values())   
+#    #print (Data_1, Data_2)   
+#       
+#       
+#    rng = numpy.random
+
+#    # Parameters
+#    learning_rate = 0.001
+#    training_epochs = 100000
+#    display_step = 50
+
+
+#    # Training Data
+#    train_X = numpy.array(Data_2, dtype="float32")#.reshape((12, 1)) #f_list[100,0][2]#numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,7.042,10.791,5.313,7.997,5.654,9.27,3.1])
+#    train_Y = numpy.array(Data_1, dtype="float32")[:,:1]#.reshape((12, 1)) #f_list[100,1][0][2]#numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,2.827,3.465,1.65,2.904,2.42,2.94,1.3])
+
+#    print (train_X, train_Y)
+
+#    n_samples = train_X.shape[0]
+#    print (train_Y.shape, train_X.shape, n_samples)
+
+#    # tf Graph Input
+#    X = tf.placeholder("float")
+#    Y = tf.placeholder("float")
+
+#    # Set model weights
+#    W = tf.Variable(rng.randn(), name="weight")
+#    b = tf.Variable(rng.randn(), name="bias")
+
+#    # Construct a linear model
+#    pred = tf.add(tf.multiply(X, W), b)
+
+
+#    # Mean squared error
+#    cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
+#    # Gradient descent
+#    #optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+#    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
+
+#    # Initialize the variables (i.e. assign their default value)
+#    init = tf.global_variables_initializer()
+
+#    # Start training
+#    with tf.Session() as sess:
+#        sess.run(init)
+
+#        # Fit all training data
+#        for epoch in range(training_epochs):
+#            for (x, y) in zip(train_X, train_Y):
+#                sess.run(optimizer, feed_dict={X: x, Y: y})
+
+#            #Display logs per epoch step
+#            if (epoch+1) % display_step == 0:
+#                c = sess.run(cost, feed_dict={X: train_X, Y:train_Y})
+#                print ("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(c), \
+#                    "W=", sess.run(W), "b=", sess.run(b))
+
+#        print ("Optimization Finished!")
+#        training_cost = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
+#        print ("Training cost=", training_cost, "W=", sess.run(W), "b=", sess.run(b), '\n')
+#        print ('Прогнозирование') 
+#        y_pred_batch = sess.run(pred, {X: train_X})
+#        print (y_pred_batch)
+#        print (train_Y) #, train_X
+#        #Graphic display
+#        plt.plot(train_X, train_Y, 'ro', label='Original data')
+#        plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')
+#        plt.legend()
+#        plt.show()                           
+#    print (len(T))  
+    
+######################################################################    
+######################################################################    
+######################################################################    
+    
                              
-    T = DB.client.execute(f"""
-             SELECT 
-                Items_Count,
-                Total_Amount,
-                Product_ID,
-                Order_ID,
-                toMonth(Order_Date) as time
-               FROM test              
-               WHERE Order_ID IN (                        
-                            SELECT
-                                 Order_ID
-                            FROM test
-                            WHERE test.Product_ID = 554815
-                           )
-                            """)    
-    D = {}  
-    #print (T)                       
-    for k in T:
-        try:
-            D[k[2]][k[-1]][0] += k[0]
-            #print (k[1], D[k[1]])
-        except KeyError:
-            D[k[2]] = {1:[0,0], 2:[0,0], 3:[0,0], 4:[0,0], 5:[0,0], 6:[0,0], 7:[0,0], 8:[0,0], 9:[0,0], 10:[0,0], 11:[0,0], 12:[0,0]}
-            D[k[2]][k[-1]][0] += k[0]
-            D[k[2]][k[-1]][1] += k[1]
-    #print (len(D), D)
-    T_data0 = []
-    ID_s = []
-    
-    T_data0.append(Z)
-    ID_s.append(554815)
-    for k in D:
-        #print (np.mean(Z), np.mean(np.array(list(D[k].values()))))
-        P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
-        if P > 10:
-            print (Z, np.array(list(D[k].values())), np.mean(Z), np.mean(np.array(list(D[k].values()))))
-            T_data0.append(np.array(list(D[k].values()))[:,0])
-            ID_s.append(k)        
-    T_data0 = np.array(T_data0)
-    corr_0 = np.corrcoef(T_data0) 
-    #heatmap_vis(corr_0, ID_s, f"ic_heatmap_554815.jpg")   
-    print (corr_0.shape, len(ID_s))
-                           
-    #-------------------->
-    
-    for x in range(corr_0.shape[0]):
-        for y in range(corr_0.shape[1]):
-            if corr_0[x,y] >= 0.9:
-                print (ID_s[x], ID_s[y], corr_0[x,y])
-    #8437646 554815
-    
-    
-    Data_1 = list(D[554815].values())
-    Data_2 = list(D[8437646].values())   
-    #print (Data_1, Data_2)   
-       
-       
-    rng = numpy.random
-
-    # Parameters
-    learning_rate = 0.001
-    training_epochs = 100000
-    display_step = 50
-
-
-    # Training Data
-    train_X = numpy.array(Data_2, dtype="float32")#.reshape((12, 1)) #f_list[100,0][2]#numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,7.042,10.791,5.313,7.997,5.654,9.27,3.1])
-    train_Y = numpy.array(Data_1, dtype="float32")[:,:1]#.reshape((12, 1)) #f_list[100,1][0][2]#numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,2.827,3.465,1.65,2.904,2.42,2.94,1.3])
-
-    print (train_X, train_Y)
-
-    n_samples = train_X.shape[0]
-    print (train_Y.shape, train_X.shape, n_samples)
-
-    # tf Graph Input
-    X = tf.placeholder("float")
-    Y = tf.placeholder("float")
-
-    # Set model weights
-    W = tf.Variable(rng.randn(), name="weight")
-    b = tf.Variable(rng.randn(), name="bias")
-
-    # Construct a linear model
-    pred = tf.add(tf.multiply(X, W), b)
-
-
-    # Mean squared error
-    cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
-    # Gradient descent
-    #optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
-    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
-
-    # Initialize the variables (i.e. assign their default value)
-    init = tf.global_variables_initializer()
-
-    # Start training
-    with tf.Session() as sess:
-        sess.run(init)
-
-        # Fit all training data
-        for epoch in range(training_epochs):
-            for (x, y) in zip(train_X, train_Y):
-                sess.run(optimizer, feed_dict={X: x, Y: y})
-
-            #Display logs per epoch step
-            if (epoch+1) % display_step == 0:
-                c = sess.run(cost, feed_dict={X: train_X, Y:train_Y})
-                print ("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(c), \
-                    "W=", sess.run(W), "b=", sess.run(b))
-
-        print ("Optimization Finished!")
-        training_cost = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
-        print ("Training cost=", training_cost, "W=", sess.run(W), "b=", sess.run(b), '\n')
-        print ('Прогнозирование') 
-        y_pred_batch = sess.run(pred, {X: train_X})
-        print (y_pred_batch)
-        print (train_Y) #, train_X
-        #Graphic display
-        plt.plot(train_X, train_Y, 'ro', label='Original data')
-        plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')
-        plt.legend()
-        plt.show()                           
-                           
 #    T = DB.client.execute(f"""
 #            SELECT
 #               count(columns.sum1) as s1,
@@ -357,7 +444,7 @@ if __name__ == "__main__":
 #            G[r] = dict_data[r][0]  
             
              
-    print (len(T))
+
 #    
 
 
@@ -407,6 +494,8 @@ if __name__ == "__main__":
 
 
 #https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
+
+#https://altinity.com/blog/harnessing-the-power-of-clickhouse-arrays-part-2
 
 #Где именно спрятано машинное обучение
 

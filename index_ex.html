@@ -23,32 +23,81 @@
 </div>
 <div id='main'>
 
-<canvas id="popChart"></canvas>
-<div id="new_block">
-<button id="back" onclick="back()">Предыдущие</button>
-<span id="parts"></span>
-<button id="next" onclick="next()">Следующие</button>
-</div>
-
-<canvas id="popChartAdd"></canvas>
-
-
-<div id="b-popup">
-                <div id="SeeBox"style="font-family: Roboto,helvetica,arial,sans-serif;">
-                     <div id="stat_cell">
-                        <canvas id="popChartAdd_up"></canvas>
-                        </div>
-                </div>
-
-    <div id="b-popup-content">
+    <div id="popChartAdd_corr">
+        <div id="stat_cell">
+            <canvas id="popChartAdd_up"></canvas>
+        </div>
     </div>
-    <div class="pv_close_btn" onclick="Close(0)" style="display: block;"></div>
+
+
+    <canvas id="popChart"></canvas>
+    <div id="new_block">
+        <button id="back" onclick="back()">Предыдущие</button>
+            <span id="parts"></span>
+        <button id="next" onclick="next()">Следующие</button>
+    </div>
+    <canvas id="popChartAdd"></canvas>
+
+    
 </div>
+<div id="pv_close_btn" onclick="Close(0)">Закрыть</div>
 
 <div id="loader"></div>
-</div>
 </body>
 <style type="text/css">
+#left_block {
+    display: block;
+    float: left;
+}
+#popChartAdd_corr {
+    position: relative;
+    display: block;
+    /* width: 100%; */
+    float: left;
+}
+
+#left_block div{
+    margin: 9px 7px;
+    padding: 11px 0px;
+    color: #666666;
+    font-family: sans-serif;
+}
+#bottom_block {
+    display: block;
+    /* left: 120px; */
+    position: relative;
+    width: 100%;
+    float: left;
+    top: 90px;
+}
+
+#bottom_block div{
+    margin: 9px 10px;
+    padding: 11px 0px;
+    display: block;
+    float: left;
+    width: 30px;
+    /* FF3.5+ */
+    -moz-transform: rotate(-90.0deg);
+    /* Opera 10.5 */
+    -o-transform: rotate(-90.0deg);
+    /* Saf3.1+, Chrome */
+    -webkit-transform: rotate(-90.0deg);
+    /* IE6,IE7 */
+    filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=0.083);
+    /* IE8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
+    /* Standard */
+    transform: rotate(-90.0deg);
+    color: #666666;
+    font-family: sans-serif;
+    
+}
+#id_regression {
+    position: relative;
+    top: 0px;
+    display: block;
+}
 
 #new_block {
     display: block;
@@ -120,10 +169,7 @@ body {
 <!--    margin: 0 auto;-->
 <!--}-->
 
-.pv_close_btn {
-    background-image: url('/pv_layer_controls.png');
-    width: 16px;
-    height: 16px;
+#pv_close_btn {
     position: fixed;
     top: 12px;
     right: 12px;
@@ -133,46 +179,21 @@ body {
     cursor: pointer;
     }
 
-#SeeBox {
-    font-family: Arial;
-    background: #FFF;
-    padding: 20px;
-    position: relative;
-    height: auto;
-    border: 1px solid #DFDFDF;
-    -webkit-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
-    -moz-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
-    box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
-    -webkit-border-radius: 11px;
-    -moz-border-radius: 11px;
-    border-radius: 11px;
-    margin: 0 auto;
-}
-#b-popup{
-    width:100%;
-    min-height:100%;
-    background-color: rgba(0,0,0,0.5);
-    overflow:hidden;
-    position:fixed;
-    top:0px;
-}
-#b-popup #b-popup-content{
-    margin:40px auto 0px auto;
-    min-width: 100px;
-    padding:10px;
-    background-color: #c5c5c5;
-    border-radius:5px;
-}
-
 
 #popChart { 
 display: block;
 box-sizing: border-box;
 margin: 0px auto;
 position: relative;
-width: 1000px;
+/*width: 1000px;*/
 }
 
+
+#popChartAdd_up {
+    display: block;
+    position: relative;
+    float: left;
+}
 
 #left_block {
     display: block;
@@ -185,45 +206,15 @@ width: 1000px;
 }
 
 
-#bottom_block {
-    display: block;
-    left: 120px;
-    position: relative;
-    width: 100%;
-    float: left;
-
-}
-#bottom_block div{
-    margin: 9px 10px;
-    padding: 11px 0px;
-    display: block;
-    float: left;
-    width: 30px;
-    /* FF3.5+ */
-    -moz-transform: rotate(-90.0deg);
-    /* Opera 10.5 */
-    -o-transform: rotate(-90.0deg);
-    /* Saf3.1+, Chrome */
-    -webkit-transform: rotate(-90.0deg);
-    /* IE6,IE7 */
-    filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=0.083);
-    /* IE8 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
-    /* Standard */
-    transform: rotate(-90.0deg);
-    
-}
-
-
 
 #loader {
-border: 16px solid #f3f3f3; /* Light grey */
-border-top: 16px solid #8d9daf; /* Blue  #3498db;*/
-border-radius: 50%;
-width: 120px;
-height: 120px;
-margin: 10% auto;
-animation: spin 2s linear infinite;
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #8d9daf; /* Blue  #3498db;*/
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    margin: 10% auto;
+    animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
@@ -233,9 +224,6 @@ animation: spin 2s linear infinite;
    
   </style>
 <script>
-var b_popup = document.getElementById('b-popup');
-var b_popup_content = document.getElementById('b-popup-content');
-b_popup.style.display = "none";
 
 var main_div = document.getElementById("main");
 //main_div.style.display = "none";
@@ -247,15 +235,17 @@ canvasAdd.style.display = "none";
 var new_block = document.getElementById("new_block");
 new_block.style.display = "none";
 var canvasAdd_up = document.getElementById("popChartAdd_up");
-
+var popChartAdd_corr = document.getElementById("popChartAdd_corr");
+popChartAdd_corr.style.display = "none";
 
 var t_el = document.getElementById("loader");
 t_el.style.display = "none";
+var close_el = document.getElementById("pv_close_btn");
+close_el.style.display = "none";
 
-
-var popCanvas = document.getElementById("popChart").getContext("2d");
-var popChartAdd = document.getElementById("popChartAdd").getContext("2d");
-var popChartAdd_up = document.getElementById("popChartAdd_up").getContext("2d");
+var popCanvas = canvas.getContext("2d");
+var popChartAdd = canvasAdd.getContext("2d");
+var popChartAdd_up = canvasAdd_up.getContext("2d");
 
 var A = new Chart(popChartAdd);
 var DDD = new Chart(popCanvas);
@@ -307,8 +297,9 @@ var ws = new WebSocket("ws://178.158.131.41:8008/websocket"); // IP http://178.1
 
 function Close() {
   console.log("Close");
-  b_popup.style.display = "none";
-  document.getElementById('SeeBox').style.display = "none";
+  popChartAdd_corr.style.display = "none";
+  canvas.style.display = "block";
+  close_el.style.display = "none";
 }
 
 
@@ -399,6 +390,7 @@ function back() {
 
 function show_product(){
      //main_div.style.display = "none";
+     popChartAdd_corr.style.display = "none";
      new_block.style.display = "none";
      canvas.style.display = "none";
      t_el.style.display = "block";
@@ -419,6 +411,7 @@ function show_table(){
 }
 
 function show_user(){
+    popChartAdd_corr.style.display = "none";
     new_block.style.display = "none";
     t_el.style.display = "block";
     //main_div.style.display = "none";
@@ -436,6 +429,7 @@ function show_user(){
 
 
 function show_category1(){
+    popChartAdd_corr.style.display = "none";
     new_block.style.display = "none";
     var send_str = JSON.stringify({
       to: "show_category1",
@@ -447,6 +441,7 @@ function show_category1(){
 }
 
 function show_category2(){
+    popChartAdd_corr.style.display = "none";
     new_block.style.display = "none";
     var send_str = JSON.stringify({
       to: "show_category2",
@@ -566,8 +561,8 @@ function dynamicColors() {
 
 var coorAns;
 var stat_cell;
-function getMousePos(cc, evt){
-   var rect = cc.getBoundingClientRect();
+function getMousePos(canvas, evt){
+   var rect = canvas.getBoundingClientRect();
    return {x: evt.clientX - rect.left,
            y: evt.clientY - rect.top};
 };
@@ -579,9 +574,101 @@ function getAnswHuman(mousePos){
        };
    };
 };
+//-------------------------------->
 
+/* Convert a hex string to an RGB triplet */
+function hex (c) {
+  var s = "0123456789abcdef";
+  var i = parseInt (c);
+  if (i == 0 || isNaN (c))
+    return "00";
+  i = Math.round (Math.min (Math.max (0, i), 255));
+  return s.charAt ((i - i % 16) / 16) + s.charAt (i % 16);
+}
+
+/* Convert an RGB triplet to a hex string */
+function convertToHex (rgb) {
+  return hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
+}
+
+function convertToRGB (hex) {
+  var color = [];
+  color[0] = parseInt ((trim(hex)).substring (0, 2), 16);
+  color[1] = parseInt ((trim(hex)).substring (2, 4), 16);
+  color[2] = parseInt ((trim(hex)).substring (4, 6), 16);
+  return color;
+}
+/* Remove '#' in color hex string */
+function trim (s) { return (s.charAt(0) == '#') ? s.substring(1, 7) : s }
+
+function generateColor(colorStart, colorEnd, colorCount){
+
+    // The beginning of your gradient
+    var start = convertToRGB (colorStart);    
+
+    // The end of your gradient
+    var end   = convertToRGB (colorEnd);    
+
+    // The number of colors to compute
+    var len = colorCount;
+
+    //Alpha blending amount
+    var alpha = 0.0;
+
+    var saida = [];
+
+    for (i = 0; i < len; i++) {
+        var c = [];
+        alpha += (1.0/len);
+        
+        c[0] = start[0] * alpha + (1 - alpha) * end[0];
+        c[1] = start[1] * alpha + (1 - alpha) * end[1];
+        c[2] = start[2] * alpha + (1 - alpha) * end[2];
+
+        saida.push(convertToHex(c));
+        
+    }
+
+    return saida;
+
+}
+
+
+
+
+//----------------------------------->
 //var ctx = canvasAdd.getContext('2d');
 var size_cell = 50;
+
+var heatmap_color = {};
+var heatmap_color_list = []
+for (var i=-1.0; i<1; i+=0.1) {
+    //console.log(i.toFixed(1), 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')');
+    //heatmap_color[i.toFixed(1)] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+    if (i.toFixed(1) == 0.0) {
+        heatmap_color["-0.0"] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+        heatmap_color["0.0"] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+        heatmap_color_list.push("0.0");
+        heatmap_color_list.push("-0.0")
+    }
+    heatmap_color[i.toFixed(1)] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';
+    heatmap_color_list.push(i.toFixed(1))
+    //255, 69, 0
+    }
+
+<!--for (var i=-1.0; i<1; i+=0.1) {-->
+<!--    //console.log(i.toFixed(1), 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')');-->
+<!--    //heatmap_color[i.toFixed(1)] = 'rgb(0,'+ Math.floor(255-42.5*i) + ',' + Math.floor(255-10.0*i) +')';-->
+<!--    if (i>=0.8) {-->
+<!--     heatmap_color[i.toFixed(1)] = 'rgb(255,'+ Math.floor(69-(i*30)) + ', 0)'; //Math.floor(255-10.0*i) +')'-->
+<!--     //Math.floor(255-10.0*i) +')' 255, 69, 0-->
+<!--    } else {-->
+<!--     heatmap_color[i.toFixed(1)] = 'rgb(255,'+ Math.floor(255-42.5*i) + ', 0)';-->
+<!--    } -->
+<!--    //255, 69, 0-->
+<!--    }-->
+
+var tmp = generateColor('#FF4500', '#FFFFE0', heatmap_color_list.length);
 
 
 
@@ -804,7 +891,7 @@ ws.onmessage = function(evt) {
                 var temp_div = document.createElement("div");
                 temp_div.id = "correlation";
                 temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Кореляция</span></button>";
-                document.body.append(temp_div);
+                document.getElementById("button_div").append(temp_div);
                 
         }
 
@@ -942,8 +1029,8 @@ ws.onmessage = function(evt) {
             var temp_div = document.createElement("div");
             temp_div.id = "correlation";
             temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Сопутствующие продукты</span></button>";
-            document.body.append(temp_div);
-                
+            //document.body.append(temp_div);
+            document.getElementById("button_div").append(temp_div);    
         }
         
         //Кореляция продуктов
@@ -951,12 +1038,18 @@ ws.onmessage = function(evt) {
     }
     
     if (message_data["from"] == "show_correlation_product") {
-            b_popup.style.display = "block";
             //console.log(message_data['data'][0], message_data['data'][1].length);
+            
+            //A.destroy()
+            //popChartAdd = canvasAdd_up.getContext("2d");
+            popChartAdd_corr.style.display = "block";
+            canvas.style.display = "none"
+            close_el.style.display = "block";
+            
             var cor_data = message_data['data'][0];
             var cor_info = message_data['data'][1];
             
-            popChartAdd_up.clearRect(0, 0, canvasAdd.width, canvasAdd.height);
+            popChartAdd_up.clearRect(0, 0, canvasAdd_up.width, canvasAdd_up.height);
 
             //canvasAdd
             var len_corr = message_data['data'][1].length;
@@ -1003,15 +1096,13 @@ ws.onmessage = function(evt) {
                 var bottom_block_div = document.getElementById("bottom_block");
                 left_block_div.innerHTML = "";
                 bottom_block_div.innerHTML = "";
-            }
-            catch (e){
+            } catch(e){
                 var left_block_div = document.createElement("div");
                 var bottom_block_div = document.createElement("div");
                 bottom_block_div.id = "bottom_block";
                 left_block_div.id = "left_block";
-            
-            
             }
+
             for (let x = 0; x < len_corr; x++) { 
                 console.log(cor_info[x]);
                 var temp_div = document.createElement("div");
@@ -1026,11 +1117,23 @@ ws.onmessage = function(evt) {
                 
                 for (let y = 0; y < len_corr; y++) { 
                     //console.log(x, y, coorAns.length, OXX, cor_data[y][x].toFixed(1), cor_data[x][y].toFixed(1))
-                    //console.log(OXX);
+                    //console.log(cor_data[x][y].toFixed(1), heatmap_color[cor_data[x][y].toFixed(1)])
+                  
+                  var IDX = heatmap_color_list.indexOf(cor_data[x][y].toFixed(1));
+                  console.log(tmp[IDX], IDX)
+                  popChartAdd_up.fillStyle = "#"+tmp[IDX];//heatmap_color[cor_data[x][y].toFixed(1)];
+                  popChartAdd_up.fillRect(Math.floor(coorAns[OXX][0] / size_cell) * size_cell,
+                    Math.floor(coorAns[OXX][1] / size_cell) * size_cell,
+                    size_cell, size_cell);
+                    
+                    popChartAdd_up.fillStyle = "white";
                     popChartAdd_up.font = "16px serif";
                     popChartAdd_up.textBaseline = "top";
                     //ctx.fillText(OXX, coorAns[OXX][0]+15, coorAns[OXX][1]+15);
                     popChartAdd_up.fillText(cor_data[x][y].toFixed(1), coorAns[OXX][0]+15, coorAns[OXX][1]+15);
+                    
+
+                       
                     stat_cell.push([cor_data[x][y].toFixed(1)]);
                     info_cell.push([cor_info[x], cor_info[y]])
                     OXX++;
@@ -1043,16 +1146,69 @@ ws.onmessage = function(evt) {
         
     }
     
+function removeItemOnce(arr, value) {
+  var index = arr.indexOf(value);
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
+}
+
+var triger = [];
 canvasAdd_up.onclick = function (evt) {
-      var mousePos = getMousePos(canvasAdd, evt);
-      var answ = getAnswHuman(mousePos);
-      console.log("ok", evt, mousePos, answ, stat_cell[answ], info_cell[answ], popChartAdd_up.fillStyle);
+     var mousePos = getMousePos(canvasAdd_up, evt);
+     var answ = getAnswHuman(mousePos);
+     //popChartAdd.triger = 1;
+     
+    console.log("ok", evt, mousePos, answ, ">>>>>>>>>>>>",stat_cell[answ], info_cell[answ], popChartAdd_up.fillStyle, triger.length==0);
+    if (triger.includes(answ)){
+      var IDX = heatmap_color_list.indexOf(stat_cell[answ][0]);
+      popChartAdd_up.fillStyle = "#"+tmp[IDX];
+      
+      popChartAdd_up.fillRect((Math.floor(evt.offsetX / size_cell) * size_cell),
+        (Math.floor(evt.offsetY / size_cell) * size_cell),
+        size_cell, size_cell); 
+      popChartAdd_up.font = "16px serif";
+      popChartAdd_up.fillStyle = "white";//"black";
+      popChartAdd_up.fillText(stat_cell[answ][0], coorAns[answ][0]+15, coorAns[answ][1]+15);
+      popChartAdd_up.fill();
+      removeItemOnce(triger, answ)
+    
+      if (triger.length==0) {
+      document.getElementById("id_regression").remove();     
+      }
+    
+        
+    } else {
+      //popChartAdd.globalCompositeOperation = 'destination-out';
+      //triger = answ;
+      triger.push(answ)
       popChartAdd_up.fillStyle = "rgba(70, 77, 77, 0.5)";
       popChartAdd_up.fillRect(Math.floor(evt.offsetX / size_cell) * size_cell,
         Math.floor(evt.offsetY / size_cell) * size_cell,
-        size_cell, size_cell);          
-    //}
-};          
+        size_cell, size_cell);   
+        
+      //------------------------->
+      if (triger.length==1) {
+          var K = document.createElement("div");
+          K.id = "id_regression"
+          K.innerHTML = "<button>Регрессия</button>";
+          document.getElementById("stat_cell").append(K);
+      }
+        
+               
+    }
+};     
+<!--canvasAdd_up.onclick = function (evt) {-->
+<!--      var mousePos = getMousePos(canvasAdd, evt);-->
+<!--      var answ = getAnswHuman(mousePos);-->
+<!--      console.log("ok", evt, mousePos, answ, stat_cell[answ], info_cell[answ], popChartAdd_up.fillStyle);-->
+<!--      popChartAdd_up.fillStyle = "rgba(70, 77, 77, 0.5)";-->
+<!--      popChartAdd_up.fillRect(Math.floor(evt.offsetX / size_cell) * size_cell,-->
+<!--        Math.floor(evt.offsetY / size_cell) * size_cell,-->
+<!--        size_cell, size_cell);          -->
+<!--    //}-->
+<!--};          -->
     
 //--------------------------->
 

@@ -295,11 +295,11 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                     ID_s.append(k)        
             T_data0 = np.array(T_data0)
             corr_0 = np.corrcoef(T_data0)
-            print (corr_0.shape, ID_s) 
+            corr_0 = tuple(corr_0.tolist())
+            #print (corr_0.shape, corr_0.size, ID_s) 
             #heatmap_vis(corr_0, ID_s, f"ic_heatmap_{message['data']['id_product']}.jpg")  
                         
-            self.write_message(json.dumps({"from":"show_correlation_product", "data":[corr_0.tolist(), list(ID_s)]}))
-
+            self.write_message(json.dumps({"from":"show_correlation_product", "data":[corr_0, tuple(ID_s)]}))
 
         if message["to"] == "sort_product_id":
                 T = DB.client.execute(f"""
@@ -329,7 +329,7 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html", title="Нейронная сеть/Тренировка")
+        self.render("index_ex.html", title="Нейронная сеть/Тренировка")
 
 app = tornado.web.Application([
         (r"/", MainHandler),

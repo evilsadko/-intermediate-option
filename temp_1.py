@@ -403,6 +403,8 @@ if __name__ == "__main__":
 #https://towardsdatascience.com/predicting-sales-611cb5a252de
 
 #https://www.kaggle.com/myster/eda-prophet-winning-solution-3-0
+#https://www.kaggle.com/guidosalimbeni/regression-with-convolutional-neural-network-keras
+
 
 #https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
 

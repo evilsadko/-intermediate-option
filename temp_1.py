@@ -5,6 +5,15 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as dates
 import tensorflow as tf
 import numpy
+import keras
+from keras.layers import Dense
+from keras.models import Sequential
+from keras.optimizers import Adam 
+from keras.callbacks import EarlyStopping
+from keras.utils import np_utils
+from keras.layers import LSTM
+from sklearn.model_selection import KFold, cross_val_score, train_test_split
+
 
 
 DB = dbhandler.DataBase()
@@ -162,6 +171,7 @@ if __name__ == "__main__":
     T = DB.client.execute(f"""
              SELECT 
                 Items_Count,
+                Total_Amount,
                 Product_ID,
                 Order_ID,
                 toMonth(Order_Date) as time
@@ -177,11 +187,12 @@ if __name__ == "__main__":
     #print (T)                       
     for k in T:
         try:
-            D[k[1]][k[-1]] += k[0]
+            D[k[2]][k[-1]][0] += k[0]
             #print (k[1], D[k[1]])
         except KeyError:
-            D[k[1]] = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0}
-            D[k[1]][k[-1]] += k[0]
+            D[k[2]] = {1:[0,0], 2:[0,0], 3:[0,0], 4:[0,0], 5:[0,0], 6:[0,0], 7:[0,0], 8:[0,0], 9:[0,0], 10:[0,0], 11:[0,0], 12:[0,0]}
+            D[k[2]][k[-1]][0] += k[0]
+            D[k[2]][k[-1]][1] += k[1]
     #print (len(D), D)
     T_data0 = []
     ID_s = []
@@ -193,7 +204,7 @@ if __name__ == "__main__":
         P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
         if P > 10:
             print (Z, np.array(list(D[k].values())), np.mean(Z), np.mean(np.array(list(D[k].values()))))
-            T_data0.append(np.array(list(D[k].values())))
+            T_data0.append(np.array(list(D[k].values()))[:,0])
             ID_s.append(k)        
     T_data0 = np.array(T_data0)
     corr_0 = np.corrcoef(T_data0) 
@@ -218,13 +229,13 @@ if __name__ == "__main__":
 
     # Parameters
     learning_rate = 0.001
-    training_epochs = 5000
+    training_epochs = 100000
     display_step = 50
 
 
     # Training Data
     train_X = numpy.array(Data_2, dtype="float32")#.reshape((12, 1)) #f_list[100,0][2]#numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,7.042,10.791,5.313,7.997,5.654,9.27,3.1])
-    train_Y = numpy.array(Data_1, dtype="float32")#.reshape((12, 1)) #f_list[100,1][0][2]#numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,2.827,3.465,1.65,2.904,2.42,2.94,1.3])
+    train_Y = numpy.array(Data_1, dtype="float32")[:,:1]#.reshape((12, 1)) #f_list[100,1][0][2]#numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,2.827,3.465,1.65,2.904,2.42,2.94,1.3])
 
     print (train_X, train_Y)
 
@@ -273,7 +284,7 @@ if __name__ == "__main__":
         print ('Прогнозирование') 
         y_pred_batch = sess.run(pred, {X: train_X})
         print (y_pred_batch)
-        print (train_Y, train_X)
+        print (train_Y) #, train_X
         #Graphic display
         plt.plot(train_X, train_Y, 'ro', label='Original data')
         plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')
@@ -380,6 +391,20 @@ if __name__ == "__main__":
 #https://doc.arcgis.com/ru/insights/latest/analyze/regression-analysis.htm
 
 #https://dev-gang.ru/article/-prostyh-sposoba-normalizovat-dannye-v-python-7qqrhmlppl/
+
+#https://www.machinelearningmastery.ru/predicting-sales-611cb5a252de/
+
+#https://gist.github.com/karamanbk/fae78e4b0894cc0812812e4e600e5860
+
+#https://habr.com/ru/company/ozontech/blog/431950/
+
+#https://retail-loyalty.org/lr/trinity/
+
+#https://towardsdatascience.com/predicting-sales-611cb5a252de
+
+#https://www.kaggle.com/myster/eda-prophet-winning-solution-3-0
+
+#https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
 
 #Где именно спрятано машинное обучение
 

@@ -220,17 +220,30 @@ if __name__ == "__main__":
 #                    GROUP BY Category1_Id
 #                """)
 
+#    T = DB.client.execute(f"""
+
+#                    (SELECT
+#                        Category1_Id,
+#                        SUM(Items_Count) AS S,
+#                        groupArray(Items_Count) AS IC,
+#                        groupArray(toMonth(Order_Date)) AS eventstimes
+#                    FROM test
+#                    GROUP BY Category1_Id)
+#                """)
+#    print (T[0][0], T[0][1], len(T[0][2]), len(T[0][3]), len(T))
     T = DB.client.execute(f"""
-                    SELECT
+
+                    (SELECT
                         Category1_Id,
-                        groupArray(Items_Count) AS IC,
+                        groupArrayMovingSum(Items_Count) AS IC,
                         groupArray(toMonth(Order_Date)) AS eventstimes
                     FROM test
                     GROUP BY Category1_Id
+                    )
                 """)
 
-    #print (T[2][0], len(T[2][1]), len(T))
-    print (T[0][0], len(T[0][1]), len(T[0][2]), len(T))
+    print (T[0][0],len(T[0][1]),len(T))#len(T[0][2]), len(T[0][1]), 
+    
 
 
 ######################################################################    
@@ -496,6 +509,10 @@ if __name__ == "__main__":
 #https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
 
 #https://altinity.com/blog/harnessing-the-power-of-clickhouse-arrays-part-2
+
+#https://blog.tinybird.co/2021/03/07/tips-4-using-group-array-array/
+
+#https://github.com/ClickHouse/ClickHouse/issues/2739
 
 #Где именно спрятано машинное обучение
 

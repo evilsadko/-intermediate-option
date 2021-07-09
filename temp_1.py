@@ -160,13 +160,12 @@ if __name__ == "__main__":
 ######################################################################    
 ######################################################################    
 ######################################################################   
-#    H = DB.client.execute(f"""
-#                SELECT * FROM category1 
-#                order by sum  
-#                DESC
-#                                                            
-#                """)
-#    print (H[0],len(H))
+    H = DB.client.execute(f"""
+                    SELECT * FROM category1 
+                    order by sum  
+                    DESC        
+                """)
+    print (H[0],len(H))
     
 #    T = DB.client.execute(f"""
 #                SELECT
@@ -231,21 +230,33 @@ if __name__ == "__main__":
 #                    GROUP BY Category1_Id)
 #                """)
 #    print (T[0][0], T[0][1], len(T[0][2]), len(T[0][3]), len(T))
-    T = DB.client.execute(f"""
+#    T = DB.client.execute(f"""
 
-                    (SELECT
-                        Category1_Id,
-                        groupArrayMovingSum(Items_Count) AS IC,
-                        groupArray(toMonth(Order_Date)) AS eventstimes
-                    FROM test
-                    GROUP BY Category1_Id
-                    )
+#                    (SELECT
+#                        Category1_Id,
+#                        groupArrayMovingSum(Items_Count) AS IC,
+#                        toMonth(Order_Date) AS eventstimes
+#                    FROM test
+#                    GROUP BY Category1_Id
+#                    )
+#                """)
+
+#    print (T[0][0],len(T[0][1]),len(T))#len(T[0][2]), len(T[0][1]), 
+#    
+    T = DB.client.execute(f"""
+                       SELECT 
+                        Items_Count,
+                        toMonth(Order_Date) as time
+                       FROM test              
+                       WHERE Category1_Id IN (                        
+                                    SELECT
+                                         Category1_Id
+                                    FROM test
+                                   )
                 """)
 
-    print (T[0][0],len(T[0][1]),len(T))#len(T[0][2]), len(T[0][1]), 
-    
-
-
+    print (len(T))#len(T[0][2]), len(T[0][1]), 
+                    
 ######################################################################    
 ######################################################################    
 ######################################################################    

@@ -18,6 +18,74 @@ import matplotlib.dates as dates
 
 DB = dbhandler.DataBase()
 
+def func_corr(Z, Kx):  
+    if Z.shape[0] < 12:
+        Zero = np.zeros((12,))
+        for u in Z:
+            Zero[int(u[-1])-1] = u[0]
+            #print (int(u[-1])-1)
+            #Zero[(u[-1]-1)] = u[0] 
+        #print (Zero, Kx[0])
+        Z = Zero 
+    else:
+        Z = Z[:,0]                     
+    T = DB.client.execute(f"""
+             SELECT 
+                Items_Count,
+                Total_Amount,
+                Product_ID,
+                Order_ID,
+                toMonth(Order_Date) as time
+               FROM test              
+               WHERE Order_ID IN (                        
+                            SELECT
+                                 Order_ID
+                            FROM test
+                            WHERE test.Product_ID = {Kx[0]}
+                           )
+                            """)    
+    D = {}  
+    #print (T)                       
+    for k in T:
+        try:
+            D[k[2]][k[-1]][0] += k[0]
+            D[k[2]][k[-1]][1] += k[1]
+            #print (k[1], D[k[1]])
+        except KeyError:
+            D[k[2]] = {1:[0,0], 2:[0,0], 3:[0,0], 4:[0,0], 5:[0,0], 6:[0,0], 7:[0,0], 8:[0,0], 9:[0,0], 10:[0,0], 11:[0,0], 12:[0,0]}
+            D[k[2]][k[-1]][0] += k[0]
+            D[k[2]][k[-1]][1] += k[1]
+    #print (len(D), D)
+    T_data0 = []
+    ID_s = []
+    
+    T_data0.append(Z)
+    ID_s.append(Kx[0])
+    for k in D:
+        #print (np.mean(Z), np.mean(np.array(list(D[k].values()))))
+#        P = np.mean(np.array(list(D[k].values()))[:,0]) / np.mean(Z) * 100.
+        #print (list(D[k].values()), np.mean(Z))
+        P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
+        if P > 10:
+            #print (np.array(list(D[k].values()))[:,0].shape)#(Z, np.array(list(D[k].values())), np.mean(Z), np.mean(np.array(list(D[k].values()))))
+            T_data0.append(np.array(list(D[k].values()))[:,0])
+            ID_s.append(k) 
+    T_data0 = np.array(T_data0)
+    #print (Z.shape, T_data0.shape)
+    corr_0 = np.corrcoef(T_data0) 
+    #heatmap_vis(corr_0, ID_s, f"ic_heatmap_554815.jpg")   
+    #print (corr_0.shape, len(ID_s))
+    
+    temp_list = []
+    for x in range(corr_0.shape[0]):
+        for y in range(corr_0.shape[1]):
+            if corr_0[x,y] >= 0.9:
+                if ID_s[x] != ID_s[y]:
+                    #print (ID_s[x], ID_s[y], corr_0[x,y])   
+                    temp_list.append(ID_s[y])
+    return temp_list, D       
+
+
 if __name__ == "__main__":
 # Создать массив классов продуктов из магазина
 
@@ -67,40 +135,72 @@ if __name__ == "__main__":
 #    month_array = np.zeros((12,1))
 
 # Нужно получить все продукты и все сопуствующие этих продуктов с корреляцией 
-    for k in p_list[:10]:
+    for Kx in p_list[:10]:
         T = DB.client.execute(f"""
                                 SELECT
                                     SUM(Items_Count) as IC,
                                     SUM(Total_Amount) as TA,
                                     toMonth(Order_Date) as time
                                 FROM test
-                                WHERE test.Product_ID = {k[0]} 
+                                WHERE test.Product_ID = {Kx[0]} 
                                 GROUP BY time
                                 """)         
-        Z = np.array(T)
-        M = {}
-        for i in range(Z.shape[0]):
-            IC = Z[i,0]
-            TA = Z[i,1]
-            if TA>IC:
-                price = TA/IC
-            else:
-                price = 0.1    
-            M[Z[i,-1]] = price   
-        #print (k, T, M)
-        temp_list = list(M.keys())
-        for i in range(len(temp_list)):
-            k_m = temp_list[i]
-            k_m_before = temp_list[i-1]
+        Z = np.array(T)[:,:]#[:,:]
+  
+        temp_, D = func_corr(Z, Kx)
+        print (len(T), len(temp_), temp_[0], D[temp_[0]])
+        
+        
+#        M = {}
+#        for i in range(Z.shape[0]):
+#            IC = Z[i,0]
+#            TA = Z[i,1]
+#            if TA>IC:
+#                price = TA/IC
+#            else:
+#                price = 0.1    
+#            M[Z[i,-1]] = [price, TA, IC]   
+#        #print (Kx, T, M)
+#        temp_list = list(M.keys())
+#        for i in range(len(temp_list)):
+#            k_m = temp_list[i]
+#            k_m_before = temp_list[i-1]
+#            
+#            P = round(((M[k_m][0]-M[k_m_before][0])/M[k_m][0]*100), 1)#int((temp_list[i]-temp_list[i-1])/temp_list[i]*100)
+#            up = np.zeros(2)
+#            if P<0:
+#                up[0] = 1
+#            if P>0:
+#                up[1] = 1
+#            print (f"ID PRODUCT {Kx[0]} >>>>", up, P, ">>>>>>>>>>>>>", dict_pid[Kx[0]], dict_category1[Kx[1]], dict_category2[Kx[2]],  k_m, M[k_m_before])  
+#            print ()  
+#        print ()
+#
+
+#Какойто из месяцов будет брать в тестовую выборку
+
+
             
-            P = round(((M[k_m]-M[k_m_before])/M[k_m]*100), 1)#int((temp_list[i]-temp_list[i-1])/temp_list[i]*100)
-            up = np.zeros(2)
-            if P<0:
-                up[0] = 1
-            if P>0:
-                up[1] = 1
-            print (f"ID PRODUCT {k[0]} >>>>", up, P, ">>>>>>>>>>>>>", dict_pid[k[0]], dict_category2[k[2]], dict_category1[k[1]], k_m, M[k_m])    
-            print ()
+####             Код поиска корреляции
+
+        #print (Z.tolist())
+ 
+
+
+
+#                               
+#        #-------------------->
+#        
+#        for x in range(corr_0.shape[0]):
+#            for y in range(corr_0.shape[1]):
+#                if corr_0[x,y] >= 0.9:
+#                    print (ID_s[x], ID_s[y], corr_0[x,y])    
+#------------------------------------->
+            
+            
+            
+            
+            
             
 #        temp_list = list(M.keys())
 #        for i in range(len(temp_list)):

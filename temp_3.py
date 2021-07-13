@@ -3,6 +3,7 @@ from utils import *
 import dbhandler
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
+import random
 #import tensorflow as tf
 #import numpy
 #import keras
@@ -19,16 +20,6 @@ import matplotlib.dates as dates
 DB = dbhandler.DataBase()
 
 def func_corr(Z, Kx):  
-    if Z.shape[0] < 12:
-        Zero = np.zeros((12,))
-        for u in Z:
-            Zero[int(u[-1])-1] = u[0]
-            #print (int(u[-1])-1)
-            #Zero[(u[-1]-1)] = u[0] 
-        #print (Zero, Kx[0])
-        Z = Zero 
-    else:
-        Z = Z[:,0]                     
     T = DB.client.execute(f"""
              SELECT 
                 Items_Count,
@@ -45,16 +36,20 @@ def func_corr(Z, Kx):
                            )
                             """)    
     D = {}  
-    #print (T)                       
     for k in T:
-        try:
-            D[k[2]][k[-1]][0] += k[0]
-            D[k[2]][k[-1]][1] += k[1]
-            #print (k[1], D[k[1]])
-        except KeyError:
-            D[k[2]] = {1:[0,0], 2:[0,0], 3:[0,0], 4:[0,0], 5:[0,0], 6:[0,0], 7:[0,0], 8:[0,0], 9:[0,0], 10:[0,0], 11:[0,0], 12:[0,0]}
-            D[k[2]][k[-1]][0] += k[0]
-            D[k[2]][k[-1]][1] += k[1]
+        if k[0] > 0:
+            try:
+                #print (k[1], k[0])
+                D[k[2]][k[-1]][0] += k[0]
+                D[k[2]][k[-1]][1] += k[1]
+                D[k[2]][k[-1]][2] = k[1]/k[0]
+                
+            except KeyError:
+                #D[k[2]] = {1:[0,0], 2:[0,0], 3:[0,0], 4:[0,0], 5:[0,0], 6:[0,0], 7:[0,0], 8:[0,0], 9:[0,0], 10:[0,0], 11:[0,0], 12:[0,0]}
+                D[k[2]] = {1:[0,0,0], 2:[0,0,0], 3:[0,0,0], 4:[0,0,0], 5:[0,0,0], 6:[0,0,0], 7:[0,0,0], 8:[0,0,0], 9:[0,0,0], 10:[0,0,0], 11:[0,0,0], 12:[0,0,0]}
+                D[k[2]][k[-1]][0] += k[0]
+                D[k[2]][k[-1]][1] += k[1]
+            
     #print (len(D), D)
     T_data0 = []
     ID_s = []
@@ -62,12 +57,10 @@ def func_corr(Z, Kx):
     T_data0.append(Z)
     ID_s.append(Kx[0])
     for k in D:
-        #print (np.mean(Z), np.mean(np.array(list(D[k].values()))))
-#        P = np.mean(np.array(list(D[k].values()))[:,0]) / np.mean(Z) * 100.
-        #print (list(D[k].values()), np.mean(Z))
-        P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
+        P = np.mean(np.array(list(D[k].values()))[:,0]) / np.mean(Z) * 100.
+#        P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
         if P > 10:
-            #print (np.array(list(D[k].values()))[:,0].shape)#(Z, np.array(list(D[k].values())), np.mean(Z), np.mean(np.array(list(D[k].values()))))
+            #print (np.array(list(D[k].values()))[:,0], Z, P) #np.mean(Z), 
             T_data0.append(np.array(list(D[k].values()))[:,0])
             ID_s.append(k) 
     T_data0 = np.array(T_data0)
@@ -84,6 +77,15 @@ def func_corr(Z, Kx):
                     #print (ID_s[x], ID_s[y], corr_0[x,y])   
                     temp_list.append(ID_s[y])
     return temp_list, D       
+
+def func_helper(X, k_m, k_m_before):
+    P = round(((X[k_m][-1]- X[k_m_before][-1])/ X[k_m][0]*100), 1)
+    up = np.zeros(2)
+    if P<0:
+        up[0] = 1
+    if P>0:
+        up[1] = 1
+    return up, P
 
 
 if __name__ == "__main__":
@@ -135,7 +137,9 @@ if __name__ == "__main__":
 #    month_array = np.zeros((12,1))
 
 # Нужно получить все продукты и все сопуствующие этих продуктов с корреляцией 
-    for Kx in p_list[:10]:
+
+    LIST_ARR = []
+    for Kx in p_list[:20]:
         T = DB.client.execute(f"""
                                 SELECT
                                     SUM(Items_Count) as IC,
@@ -147,34 +151,51 @@ if __name__ == "__main__":
                                 """)         
         Z = np.array(T)[:,:]#[:,:]
         
-        temp_, D = func_corr(Z, Kx)
-        #print (len(T), len(temp_), temp_[0], D[temp_[0]])
-        
-        
-#        M = {}
-#        for i in range(Z.shape[0]):
-#            IC = Z[i,0]
-#            TA = Z[i,1]
-#            if TA>IC:
-#                price = TA/IC
-#            else:
-#                price = 0.1    
-#            M[Z[i,-1]] = [price, TA, IC]   
-#        #print (Kx, T, M)
-#        temp_list = list(M.keys())
-#        for i in range(len(temp_list)):
-#            k_m = temp_list[i]
-#            k_m_before = temp_list[i-1]
-#            
-#            P = round(((M[k_m][0]-M[k_m_before][0])/M[k_m][0]*100), 1)#int((temp_list[i]-temp_list[i-1])/temp_list[i]*100)
-#            up = np.zeros(2)
-#            if P<0:
-#                up[0] = 1
-#            if P>0:
-#                up[1] = 1
-#            print (f"ID PRODUCT {Kx[0]} >>>>", up, P, ">>>>>>>>>>>>>", dict_pid[Kx[0]], dict_category1[Kx[1]], dict_category2[Kx[2]],  k_m, M[k_m_before])  
-#            print ()  
-#        print ()
+        if (Z.shape[0]==12):
+            
+            temp_, D = func_corr(Z[:,0], Kx)
+            #ID_corr_product = random.choice(temp_)
+            #print (Kx[0], Z.shape, len(temp_), ID_corr_product, D[ID_corr_product])
+            M = {}
+            for i in range(Z.shape[0]):
+                IC = Z[i,0]
+                TA = Z[i,1]
+                if TA>IC:
+                    price = TA/IC
+                else:
+                    price = 0.1    
+                M[Z[i,-1]] = [IC, TA, price] #[price, TA, IC]   
+            #print (Kx, T, M)
+            temp_list = list(M.keys())
+            for A in temp_:
+                #print (A, D[A])
+                corr_product_info = p_list[dict_pid[A]]
+                #print (f"ID PRODUCT {A} >>>>>>>>>>>>>>>>>", dict_pid[A], dict_category1[corr_product_info[1]], dict_category2[corr_product_info[2]])
+                for i in range(1, len(temp_list)):
+                    k_m = temp_list[i]
+                    k_m_before = temp_list[i-1]
+                    
+                    #P = round(((M[k_m][-1]-M[k_m_before][-1])/M[k_m][0]*100), 1)#int((temp_list[i]-temp_list[i-1])/temp_list[i]*100)
+                    up1, P1 = func_helper(M, k_m, k_m_before)
+                    
+                    up2, P2 = func_helper(D[A], k_m, k_m_before)
+#                    P = round(((D[A][k_m][-1]- D[A][k_m_before][-1])/ D[A][k_m][0]*100), 1)
+#                    up = np.zeros(2)
+#                    if P<0:
+#                        up[0] = 1
+#                    if P>0:
+#                        up[1] = 1
+                    print ("...........................")#, k_m, M[k_m_before])
+                    print (f"ID PRODUCT {Kx[0]} >>>>", up1, P1, ">>>>>>>>>>>>>", 
+                            dict_pid[Kx[0]], dict_category1[Kx[1]], dict_category2[Kx[2]], M[k_m][-1], M[k_m_before], k_m, k_m_before) 
+                    
+                    print (f"ID PRODUCT {A} >>>>", up2, P2, ">>>>>>>>>>>>>", 
+                            dict_pid[A], dict_category1[corr_product_info[1]], dict_category2[corr_product_info[2]], D[A][k_m][-1], D[A][k_m_before], k_m, k_m_before) 
+                    #Product_ID
+                    #predict = [up1, P1]
+                    #in_data = [dict_pid[Kx[0]], dict_category1[Kx[1]], dict_category2[Kx[2]], ]
+                    #LIST_ARR.append([[up1, P1],[dict_pid[Kx[0]], dict_category1[Kx[1]], dict_category2[Kx[2]], ]])
+                print ("\n")
 #
 
 #Какойто из месяцов будет брать в тестовую выборку

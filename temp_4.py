@@ -133,7 +133,6 @@ def func_corr(Z, Kx):
     T_data0 = np.array(T_data0)
     #print (Z.shape, T_data0.shape)
     corr_0 = np.corrcoef(T_data0) 
-    #heatmap_vis(corr_0, ID_s, f"ic_heatmap_554815.jpg")   
     #print (corr_0.shape, len(ID_s))
     
     temp_list = []
@@ -162,6 +161,14 @@ def func_helper(X, k_m, k_m_before):
 
 
 if __name__ == "__main__":
+
+    if len(sys.argv) > 1:
+       initial_weights = sys.argv
+    else:
+       initial_weights = None
+
+
+
 # Создать массив классов продуктов из магазина
 
 
@@ -285,141 +292,23 @@ if __name__ == "__main__":
     saver = tf.train.Saver()
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.70)
     with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
-        sess.run(init)
-        for q in range(Array1.shape[0]):
-            batch_xs = Array1[q,:,:,:].reshape((1,6,3,1))
-            batch_ys = Array2[q,:].reshape((1,101))
-            #print (batch_xs.shape, batch_ys.shape)
-            sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
-            r = sess.run([best,
-                          correct,
-                          tf.greater(y[:, 0], 0),
-                          y_[:, 0],
-                          loss],
-                          feed_dict={x: batch_xs, y_: batch_ys})
-            print (r, "Проверка: ", batch_ys)
-#Какойто из месяцов будет брать в тестовую выборку
-
-
-            
-####             Код поиска корреляции
-
-        #print (Z.tolist())
- 
-
-
-
-#                               
-#        #-------------------->
-#        
-#        for x in range(corr_0.shape[0]):
-#            for y in range(corr_0.shape[1]):
-#                if corr_0[x,y] >= 0.9:
-#                    print (ID_s[x], ID_s[y], corr_0[x,y])    
-#------------------------------------->
-            
-            
-            
-            
-            
-            
-#        temp_list = list(M.keys())
-#        for i in range(len(temp_list)):
-#            #print (temp_list[i], temp_list[i-1])
-#            P = round(((temp_list[i]-temp_list[i-1])/temp_list[i]*100), 1)#int((temp_list[i]-temp_list[i-1])/temp_list[i]*100)
-#            # Создать массив вверх/вниз
-#            up = np.zeros(2)
-#            if P<0:
-#                up[0] = 1
-#            if P>0:
-#                up[1] = 1
-#            print (up, P, k, i+1, M)    
-#            print (k[0], dict_category2[k[2]], dict_category1[k[1]], M[i+1])
-#            #print (up, P, ">>>>>>>>>" ,temp_list[i], temp_list[i-1], ">>>>>>>>> price", temp_list[i] - temp_list[i-1])
-            
-            
-#    T = DB.client.execute(f"""
-#                            SELECT
-#                                SUM(Items_Count) as IC,
-#                                SUM(Total_Amount) as TA,
-#                                toMonth(Order_Date) as time
-#                            FROM test
-#                            WHERE test.Product_ID = 554815 
-#                            GROUP BY time
-#                            """) 
-#    Z = np.array(T)#[:,:]
-#    #print (np.array(T)[:,:].tolist())
-#    M = {}
-#    AVG = 0
-#    for i in range(Z.shape[0]):
-#        IC = Z[i,0]
-#        TA = Z[i,1]
-#        price = TA/IC
-#        AVG += price
-#        M[Z[i,-1]] = price   
-#    print (M, AVG/Z.shape[0])
-#    temp_list = list(M.values())
-#    for i in range(Z.shape[0]):
-#        P = int((temp_list[i]-temp_list[i-1])/temp_list[i]*100)
-#        # Создать массив вверх/вниз
-#        up = np.zeros(2)
-#        if P<0:
-#            #print (temp_list[i], temp_list[i-1], temp_list[i] - temp_list[i-1], P)   
-#            up[0] = 1
-#        else:
-#            up[1] = 1
-#        print (up, temp_list[i], temp_list[i-1], temp_list[i] - temp_list[i-1], P)
-
-
-
-
-                             
-#    T = DB.client.execute(f"""
-#             SELECT 
-#                Items_Count,
-#                Total_Amount,
-#                Product_ID,
-#                Order_ID,
-#                toMonth(Order_Date) as time
-#               FROM test              
-#               WHERE Order_ID IN (                        
-#                            SELECT
-#                                 Order_ID
-#                            FROM test
-#                            WHERE test.Product_ID = 554815
-#                           )
-#                            """)    
-#    D = {}  
-#    #print (T)                       
-#    for k in T:
-#        try:
-#            D[k[2]][k[-1]][0] += k[0]
-#            #print (k[1], D[k[1]])
-#        except KeyError:
-#            D[k[2]] = {1:[0,0], 2:[0,0], 3:[0,0], 4:[0,0], 5:[0,0], 6:[0,0], 7:[0,0], 8:[0,0], 9:[0,0], 10:[0,0], 11:[0,0], 12:[0,0]}
-#            D[k[2]][k[-1]][0] += k[0]
-#            D[k[2]][k[-1]][1] += k[1]
-#    #print (len(D), D)
-#    T_data0 = []
-#    ID_s = []
-#    
-#    T_data0.append(Z)
-#    ID_s.append(554815)
-#    for k in D:
-#        #print (np.mean(Z), np.mean(np.array(list(D[k].values()))))
-#        P = np.mean(np.array(list(D[k].values()))) / np.mean(Z) * 100.
-#        if P > 10:
-#            print (Z, np.array(list(D[k].values())), np.mean(Z), np.mean(np.array(list(D[k].values()))))
-#            T_data0.append(np.array(list(D[k].values()))[:,0])
-#            ID_s.append(k)        
-#    T_data0 = np.array(T_data0)
-#    corr_0 = np.corrcoef(T_data0) 
-#    #heatmap_vis(corr_0, ID_s, f"ic_heatmap_554815.jpg")   
-#    print (corr_0.shape, len(ID_s))
-#                           
-#    #-------------------->
-#    
-#    for x in range(corr_0.shape[0]):
-#        for y in range(corr_0.shape[1]):
-#            if corr_0[x,y] >= 0.9:
-#                print (ID_s[x], ID_s[y], corr_0[x,y])    
+        if initial_weights is not None:
+            saver.restore(sess, "model_slim/model.ckpt")
+        else:    
+            sess.run(init)
+        try:
+            for q in range(Array1.shape[0]):
+                batch_xs = Array1[q,:,:,:].reshape((1,6,3,1))
+                batch_ys = Array2[q,:].reshape((1,101))
+                #print (batch_xs.shape, batch_ys.shape)
+                sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+                r = sess.run([best,
+                              correct,
+                              tf.greater(y[:, 0], 0),
+                              y_[:, 0],
+                              loss],
+                              feed_dict={x: batch_xs, y_: batch_ys})
+                print (r, "Проверка: ", batch_ys[:,0])
+        except KeyboardInterrupt:
+             save_path = saver.save(sess, "model_slim/model.ckpt")
+             print("Model saved in path: %s" % save_path)

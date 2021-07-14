@@ -8,6 +8,7 @@ import tensorflow as tf
 import numpy
 import keras
 import tensorflow as tf
+import sys
 slim = tf.contrib.slim
 
 learn_rate=0.001

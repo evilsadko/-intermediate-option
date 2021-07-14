@@ -259,10 +259,10 @@ if __name__ == "__main__":
                     
                     def to_vec(c):
                         y = numpy.zeros((100,))
-                        print (с)
+                        print (c)
                         y[c] = 1.0
                         return y
-                    predict =  numpy.concatenate([up1, to_vec(P1)])
+                    predict =  numpy.concatenate([up1, to_vec(P1-1)])
                     #predict = [up1, P1]
                     in_data = [dict_pid[Kx[0]], dict_category1[Kx[1]], dict_category2[Kx[2]], 
                                M[k_m_before][0],  M[k_m_before][1],  M[k_m_before][2],
@@ -297,7 +297,7 @@ if __name__ == "__main__":
                           y_[:, 0],
                           loss],
                           feed_dict={x: batch_xs, y_: batch_ys})
-            print (r)
+            print (r, "Проверка: ", batch_ys)
 #Какойто из месяцов будет брать в тестовую выборку
 
 

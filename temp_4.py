@@ -213,7 +213,7 @@ if __name__ == "__main__":
 
     LIST_ARR = []
     LIST_ARR_pred = []
-    for Kx in p_list[:7]:
+    for Kx in p_list[:40]:
         T = DB.client.execute(f"""
                                 SELECT
                                     SUM(Items_Count) as IC,
@@ -257,12 +257,12 @@ if __name__ == "__main__":
                             dict_pid[A], dict_category1[corr_product_info[1]], dict_category2[corr_product_info[2]], D[A][k_m][-1], D[A][k_m_before], k_m, k_m_before) 
                     print ("...........................")
                     
-                    def char_to_vec(c):
+                    def to_vec(c):
                         y = numpy.zeros((100,))
-                        #print c
+                        print (с)
                         y[c] = 1.0
                         return y
-                    predict =  numpy.concatenate([up1, char_to_vec(P1)])
+                    predict =  numpy.concatenate([up1, to_vec(P1)])
                     #predict = [up1, P1]
                     in_data = [dict_pid[Kx[0]], dict_category1[Kx[1]], dict_category2[Kx[2]], 
                                M[k_m_before][0],  M[k_m_before][1],  M[k_m_before][2],
@@ -293,6 +293,8 @@ if __name__ == "__main__":
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
             r = sess.run([best,
                           correct,
+                          tf.greater(y[:, 0], 0),
+                          y_[:, 0],
                           loss],
                           feed_dict={x: batch_xs, y_: batch_ys})
             print (r)

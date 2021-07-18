@@ -254,7 +254,7 @@ def create_data():
     LIST_ARR_test = []
     LIST_ARR_pred_test = []
 
-    for ikx, Kx in enumerate(p_list[:40]):
+    for ikx, Kx in enumerate(p_list[:100]):
         T = DB.client.execute(f"""
                                 SELECT
                                     SUM(Items_Count) as IC,
@@ -328,51 +328,51 @@ def create_data():
     Array2_test = np.array(LIST_ARR_pred_test)
     print (Array1_test.shape, Array2_test.shape)
     
-    OK = 0
-    NOK = 0
-    for k in range(Array2.shape[0]):
-        print (Array2[k,0])
-        if Array2[k,0] == 0:
-            NOK += 1
-        else:
-            OK += 1
-    print (OK, NOK)
-    #---------------------------------->
-    init = tf.initialize_all_variables()
-    saver = tf.train.Saver()
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.70)
-    with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
-        if initial_weights is not None:
-            saver.restore(sess, "model_slim/model.ckpt")
-        else:    
-            sess.run(init)
-        try:
-            for a in range(20):
-                for q in range(Array1.shape[0]):
-                    batch_xs = Array1[q,:,:,:].reshape((1,6,3,1))
-                    batch_ys = Array2[q,:].reshape((1,101))
-                    #print (batch_xs.shape, batch_ys.shape)
-                    sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
-                    
-                    
-                    
-                    batch_test_x = Array1_test[-10:,:,:,:].reshape((10,6,3,1))
-                    batch_test_y = Array2_test[-10:,:].reshape((10,101))                
-                    r = sess.run([best,
-                                  correct,
-                                  tf.greater(y[:, 0], 0),
-                                  y_[:, 0],
-                                  loss],
-                                  feed_dict={x: batch_test_x, y_: batch_test_y})
-                    #r_short = (r[0][:190], r[1][:190])  
-                    r_short = (r[0][:190], r[1][:190], r[2][:190], r[3][:190])            
-                    for b, c, pb, pc in zip(*r_short):
-                        print ("{} {} <-> {} {}".format(c, pc, b, float(pb)))  
-                                  
-                    print ("Потеря: ", r[-1])
-        except KeyboardInterrupt:
-             save_path = saver.save(sess, "model_slim/model.ckpt")
-             print("Model saved in path: %s" % save_path)
+#    OK = 0
+#    NOK = 0
+#    for k in range(Array2.shape[0]):
+#        print (Array2[k,0])
+#        if Array2[k,0] == 0:
+#            NOK += 1
+#        else:
+#            OK += 1
+#    print (OK, NOK)
+#    #---------------------------------->
+#    init = tf.initialize_all_variables()
+#    saver = tf.train.Saver()
+#    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.70)
+#    with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
+#        if initial_weights is not None:
+#            saver.restore(sess, "model_slim/model.ckpt")
+#        else:    
+#            sess.run(init)
+#        try:
+#            for a in range(20):
+#                for q in range(Array1.shape[0]):
+#                    batch_xs = Array1[q,:,:,:].reshape((1,6,3,1))
+#                    batch_ys = Array2[q,:].reshape((1,101))
+#                    #print (batch_xs.shape, batch_ys.shape)
+#                    sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+#                    
+#                    
+#                    
+#                    batch_test_x = Array1_test[-10:,:,:,:].reshape((10,6,3,1))
+#                    batch_test_y = Array2_test[-10:,:].reshape((10,101))                
+#                    r = sess.run([best,
+#                                  correct,
+#                                  tf.greater(y[:, 0], 0),
+#                                  y_[:, 0],
+#                                  loss],
+#                                  feed_dict={x: batch_test_x, y_: batch_test_y})
+#                    #r_short = (r[0][:190], r[1][:190])  
+#                    r_short = (r[0][:190], r[1][:190], r[2][:190], r[3][:190])            
+#                    for b, c, pb, pc in zip(*r_short):
+#                        print ("{} {} <-> {} {}".format(c, pc, b, float(pb)))  
+#                                  
+#                    print ("Потеря: ", r[-1])
+#        except KeyboardInterrupt:
+#             save_path = saver.save(sess, "model_slim/model.ckpt")
+#             print("Model saved in path: %s" % save_path)
 
 if __name__ == "__main__":
 

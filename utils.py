@@ -109,6 +109,9 @@ def CUSTOMER():
 def PRODUCT():
     p_open = pd.read_pickle("in/B24_dbo_Crm_product_in_order.pk")
 #    see_stat(p_open)
+    p_open['Total_Amount'] = p_open['Total_Amount'].replace(np.nan, 0)
+    p_open['Items_Count'] = p_open['Items_Count'].replace(np.nan, 0)
+
     p_open = p_open[['Order_ID', 'Product_ID', 'Items_Count', 'Total_Amount', 'TotalDiscount']] 
     return p_open
     

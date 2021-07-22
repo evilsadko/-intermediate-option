@@ -160,13 +160,35 @@ if __name__ == "__main__":
 ######################################################################    
 ######################################################################    
 ######################################################################   
-    H = DB.client.execute(f"""
-                    SELECT * FROM category1 
-                    order by sum  
-                    DESC        
-                """)
-    print (H[0],len(H))
-    
+#    H = DB.client.execute(f"""
+#                    SELECT * FROM category1 
+#                    order by sum  
+#                    DESC        
+#                """)
+#    print (H[0],len(H))
+ 
+ #{'to': 'sort_product_id_month_day', 'data': {'id_product': 7290001201596, 'month': 'October', 'day': 24}}
+
+     T = DB.client.execute(f"""
+                       SELECT
+                           SUM(columns.Items_Count) as s1,
+                           SUM(columns.Total_Amount) as S2,
+                           columns.time_hour
+                       FROM    
+                       (SELECT
+                            toMonth(Order_Date) as time,
+                            toDayOfMonth(Order_Date) as time_day,
+                            toHour(Order_Date) as time_hour,
+                            Items_Count,
+                            Total_Amount
+                        FROM test
+                        WHERE Product_ID = 7290001201596
+                        AND time = 9
+                        AND time_day = 24
+                        ORDER BY time_day) columns
+                        GROUP BY columns.time_hour
+                        """)  
+     print (T)
 #    T = DB.client.execute(f"""
 #                SELECT
 #                     Category1_Id,
@@ -243,19 +265,19 @@ if __name__ == "__main__":
 
 #    print (T[0][0],len(T[0][1]),len(T))#len(T[0][2]), len(T[0][1]), 
 #    
-    T = DB.client.execute(f"""
-                       SELECT 
-                        Items_Count,
-                        toMonth(Order_Date) as time
-                       FROM test              
-                       WHERE Category1_Id IN (                        
-                                    SELECT
-                                         Category1_Id
-                                    FROM test
-                                   )
-                """)
+#    T = DB.client.execute(f"""
+#                       SELECT 
+#                        Items_Count,
+#                        toMonth(Order_Date) as time
+#                       FROM test              
+#                       WHERE Category1_Id IN (                        
+#                                    SELECT
+#                                         Category1_Id
+#                                    FROM test
+#                                   )
+#                """)
 
-    print (len(T))#len(T[0][2]), len(T[0][1]), 
+#    print (len(T))#len(T[0][2]), len(T[0][1]), 
                     
 ######################################################################    
 ######################################################################    

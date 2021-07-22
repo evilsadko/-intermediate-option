@@ -1019,6 +1019,7 @@ ws.onmessage = function(evt) {
         A["config"]._config.data.datasets = [];
         A["config"]._config.data.labels = MONTHS;
         A["config"]._config.data.datasets.push({label: 'продажи', data: T});
+        A["config"]["switch"] = "sort_product_id";
         
         A.update(); 
         
@@ -1037,7 +1038,60 @@ ws.onmessage = function(evt) {
         }
         
         //Кореляция продуктов
+        
+        
 
+    }
+    if (message_data["from"] == "sort_product_id_month") {
+        var datas = [];
+        var cat = [];
+        for (let i = 0; i < message_data['data'].length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(message_data['data'][i][0]);
+            cat.push(message_data['data'][i][2]);
+        } 
+        canvasAdd.style.display = "block";
+        
+        A["config"]._config.type = "line";
+        A["config"]._config.options.legend = {
+                                                  display: true,
+                                                };        
+        A["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика продукта '+DDD["config"]["req_id_prod"]+' в ' + A["config"]["month"] 
+                                  };     
+        A["config"]._config.data.datasets = [];
+        A["config"]._config.data.labels = cat;
+        A["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        A["config"]["switch"] = "sort_product_id_month_day";
+        
+        A.update();    
+    }
+    
+    if (message_data["from"] == "sort_product_id_month_day") {
+        var datas = [];
+        var cat = [];
+        for (let i = 0; i < message_data['data'].length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(message_data['data'][i][0]);
+            cat.push(message_data['data'][i][2]);
+        } 
+        canvasAdd.style.display = "block";
+        
+        A["config"]._config.type = "line";
+        A["config"]._config.options.legend = {
+                                                  display: true,
+                                                };        
+        A["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика продукта '+DDD["config"]["req_id_prod"]+ ' ' + A["config"]["day"] + ' ' + A["config"]["month"] 
+                                  };     
+        A["config"]._config.data.datasets = [];
+        A["config"]._config.data.labels = cat;
+        A["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        A["config"]["switch"] = "";
+        
+        A.update();     
     }
     
     if (message_data["from"] == "show_correlation_product") {
@@ -1216,6 +1270,55 @@ canvasAdd_up.onclick = function (evt) {
 <!--};          -->
     
 //--------------------------->
+canvasAdd.onclick = function (evt) {
+    var activePoints = A.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+    if (A["config"]["switch"] == "sort_product_id") {
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+            var label = A.data.labels[firstPoint.index];
+            var value = A.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            console.log("sort_product_id", value, label, DDD["config"]["req_id_prod"]);
+            var send_str = JSON.stringify({
+              to: "sort_product_id_month",
+              data: {
+                     id_product: DDD["config"]["req_id_prod"],
+                     month: label
+                     }
+            })
+
+            //A["config"]["switch"]  = "sort_product_id_month";  
+            A["config"]["month"] = label; 
+            ws.send(send_str);            
+            //
+        };
+    
+    }
+    if (A["config"]["switch"] == "sort_product_id_month_day") {
+        if (activePoints.length) {
+            
+            var firstPoint = activePoints[0];
+            var label = A.data.labels[firstPoint.index];
+            var value = A.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            console.log("sort_product_id_month_day", value, label, DDD["config"]["req_id_prod"], A["config"]["month"])
+            var send_str = JSON.stringify({
+              to: "sort_product_id_month_day",
+              data: {
+                     id_product: DDD["config"]["req_id_prod"],
+                     month: A["config"]["month"],
+                     day: label
+                     }
+            })
+
+            //A["config"]["switch"]  = "sort_product_id_month";  
+            A["config"]["day"] = label; 
+            ws.send(send_str);    
+            
+            
+        }
+    }
+    
+}
+
 
 canvas.onclick = function (evt) {
     //console.log(DDD["config"]._config.options.plugins.title.text);

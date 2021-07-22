@@ -3,7 +3,7 @@ from utils import *
 import dbhandler
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
-import tensorflow as tf
+#import tensorflow as tf
 import numpy
 
 

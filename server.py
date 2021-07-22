@@ -12,6 +12,21 @@ from temp import heatmap_vis
 
 DB = dbhandler.DataBase()
 
+MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+]
+
 class ImageWebSocket(tornado.websocket.WebSocketHandler):
     clients = set()
     
@@ -331,9 +346,54 @@ class ImageWebSocket(tornado.websocket.WebSocketHandler):
                         """)  
                 self.write_message(json.dumps({"from":"sort_product_id", "data":T})) 
 
+
+        if message["to"] == "sort_product_id_month":
+                M = message['data']['month']
+                T = DB.client.execute(f"""
+                                    SELECT
+                                       SUM(columns.Items_Count) as s1,
+                                       SUM(columns.Total_Amount) as S2,
+                                       columns.time_day
+                                    FROM
+                                    (SELECT
+                                        toMonth(Order_Date) as time,
+                                        toDayOfMonth(Order_Date) as time_day,
+                                        Items_Count,
+                                        Total_Amount
+                                    FROM test
+                                    WHERE Product_ID = {message["data"]["id_product"]}
+                                    AND time = {MONTHS.index(M)+1}
+                                    ORDER BY time_day) columns
+                                    GROUP BY columns.time_day
+                                    """)    
+                self.write_message(json.dumps({"from":"sort_product_id_month", "data":T}))                                            
+        if message["to"] == "sort_product_id_month_day":   
+                #print (message)
+                M = message['data']['month']
+                T = DB.client.execute(f"""
+                   SELECT
+                       SUM(columns.Items_Count) as s1,
+                       SUM(columns.Total_Amount) as S2,
+                       columns.time_hour
+                   FROM    
+                   (SELECT
+                        toMonth(Order_Date) as time,
+                        toDayOfMonth(Order_Date) as time_day,
+                        toHour(Order_Date) as time_hour,
+                        Items_Count,
+                        Total_Amount
+                    FROM test
+                    WHERE Product_ID = {message["data"]["id_product"]}
+                    AND time = {MONTHS.index(M)+1}
+                    AND time_day = {message["data"]["day"]}
+                    ORDER BY time_day) columns
+                    GROUP BY columns.time_hour
+                    """)  
+                self.write_message(json.dumps({"from":"sort_product_id_month_day", "data":T}))
+                #{'to': 'sort_product_id_month_day', 'data': {'id_product': 7290001201596, 'month': 'October', 'day': 24}}
+                
+                
                         
-                          
-            
     def on_close(self):
         ImageWebSocket.clients.remove(self)
         print("WebSocket closed from: " + self.request.remote_ip)

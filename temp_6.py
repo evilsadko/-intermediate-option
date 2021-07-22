@@ -274,9 +274,12 @@ def create_data():
                 for i in range(Z.shape[0]):
                     IC = Z[i,0]
                     TA = Z[i,1]
-                    price = TA/IC
+                    if IC==0 and TA==0:
+                        price = 0
+                    else:
+                        price = TA/IC
                     M[Z[i,-1]] = [IC, TA, price]   
-                    
+                    print (M[Z[i,-1]])
                     
                 temp_list = list(M.keys())
                 #print (temp_list, list(M.values()))
@@ -286,7 +289,7 @@ def create_data():
                         k_m = temp_list[i]
                         k_m_before = temp_list[i-1]
                         #----------------------------------->
-                        
+                        print (">>>>>>>>>>", M, k_m, k_m_before)
                         up1, P1 = func_helper(M, k_m, k_m_before)
                         up2, P2 = func_helper(D[A], k_m, k_m_before)
                         
@@ -340,6 +343,9 @@ def create_data():
 #    #---------------------------------->
 #    init = tf.initialize_all_variables()
 #    saver = tf.train.Saver()
+
+
+
 #    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.70)
 #    with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 #        if initial_weights is not None:

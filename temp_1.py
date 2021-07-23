@@ -167,26 +167,39 @@ if __name__ == "__main__":
 #                """)
 #    print (H[0],len(H))
  
- #{'to': 'sort_product_id_month_day', 'data': {'id_product': 7290001201596, 'month': 'October', 'day': 24}}
-
+#{'to': 'sort_product_id_user_id_month', 'data': {'id_product': 5555127, 'id_user': 2896007, 'month': 'May'}}
+#                                    SELECT
+#                                       SUM(columns.Items_Count) as s1,
+#                                       SUM(columns.Total_Amount) as S2,
+#                                       columns.time_day
+#                                    FROM
+#                                    (SELECT
+#                                        toMonth(Order_Date) as time,
+#                                        toDayOfMonth(Order_Date) as time_day,
+#                                        Items_Count,
+#                                        Total_Amount
+#                                    FROM test
+#                                    WHERE Product_ID = {message["data"]["id_product"]}
+#                                    AND time = {MONTHS.index(M)+1}
+#                                    ORDER BY time_day) columns
+#                                    GROUP BY columns.time_day
      T = DB.client.execute(f"""
                        SELECT
                            SUM(columns.Items_Count) as s1,
                            SUM(columns.Total_Amount) as S2,
-                           columns.time_hour
+                           columns.time_day
                        FROM    
                        (SELECT
                             toMonth(Order_Date) as time,
                             toDayOfMonth(Order_Date) as time_day,
-                            toHour(Order_Date) as time_hour,
                             Items_Count,
                             Total_Amount
                         FROM test
-                        WHERE Product_ID = 7290001201596
+                        WHERE Product_ID = 7290004127329
+                        AND Customer_Id = 0
                         AND time = 9
-                        AND time_day = 24
-                        ORDER BY time_day) columns
-                        GROUP BY columns.time_hour
+                        ORDER BY time) columns
+                        GROUP BY columns.time_day
                         """)  
      print (T)
 #    T = DB.client.execute(f"""

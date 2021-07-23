@@ -20,6 +20,8 @@
 <!--<button id="sort_product_by_user_id_rt" onclick="sort_product_by_user_id_rt()">Статистика продуктов для пользователя ID = <span id="change_see"></span></button>-->
 
 <!--<button id="sort_category_by_user_id" onclick="sort_category_by_user_id_rt()">Статистика категорий для пользователя ID = <span id="change_see"></span></button>-->
+
+<div id="correlation"></div>
 </div>
 <div id='main'>
 
@@ -256,6 +258,11 @@ var start_slice;
 var parts = document.getElementById("parts");
 
 
+var correlation_div = document.getElementById("correlation");
+            
+
+
+
 A["config"]._config.options.responsive = true;
 A.options.aspectRatio = 4;
 //DDD.canvas.parentNode.style.height = '128px'
@@ -392,6 +399,7 @@ function back() {
 };
 
 function show_product(){
+     correlation_div.style.display = "none";
      //main_div.style.display = "none";
      popChartAdd_corr.style.display = "none";
      new_block.style.display = "none";
@@ -414,6 +422,7 @@ function show_table(){
 }
 
 function show_user(){
+    correlation_div.style.display = "none";
     popChartAdd_corr.style.display = "none";
     new_block.style.display = "none";
     t_el.style.display = "block";
@@ -432,6 +441,7 @@ function show_user(){
 
 
 function show_category1(){
+    correlation_div.style.display = "none";
     popChartAdd_corr.style.display = "none";
     new_block.style.display = "none";
     var send_str = JSON.stringify({
@@ -444,6 +454,7 @@ function show_category1(){
 }
 
 function show_category2(){
+    correlation_div.style.display = "none";
     popChartAdd_corr.style.display = "none";
     new_block.style.display = "none";
     var send_str = JSON.stringify({
@@ -886,18 +897,8 @@ ws.onmessage = function(evt) {
     }
     
     if (message_data["from"] == "sort_product_id_user_id") {
-        try {
-            var temp_div = document.getElementById("correlation");
-            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Сопутствующие продукты</span></button>";
-        }
-        catch (e) {
-                var temp_div = document.createElement("div");
-                temp_div.id = "correlation";
-                temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Сопутствующие продукты</span></button>";
-                document.getElementById("button_div").append(temp_div);
-                
-        }
-
+        correlation_div.style.display = "block";
+        correlation_div.innerHTML = "<button id='show_correlation' onclick='show_correlation(" +  DDD["config"]["req_id_prod"] +","+ DDD["config"]["req_id"] +")'>Сопутствующие продукты</span></button>";
         
         for (let i = 0; i < message_data['data'].length; i++) {
             console.log(message_data['data'][i][0], message_data['data'][i]);
@@ -921,9 +922,66 @@ ws.onmessage = function(evt) {
         A["config"]._config.data.datasets = [];
         A["config"]._config.data.labels = MONTHS;
         A["config"]._config.data.datasets.push({label: 'продажи', data: T});
+        A["config"]["switch"] = "sort_product_id_user_id_month";
+        A["config"]["month"] 
         
         A.update();                                        
     }
+
+    if (message_data["from"] == "sort_product_id_user_id_month") {
+        var datas = [];
+        var cat = [];
+        for (let i = 0; i < message_data['data'].length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(message_data['data'][i][0]);
+            cat.push(message_data['data'][i][2]);
+        } 
+        canvasAdd.style.display = "block";
+        
+        A["config"]._config.type = "line";
+        A["config"]._config.options.legend = {
+                                                  display: true,
+                                                };        
+        A["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика продукта '+DDD["config"]["req_id_prod"]+' в ' + A["config"]["month"] 
+                                  };     
+        A["config"]._config.data.datasets = [];
+        A["config"]._config.data.labels = cat;
+        A["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        A["config"]["switch"] = "sort_product_id_user_id_month_day";
+        
+        A.update();          
+    }
+    if (message_data["from"] == "sort_product_id_user_id_month_day") {
+        var datas = [];
+        var cat = [];
+        for (let i = 0; i < message_data['data'].length; i++) {
+            //console.log(message_data['data'][i][0], message_data['data'][i]);
+            datas.push(message_data['data'][i][0]);
+            cat.push(message_data['data'][i][2]);
+        } 
+        canvasAdd.style.display = "block";
+        
+        A["config"]._config.type = "line";
+        A["config"]._config.options.legend = {
+                                                  display: true,
+                                                };        
+        A["config"]._config.options.plugins.title = {
+                                    display: true,
+                                    text: 'Статистика продукта '+DDD["config"]["req_id_prod"]+ ' ' + A["config"]["day"] + ' ' + A["config"]["month"] 
+                                  };     
+        A["config"]._config.data.datasets = [];
+        A["config"]._config.data.labels = cat;
+        A["config"]._config.data.datasets.push({label: 'продажи', data: datas});
+        A["config"]["switch"] = "";
+        
+        A.update();      
+    
+    }
+     
+
+
 
     if (message_data["from"] == "show_correlation") {
         var datas = [];
@@ -1024,18 +1082,8 @@ ws.onmessage = function(evt) {
         A.update(); 
         
 
-        
-        try {
-            var temp_div = document.getElementById("correlation");
-            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Корреляция</span></button>";
-        }
-        catch (e) {
-            var temp_div = document.createElement("div");
-            temp_div.id = "correlation";
-            temp_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Корреляция</span></button>";
-            //document.body.append(temp_div);
-            document.getElementById("button_div").append(temp_div);    
-        }
+        correlation_div.style.display = "block";
+        correlation_div.innerHTML = "<button id='show_correlation' onclick='show_correlation_product(" +  DDD["config"]["req_id_prod"] +")'>Корреляция</span></button>";
         
         //Кореляция продуктов
         
@@ -1316,6 +1364,50 @@ canvasAdd.onclick = function (evt) {
             
         }
     }
+    if (A["config"]["switch"] == "sort_product_id_user_id_month") {
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+            var label = A.data.labels[firstPoint.index];
+            var value = A.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            console.log("sort_product_id_user_id_month", value, label, DDD["config"]["req_id"], DDD["config"]["req_id_prod"])            
+            var send_str = JSON.stringify({
+              to: "sort_product_id_user_id_month",
+              data: {
+                     id_product: DDD["config"]["req_id_prod"],
+                     id_user: DDD["config"]["req_id"],
+                     month: label,
+                     }
+            }) 
+            A["config"]["month"] = label; 
+            ws.send(send_str);   
+                   
+        }
+    }
+    if (A["config"]["switch"] == "sort_product_id_user_id_month_day") {
+        if (activePoints.length) {
+            var firstPoint = activePoints[0];
+            var label = A.data.labels[firstPoint.index];
+            var value = A.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];  
+            console.log("sort_product_id_user_id_month_day", value, label, DDD["config"]["req_id"], DDD["config"]["req_id_prod"], A["config"]["month"])      
+            var send_str = JSON.stringify({
+              to: "sort_product_id_user_id_month_day",
+              data: {
+                     id_product: DDD["config"]["req_id_prod"],
+                     id_user: DDD["config"]["req_id"],
+                     month: A["config"]["month"],
+                     day: label
+                     }
+            }) 
+            A["config"]["day"] = label;
+            ws.send(send_str);             
+            
+             
+        }
+    
+    }
+    
+    
+    
     
 }
 

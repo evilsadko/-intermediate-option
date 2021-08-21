@@ -308,7 +308,7 @@ function Close() {
   canvas.style.display = "block";
   canvasAdd.style.display = "block";
   close_el.style.display = "none";
-  
+  new_block.style.display = "block";
   
 }
 
@@ -909,6 +909,7 @@ ws.onmessage = function(evt) {
 
 
 
+
         canvasAdd.style.display = "block";
         
         A["config"]._config.type = "line";
@@ -923,7 +924,6 @@ ws.onmessage = function(evt) {
         A["config"]._config.data.labels = MONTHS;
         A["config"]._config.data.datasets.push({label: 'продажи', data: T});
         A["config"]["switch"] = "sort_product_id_user_id_month";
-        A["config"]["month"] 
         
         A.update();                                        
     }

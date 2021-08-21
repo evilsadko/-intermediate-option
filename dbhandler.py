@@ -106,14 +106,15 @@ class DataBase():
 
         
     def T(self, p_arr, t_name):
+        step_size = 100
         size = p_arr.shape[0]
-        step = int((size/1000)+1)
+        steps = int((size/step_size)+1)
         D = DataBase()
-        for ii in range(0, step):
-            end = (ii+1)*step 
+        for ii in range(0, steps):
+            end = (ii+1)*step_size 
             if end>size:
                 end = size
-            product_arr = p_arr[ii*step:end, :]
+            product_arr = p_arr[ii*step_size:end, :]
             str_temp = f""
             for i in range(product_arr.shape[0]):
                 _order = self.order_arr[self.ids_order[product_arr[i,0]],:][0]
